@@ -1,0 +1,42 @@
+{
+  "compareMode": {
+    "enabled": false,
+    "layout": "side-by-side",
+    "primary": {
+      "segment": "index",
+      "exchange": "NSE",
+      "underlying": null,
+      "expiry": null
+    },
+    "secondary": {
+      "segment": "index",
+      "exchange": "NSE",
+      "underlying": null,
+      "expiry": null
+    }
+  },
+  "columns": {
+    "marketData": {
+      "volume": true,
+      "oi": true,
+      "closePrice": true,
+      "prevOi": true,
+      "bid": true,
+      "bidQty": true,
+      "ask": true,
+      "askQty": true
+    },
+    "greeks": {
+      "vega": true,
+      "theta": true,
+      "gamma": true,
+      "delta": true,
+      "iv": true,
+      "pop": true
+    },
+    "custom": {
+      "valuation": true,
+      "bidAskChart": true
+    }
+  }
+}

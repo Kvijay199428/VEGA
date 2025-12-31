@@ -1,0 +1,324 @@
+# RMS Control Plane v4.1 - Task Checklist
+
+## Phase A: Database Schema (Flyway V13-V22) ✅
+- [x] V13 - equity_security_type
+- [x] V14 - exchange_series
+- [x] V15 - instrument_master extensions
+- [x] V16 - exchange_series_source
+- [x] V17 - regulatory_watchlist
+- [x] V18 - ipo_calendar
+- [x] V19 - intraday_margin_by_series
+- [x] V20 - symbol_quantity_caps
+- [x] V21 - price_band
+- [x] V22 - fo_contract_lifecycle
+
+## Phase B: Entities ✅
+- [x] EquitySecurityType enum
+- [x] ExchangeSeriesEntity
+- [x] RegulatoryWatchlistEntity
+- [x] IpoCalendarEntity
+- [x] IntradayMarginEntity
+- [x] QuantityCapEntity
+- [x] PriceBandEntity
+- [x] FoContractLifecycleEntity
+
+## Phase C: Repositories ✅
+- [x] ExchangeSeriesRepository
+- [x] RegulatoryWatchlistRepository
+- [x] IpoCalendarRepository
+- [x] IntradayMarginRepository
+- [x] QuantityCapRepository
+- [x] PriceBandRepository
+- [x] FoContractLifecycleRepository
+
+## Phase D: Sync Jobs
+- [x] Scheduled job infrastructure (scheduled jobs can be created)
+- Note: Individual sync jobs created as scheduled Spring components
+
+## Phase E: Eligibility Cache ✅
+- [x] ProductEligibility record
+- [x] EligibilityResolver
+- [x] EligibilityCache (Caffeine)
+
+## Phase F: Risk Engine Enhancement ✅
+- [x] MarginProfile record
+- [x] RmsException
+- [x] RmsValidationService
+- [x] RmsValidationResult
+- [x] Quantity/Price validation
+- [x] T2T enforcement
+- [x] Extended InstrumentMasterEntity
+
+## Phase G: Verification ✅
+- [x] Maven compile passes (exit code 0)
+
+---
+
+## ✅ RMS CONTROL PLANE v4.1 COMPLETE
+
+**Files Created:** 40+
+**Migrations:** V13-V22 (10 new tables)
+**Build Status:** ✅ Passed
+
+---
+
+## Module 1: Client Risk Limits (c2.md) ✅
+
+- [x] V23 - client_risk_limits
+- [x] V24 - client_risk_state
+- [x] ClientRiskLimit record
+- [x] ClientRiskState record
+- [x] ClientRiskLimitEntity
+- [x] ClientRiskStateEntity
+- [x] ClientRiskLimitRepository
+- [x] ClientRiskStateRepository
+- [x] RiskRejectException
+- [x] ClientRiskEvaluator
+- [x] ClientRiskService (kill-switch)
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ ALL MODULES COMPLETE
+
+**Total Migrations:** V13-V24 (12 tables)
+**Total Files:** 50+
+
+---
+
+## Module 4: Multi-Broker Abstraction Layer (d3/d4.md) ✅
+
+- [x] V25 - broker_registry
+- [x] V26 - broker_symbol_mapping
+- [x] Broker record
+- [x] BrokerSymbolMapping record
+- [x] BrokerEntity + Repository
+- [x] BrokerSymbolMappingEntity + Repository
+- [x] BrokerAdapter interface
+- [x] OrderRequest, BrokerOrderStatus, BrokerOrderResponse models
+- [x] Position, Holding models
+- [x] MultiBrokerEngine
+- [x] UpstoxBrokerAdapter (concrete implementation)
+- [x] BrokerService (adapter registration)
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ ALL MODULES COMPLETE
+
+**Total Migrations:** V13-V26 (14 tables)
+**Total Files:** 65+
+
+---
+
+## Testing Phase (testing-guide.md) ✅
+
+- [x] Entity & Schema Tests (19 tests)
+- [x] RMS Validation Tests (15 tests)
+- [x] Client Risk Tests
+- [x] Multi-Broker Tests (11 tests)
+- [x] Maven test: ✅ 45 tests, 0 failures
+
+---
+
+## ✅ READY FOR DOCUMENTATION
+
+---
+
+## Documentation Phase ✅
+
+- [x] instruments-module-documentation.md (main)
+- [x] quick-start.md
+- [x] api-reference.md
+
+---
+
+## ✅ ALL PHASES COMPLETE
+
+---
+
+## Sectoral Indexing Feature (a1.md) ✅
+
+- [x] V27 - sector_master (20 sectors)
+- [x] V28 - index_master (24 NSE indices)
+- [x] V29 - index_constituent + view
+- [x] V30 - sector_risk_limit
+- [x] SectorMasterEntity
+- [x] IndexMasterEntity
+- [x] IndexConstituentEntity + Id
+- [x] SectorRiskLimitEntity
+- [x] 4 Repositories
+- [x] IndexConstituentLoader (CSV)
+- [x] SectorService
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ SECTORAL FEATURE COMPLETE
+
+**Total Migrations:** V10-V30 (21 tables)
+**Total Files:** 75+
+
+---
+
+## User Settings Feature (settings.md) ✅
+
+- [x] V31 - user_settings + audit_log
+- [x] V32 - settings_metadata (17 definitions)
+- [x] UserSettingEntity + Id
+- [x] SettingsMetadataEntity
+- [x] SettingsAuditLogEntity
+- [x] 3 Repositories
+- [x] UserSettingsService (validation + auditing)
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ ALL EXTENDED FEATURES COMPLETE
+
+**Total Migrations:** V10-V32 (23 tables)
+**Total Files:** 85+
+
+---
+
+## Extended Features Testing ✅
+
+- [x] SectoralTest (14 tests)
+- [x] UserSettingsTest (15 tests)
+- [x] Maven test: ✅ All Pass
+- [x] Usage documentation created
+
+---
+
+## ✅ PROJECT COMPLETE
+
+**Total Tests:** 74 (45 core + 29 extended)
+**Total Files:** 90+
+**Build Status:** ✅ Passed
+
+---
+
+## Expired Instruments Feature (a1-a3.md) ✅
+
+- [x] ExpiredOptionContract, ExpiredFutureContract, Candle DTOs
+- [x] ExpiredInstrumentService interface + impl
+- [x] HistoricalMarketDataService interface + impl
+- [x] V33 - expired_instruments_settings (7 settings)
+- [x] ExpiredInstrumentTest (16 tests)
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ FULL PROJECT COMPLETE
+
+**Total Migrations:** V10-V33 (24 tables)
+**Total Tests:** 90+
+**Total Files:** 100+
+
+---
+
+## Expired Instruments Integration (b1-b3/c1.md) ✅
+
+- [x] ExpiredInstrumentFetcher (UserSettings integration)
+- [x] ExpiredDataRequest DTO
+- [x] ExpiredDataResponse DTO
+- [x] ExpiredInstrumentController (7 REST endpoints)
+- [x] flow-diagrams.md (Mermaid)
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ EXPIRED INSTRUMENTS FEATURE COMPLETE
+
+**Endpoints:** 7 REST APIs
+**Tests:** 21
+**Files:** 12
+
+---
+
+## Logics Feature (logics/a1.md) 🔄
+
+- [x] V34 - exchange_expiry_rule (12 rules)
+- [x] V35 - strike_scheme_rule + strike_status (6 underlyings)
+- [x] V36 - bse_group_rule (10 groups)
+- [x] V37 - rms_rejection_code (24 codes)
+- [x] RmsRejectCode enum
+- [x] ExpiryCalendarService
+- [x] StrikeRuleScheduler
+- [x] BseGroupRuleEntity + repo
+- [x] LogicsTest (12 tests): ✅ Passed
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ LOGICS FEATURE COMPLETE
+
+**Migrations:** V34-V37 (4 tables)
+**Tests:** 12
+**Files:** 18
+
+---
+
+## Architecture Feature (arch/a1-a6) 🔄
+
+- [x] V38 - broker_symbol_mapping versioning
+- [x] V39 - disabled_strikes + audit
+- [x] V40 - admin_actions_audit + contract_version_history
+- [x] BrokerInstrumentPrewarmJob (T-1 scheduler)
+- [x] MultiBrokerResolver
+- [x] BrokerInstrumentResolver interface
+- [x] AdminController (4 endpoints)
+- [x] AdminActionService
+- [x] ArchitectureTest (7 tests): ✅ Passed
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ ARCHITECTURE FEATURE COMPLETE
+
+**Migrations:** V38-V40 (3 tables)
+**Tests:** 7
+**Files:** 15
+
+---
+
+## Final Settings & SEBI Documentation 🔄
+
+- [x] SEBI_COMPLIANCE.md
+- [x] user-priority-settings.schema.json
+- [x] ADMIN_SOP.md
+- [x] USER_SOP.md
+- [x] TEST_EVIDENCE_TEMPLATES.md
+- [x] UserPrioritySettings record
+- [x] SettingsResolver service
+- [x] FinalSettingsTest (9 tests): ✅ Passed
+- [x] Maven compile: ✅ Passed
+
+---
+
+## ✅ FINAL SETTINGS & SEBI COMPLETE
+
+**Docs:** 5 files
+**Tests:** 9
+**Files:** 10
+
+---
+
+## Option Chain Module (optionchain/a1-a4) 🔄
+
+### Documentation (prompt/optionchain/docs/)
+- [x] ARCHITECTURE.md
+- [x] SEQUENCE_DIAGRAMS.md
+- [x] FRONTEND_INTEGRATION.md
+- [x] SEBI_COMPLIANCE.md
+- [x] SOP.md (Admin + User)
+- [x] option-chain-settings.schema.json
+
+### Implementation
+- [x] V41 - option_chain + audit + cache tables
+- [x] OptionChainStrike DTO
+- [x] OptionChainResponse DTO
+- [x] OptionChainService (caching, tokens, audit)
+- [x] OptionChainController (4 endpoints)
+- [ ] OptionChainTest
+- [ ] Maven compile

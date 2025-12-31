@@ -1,0 +1,5 @@
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile E:/github/ssh_git_private
+  IdentitiesOnly yes

@@ -1,0 +1,28 @@
+# Token Persistence Implementation
+
+## Phase 1: Database Layer
+- [ ] Create [ApiName](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/exception/AuthException.java#42-45) enum (6 API types)
+- [ ] Create `UpstoxTokenEntity` (exact schema mapping)
+- [ ] Create `SqliteDataSourceFactory` (auto-detection)
+- [ ] Create `UpstoxTokenRepository` interface
+- [ ] Create `UpstoxTokenRepositoryImpl` (REPLACE semantics)
+
+## Phase 2: Validity Engine
+- [ ] Create `TokenValidityService` (time-based check)
+- [ ] Update [ProfileVerifierV2](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/ProfileVerifierV2.java#23-299) for verification service
+- [ ] Create `TokenDecisionReport` DTO
+- [ ] Create `TokenDecisionEngine` (classify tokens)
+
+## Phase 3: Integration
+- [ ] Create `UpstoxTokenMapper` (result → entity)
+- [ ] Update [OAuthLoginAutomationV2](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/OAuthLoginAutomationV2.java#34-346) to persist tokens
+- [ ] Create `TokenGenerationService`
+
+## Phase 4: REST API
+- [ ] Create `TokenStatusController` (GET status)
+- [ ] Create `TokenGenerationController` (POST generate)
+
+## Phase 5: Testing
+- [ ] Test database operations
+- [ ] Test validity checking
+- [ ] Test end-to-end flow

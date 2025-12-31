@@ -1,0 +1,71 @@
+# Module Hierarchy & Dependencies
+
+**Scope:** Java Backend ([vega-trader](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader))
+
+## 🏗️ Module Hierarchy
+
+```mermaid
+graph TD
+    App[VegaTraderApplication] --> ControllerLayer
+    App --> ServiceLayer
+    App --> Infrastructure
+
+    subgraph ControllerLayer [API Controllers]
+        AuthEnds[AuthenticationEndpoints]
+        MarketEnds[MarketDataEndpoints]
+        PortEnds[PortfolioEndpoints]
+        OrderEnds[OrderEndpoints]
+        OptionEnds[OptionChainEndpoints]
+        WSEnds[WebSocketEndpoints]
+    end
+
+    subgraph ServiceLayer [Business Services]
+        TokenSvc[UpstoxTokenProvider]
+        TokenHealth[TokenHealthChecker]
+        InstSvc[InstrumentEnrollmentService]
+        FiltSvc[InstrumentFilterService]
+        MarketStream[MarketDataStreamerV3]
+        PortStream[PortfolioDataStreamerV2]
+        
+        %% Missing Service
+        OrderLogic[OrderService (MISSING)]
+    end
+
+    subgraph Infrastructure [Core Infra]
+        EventBus[InMemoryEventBus]
+        Disruptor[MarketDataDisruptor]
+        RateLimit[RateLimitManager]
+        Snapshots[SnapshotHandler]
+        Config[UpstoxConfig]
+    end
+
+    ControllerLayer --> ServiceLayer
+    ServiceLayer --> Infrastructure
+```
+
+## 🔗 Dependency Table
+
+| Module | Depends On | Usage |
+| :--- | :--- | :--- |
+| **AuthenticationEndpoints** | `UpstoxTokenProvider` | Uses token provider to generate and validate sessions. |
+| **MarketDataEndpoints** | `MarketDataStreamerV3` | Controls the WebSocket connection (start/stop) based on API requests. |
+| **MarketDataStreamerV3** | `MarketDataDisruptor` | Publishes incoming ticks to the RingBuffer for processing. |
+| **MarketDataStreamerV3** | `UpstoxTokenProvider` | Requires a valid valid token to authenticate the WebSocket connection. |
+| **PortfolioEndpoints** | `PortfolioDataStreamerV2` | Manages the portfolio streaming connection. |
+| **OrderEndpoints** | `OrderService` (Missing) | **BROKEN LINK**: Endpoints exist but have no underlying service to call. |
+| **InstrumentEnrollmentService** | `InstrumentKeyProvider` | Fetches master instrument list from file/DB. |
+| **RateLimitManager** | `RateLimitConfig` | Enforces API limits globally. |
+
+## 📦 Package Structure
+
+`com.vegatrader.upstox.api`
+*   `config/`: Configuration classes (URLs, Versions).
+*   `endpoints/`: REST Controllers (The entry points).
+*   `errors/`: Global error handling logic.
+*   `generator/`: URL builders.
+*   `instrument/`: Instrument master handling.
+*   `ratelimit/`: Rate limiting implementation.
+*   `request/`: Request DTOs.
+*   `response/`: Response DTOs.
+*   `sectoral/`: Sector index logic.
+*   `websocket/`: Core WebSocket implementation (`Streamers`).

@@ -1,0 +1,155 @@
+# MarketDataStreamerV3 Streaming Fixes
+
+## Gap Analysis
+
+Based on the final documentation (a1.md, a2.md, d1.md, d2.md) and the current [MarketDataStreamerV3.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java):
+
+### ✅ Already Implemented Correctly
+
+| Requirement | Status | Location |
+|-------------|--------|----------|
+| Authorization URL V3 | ✅ | `MarketDataStreamerSettings.authorizeUrl = "https://api.upstox.com/v3/feed/market-data-feed/authorize"` |
+| Bearer token header | ✅ | [getAuthorizedUrl()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#338-370) line 345 |
+| Accept: application/json | ✅ | [getAuthorizedUrl()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#338-370) line 346 |
+| Request structure (guid/method/data) | ✅ | [MarketDataFeedV3Request.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/request/websocket/MarketDataFeedV3Request.java) |
+| Subscription modes (ltpc/full/option_greeks/full_d30) | ✅ | `MarketDataMode.java` |
+| Protobuf decoding | ✅ | [handleBinaryMessage()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/service/upstox-java-sdk/examples/websocket/market_data/v3/MarketFeederClient.java#105-123) line 736 |
+| Reconnect with resubscribe | ✅ | [attemptReconnect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#891-949) lines 891-948 |
+
+### ❌ Issues Found
+
+| Issue | Description | Fix Required |
+|-------|-------------|--------------|
+| **Duplicate send methods** | Both [sendBinaryRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#760-769) (line 760) and [sendRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#950-969) (line 950) exist - creates confusion | Remove [sendRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#950-969), keep only [sendBinaryRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#760-769) |
+| **sendRequest sends TEXT** | [sendRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#950-969) sends JSON as text string (line 957) - **violates V3 spec** | This method should not be used |
+| **Missing Market State Tracker** | Documentation requires waiting for `market_info` before processing live feeds | Add `MarketStateTracker` |
+| **No authorized_redirect_uri snake_case** | Documentation shows `authorized_redirect_uri` but code looks for `authorizedRedirectUri` | Both are handled in [getAuthorizedUrl()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#338-370) ✅ |
+
+---
+
+## Proposed Changes
+
+### 1. Remove Duplicate [sendRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#950-969) Method
+
+The [sendRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#950-969) method at line 950 sends TEXT frames which violates V3 spec.
+
+#### [MODIFY] [MarketDataStreamerV3.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java)
+
+**Delete lines 950-968** (the [sendRequest](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#950-969) method that sends TEXT):
+```java
+// DELETE THIS METHOD - sends text, not binary
+private void sendRequest(MarketDataFeedV3Request request) {
+    if (webSocket == null || !isConnected.get()) {
+        throw new IllegalStateException("WebSocket is not connected");
+    }
+    try {
+        String json = gson.toJson(request);
+        boolean sent = webSocket.send(json);  // TEXT FRAME - WRONG!
+        ...
+    }
+}
+```
+
+---
+
+### 2. Add MarketStateTracker 
+
+Per documentation: "Do not process ticks until market_info arrives"
+
+#### [NEW] [MarketStateTracker.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/decoder/MarketStateTracker.java)
+
+```java
+package com.vegatrader.upstox.api.websocket.decoder;
+
+import com.upstox.marketdatafeederv3udapi.rpc.proto.MarketDataFeedV3;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Tracks market state per V3 documentation.
+ * 
+ * Flow: market_info → snapshot → live_feed
+ */
+public class MarketStateTracker {
+    
+    private final AtomicBoolean marketInfoReceived = new AtomicBoolean(false);
+    private final AtomicBoolean snapshotReceived = new AtomicBoolean(false);
+    
+    /**
+     * Checks if feed should be processed.
+     * @return true if ready for live feeds
+     */
+    public boolean isReadyForLiveFeed() {
+        return marketInfoReceived.get() && snapshotReceived.get();
+    }
+    
+    /**
+     * Updates state based on feed type.
+     */
+    public void onFeedReceived(MarketDataFeedV3.FeedResponse feed) {
+        if (feed.hasMarketInfo()) {
+            marketInfoReceived.set(true);
+        }
+        // First non-market_info feed after market_info is the snapshot
+        if (marketInfoReceived.get() && !snapshotReceived.get() && !feed.hasMarketInfo()) {
+            snapshotReceived.set(true);
+        }
+    }
+    
+    /**
+     * Resets state (on reconnect).
+     */
+    public void reset() {
+        marketInfoReceived.set(false);
+        snapshotReceived.set(false);
+    }
+}
+```
+
+---
+
+### 3. Integrate MarketStateTracker into handleBinaryMessage
+
+#### [MODIFY] [MarketDataStreamerV3.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java)
+
+Add field and use in [handleBinaryMessage()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/service/upstox-java-sdk/examples/websocket/market_data/v3/MarketFeederClient.java#105-123):
+
+```java
+// Add field
+private final MarketStateTracker marketStateTracker = new MarketStateTracker();
+
+// In handleBinaryMessage(), before processing:
+marketStateTracker.onFeedReceived(response);
+// Log market_info specially
+if (response.hasMarketInfo()) {
+    logger.info("Received market_info - market state synchronized");
+}
+```
+
+---
+
+## Verification Plan
+
+### Automated Test
+
+1. **Run ws-test to verify working connection:**
+   ```powershell
+   cd d:\projects\VEGA TRADER\ws-test
+   java -cp "target/classes;lib/*" MarketFeederClient
+   ```
+
+2. **Compile main project after changes:**
+   ```powershell
+   cd d:\projects\VEGA TRADER\backend\java\vega-trader
+   mvn compile -q
+   ```
+
+3. **Check for any remaining text-frame sends:**
+   ```powershell
+   Select-String -Path "*.java" -Pattern "webSocket.send\(json\)" -Recurse
+   ```
+
+---
+
+## Summary
+
+The main fix is removing the duplicate [sendRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#950-969) method that sends TEXT frames. The existing [sendBinaryRequest()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#760-769) correctly sends binary frames. Adding `MarketStateTracker` ensures proper V3 feed synchronization.

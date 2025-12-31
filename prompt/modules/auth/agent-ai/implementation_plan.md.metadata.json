@@ -1,0 +1,6 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary":  "Enterprise-grade upgrade plan for V2 login module. Adds CAPTCHA detection with immediate abort, token quarantine/cooldown system, failure taxonomy with classified exceptions, circuit breaker and retry with Resilience4j, audit logging service, scheduled token refresh, and enhanced error handling. Defines 12 new/modified classes organized by component.",
+  "updatedAt":  "2025-12-29T05:13:57.300876900Z",
+  "version":  "1"
+}

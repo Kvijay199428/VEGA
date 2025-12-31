@@ -1,0 +1,12 @@
+# Live Market Data Feed V3 Test
+
+## Tasks
+
+- [x] **Explore reference implementations** - Review MarketFeederClient.java in ws-test and SDK examples
+- [x] **Execute ws-test market data client** - Run the working ws-test project to verify connectivity
+- [x] **Set up logging directory** - Create log files in the designated logs folder
+- [ ] **Create test script in vega-trader** - Create a test class using MarketDataFeedV3.java and MarketUpdateV3.java
+- [x] **Configure request/response/error logging** - Log all WebSocket communication to the logs directory
+- [x] **Run live market data test** - Execute and capture results
+- [ ] **Document issues and solutions** - Create walkthrough with any issues found
+

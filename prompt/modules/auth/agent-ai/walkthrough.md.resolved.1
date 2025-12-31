@@ -1,0 +1,67 @@
+# V2 Login Automation Module - Walkthrough
+
+## Summary
+
+Created a new, separate login automation module in `auth/selenium/v2/` based on the auth documentation. This module is completely independent from the existing scripts and can be tested before replacing the old implementation.
+
+## Files Created (13 total)
+
+| File | Purpose |
+|------|---------|
+| [EnvConfigLoaderV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/EnvConfigLoaderV2.java) | **Loads credentials from .env file** |
+| [LoginCredentialsV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginCredentialsV2.java) | Credentials DTO with RFC 6238 TOTP generation |
+| [TokenExpiryCalculatorV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenExpiryCalculatorV2.java) | Token expiry logic (3:30 AM rule) |
+| [LoginPageV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginPageV2.java) | Selenium page object with XPath selectors |
+| [AuthCodeCaptureV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/AuthCodeCaptureV2.java) | Captures auth code from redirect URL |
+| [TokenExchangeClientV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenExchangeClientV2.java) | Exchanges code for access token |
+| [ProfileVerifierV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/ProfileVerifierV2.java) | Verifies token via Profile API |
+| [OAuthLoginAutomationV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/OAuthLoginAutomationV2.java) | **Main orchestrator** |
+| [LoginAutomationV2Test.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginAutomationV2Test.java) | Integration test |
+
+## Verification
+
+- ✅ Maven compile successful (exit code 0)
+- ✅ All 13 Java files created in `auth/selenium/v2/`
+- ✅ Credentials loaded from `.env` file
+
+## .env Configuration
+
+The test loads credentials from [backend/java/vega-trader/.env](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/.env):
+
+```properties
+UPSTOX_MOBILE_NUMBER=9599130381
+UPSTOX_PIN=123456
+UPSTOX_TOTP=YOUR_BASE32_TOTP_SECRET
+UPSTOX_CLIENT_ID_0=your-client-id
+UPSTOX_CLIENT_SECRET_0=your-client-secret
+UPSTOX_REDIRECT_URI=http://localhost:28020/api/v1/auth/upstox/callback
+```
+
+## Usage
+
+### Run Integration Test
+
+```bash
+cd d:\projects\VEGA TRADER\backend\java\vega-trader
+mvn exec:java -Dexec.mainClass="com.vegatrader.upstox.auth.selenium.v2.LoginAutomationV2Test"
+```
+
+### Programmatic Usage
+
+```java
+EnvConfigLoaderV2 envConfig = new EnvConfigLoaderV2();
+LoginConfigV2 config = envConfig.buildLoginConfig(0, false); // API 0 = PRIMARY
+
+OAuthLoginAutomationV2 automation = new OAuthLoginAutomationV2();
+LoginResultV2 result = automation.performLogin(config);
+
+if (result.isSuccess()) {
+    String token = result.getAccessToken();
+}
+```
+
+## Next Steps
+
+1. Run [LoginAutomationV2Test](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginAutomationV2Test.java#18-206) - credentials loaded from `.env`
+2. Verify token is captured and Profile API returns valid response
+3. Replace old implementation once V2 is verified working

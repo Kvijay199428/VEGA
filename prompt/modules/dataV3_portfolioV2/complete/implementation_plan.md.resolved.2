@@ -1,0 +1,225 @@
+# PortfolioDataStreamerV2 Streaming Fixes
+
+## Gap Analysis
+
+Based on the final documentation (a1.md, a2.md, d1.md, d2.md, d3.md) and the current [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java):
+
+### ✅ Already Implemented Correctly
+
+| Requirement | Status | Location |
+|-------------|--------|----------|
+| WebSocket URL V2 | ✅ | `PortfolioStreamerSettings.wsUrl = "wss://api.upstox.com/v2/feed/portfolio-stream-feed"` |
+| Authorize URL V2 | ✅ | `PortfolioStreamerSettings.authorizeUrl` |
+| Bearer token header | ✅ | [connect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#149-183) line 168 |
+| Accept header `*/*` | ✅ | [connect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#149-183) line 169 |
+| followRedirects enabled | ✅ | `client` builder lines 142-143 |
+| JSON parsing (not Protobuf) | ✅ | `PortfolioMessageParser.parse()` |
+| No subscription messages | ✅ | Correctly not sending any |
+| Reconnect with re-auth | ✅ | [scheduleReconnect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#377-404) |
+| Backpressure buffer | ✅ | `PortfolioDataBuffer` |
+| Update type routing | ✅ | [handlePortfolioEvent()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#417-431) |
+
+### ❌ Issues Found
+
+| Issue | Description | Fix Required |
+|-------|-------------|--------------|
+| **Missing Authorization Flow** | [connect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#149-183) directly connects to WSS URL instead of calling authorize endpoint first | Add [getAuthorizedUrl()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#342-374) method |
+| **No update_types query param** | Documentation shows `?update_types=order,position,holding` for filtering | Build URL with query params |
+| **useAuthorizeEndpoint not used** | Settings flag exists but never checked | Implement two-step authorization |
+
+---
+
+## Key Difference from MarketDataStreamV3
+
+Per documentation d1.md:
+
+> "PortfolioStreamFeedV2 is architecturally simpler:
+> - No subscription messages
+> - No protobuf
+> - No binary decoding
+> - Server pushes updates automatically"
+
+**But it STILL requires the authorization endpoint call FIRST!**
+
+---
+
+## Proposed Changes
+
+### 1. Add getAuthorizedUrl() Method
+
+Per documentation a1.md:
+```
+GET /feed/portfolio-stream-feed/authorize
+Response: {"data": {"authorized_redirect_uri": "wss://..."}}
+```
+
+#### [MODIFY] [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java)
+
+Add after imports:
+```java
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+```
+
+Add new method:
+```java
+/**
+ * Gets authorized WebSocket URL from Upstox.
+ * 
+ * Per Documentation 1: Must call authorize endpoint first.
+ * The returned URL is single-use.
+ */
+private String getAuthorizedUrl() throws Exception {
+    if (!settings.isUseAuthorizeEndpoint()) {
+        // Direct connection (for testing only)
+        return buildWsUrlWithUpdateTypes();
+    }
+
+    // Build authorize URL with update_types
+    String authorizeUrl = settings.getAuthorizeUrl() + buildUpdateTypesQuery();
+
+    Request request = new Request.Builder()
+            .url(authorizeUrl)
+            .addHeader("Authorization", "Bearer " + accessToken)
+            .addHeader("Accept", "application/json")
+            .get()
+            .build();
+
+    try (Response response = client.newCall(request).execute()) {
+        if (!response.isSuccessful()) {
+            throw new RuntimeException("Authorization failed: " + response.code());
+        }
+
+        String body = response.body().string();
+        Gson gson = new Gson();
+        JsonObject root = gson.fromJson(body, JsonObject.class);
+        JsonObject data = root.getAsJsonObject("data");
+        
+        // Use snake_case field (non-deprecated)
+        String wsUrl = data.get("authorized_redirect_uri").getAsString();
+        logger.info("Authorized WebSocket URL obtained");
+        return wsUrl;
+    }
+}
+
+/**
+ * Builds update_types query parameter based on settings.
+ */
+private String buildUpdateTypesQuery() {
+    StringBuilder query = new StringBuilder();
+    boolean first = true;
+    
+    if (settings.isEnableOrders()) {
+        query.append(first ? "?" : ",").append("order");
+        first = false;
+    }
+    if (settings.isEnablePositions()) {
+        query.append(first ? "?" : ",").append("position");
+        first = false;
+    }
+    if (settings.isEnableHoldings()) {
+        query.append(first ? "?" : ",").append("holding");
+        first = false;
+    }
+    if (settings.isEnableGtt()) {
+        query.append(first ? "?" : ",").append("gtt_order");
+        first = false;
+    }
+    
+    return first ? "" : "update_types=" + query.toString().substring(1);
+}
+
+private String buildWsUrlWithUpdateTypes() {
+    String baseUrl = settings.getWsUrl();
+    String query = buildUpdateTypesQuery();
+    return query.isEmpty() ? baseUrl : baseUrl + "?" + query;
+}
+```
+
+---
+
+### 2. Update connect() to Use Authorization Flow
+
+#### [MODIFY] [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java)
+
+Change [connect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#149-183) method (lines 152-182):
+
+```java
+public synchronized void connect() {
+    if (connected) {
+        logger.warn("Already connected");
+        return;
+    }
+
+    try {
+        connectionSettings.incrementConnections();
+        stateTracker.transitionTo(PortfolioFeedState.CONNECTING, "connect() called");
+
+        // Start single consumer thread
+        startConsumer();
+
+        // Step 1: Get authorized WebSocket URL (Doc 1)
+        String wsUrl = getAuthorizedUrl();
+        logger.info("Connecting to: {}", wsUrl);
+
+        // Step 2: Build WebSocket request (Doc 2)
+        Request request = new Request.Builder()
+                .url(wsUrl)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .addHeader("Accept", "*/*")
+                .build();
+
+        // Connect
+        webSocket = client.newWebSocket(request, new PortfolioWebSocketListener());
+        logger.logConnectionAttempt(1);
+
+    } catch (Exception e) {
+        logger.logConnectionError("Failed to connect", e);
+        stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "Connection failed");
+        connectionSettings.decrementConnections();
+        throw new RuntimeException("Connection failed", e);
+    }
+}
+```
+
+---
+
+### 3. Add Gson Import
+
+The file needs Gson for JSON parsing of the authorize response.
+
+---
+
+## Summary of Changes
+
+| File | Change |
+|------|--------|
+| [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java) | Add [getAuthorizedUrl()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#342-374), `buildUpdateTypesQuery()`, `buildWsUrlWithUpdateTypes()` methods |
+| [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java) | Update [connect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#149-183) to call authorization endpoint first |
+| [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java) | Add Gson import |
+
+---
+
+## Verification Plan
+
+### Automated Test
+
+1. **Compile after changes:**
+   ```powershell
+   cd d:\projects\VEGA TRADER\backend\java\vega-trader
+   mvn compile -q
+   ```
+
+2. **Run portfolio live test (similar to MarketData test):**
+   - Create a simple test that calls [connect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#149-183) and verifies connection.
+
+---
+
+## Alignment with MarketDataStreamerV3
+
+| Aspect | MarketDataStreamerV3 | PortfolioDataStreamerV2 |
+|--------|---------------------|------------------------|
+| Authorization | REST call → get WSS URL | REST call → get WSS URL ✅ |
+| Subscription | Send binary request after connect | ❌ Not needed |
+| Payload format | Protobuf binary | JSON text ✅ |
+| Auto-push | After subscription | Immediately on connect ✅ |

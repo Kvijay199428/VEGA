@@ -1,0 +1,5 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_WALKTHROUGH",
+  "summary":  "Walkthrough documenting the instrument module upgrade implementation. Covers Phase 1 (Flyway migrations), Phase 2 (entities/repositories), Phase 3 (loader service), Phase 4 (validation patterns), Phase 5 (search API), Phase 6 (risk engine). Lists 20 new files created across database migrations, entities, repositories, services, and controllers. Includes new REST API endpoints and verification results.",
+  "updatedAt":  "2025-12-29T19:21:55.044172800Z"
+}

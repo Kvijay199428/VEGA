@@ -1,0 +1,58 @@
+name: Publish to Maven Central
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4.0.0
+
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v4.0.0
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+        server-id: central
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
+        settings-path: ${{ github.workspace }}
+
+    - name: Import GPG key
+      run: |
+        echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --pinentry-mode loopback --import
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
+    - name: Set up Maven settings.xml
+      uses: s4u/maven-settings-action@v3.0.0
+      with:
+        servers: |
+          [{
+            "id": "central",
+            "username": "${{ secrets.CENTRAL_USERNAME }}",
+            "password": "${{ secrets.CENTRAL_PASSWORD }}"
+          },{
+            "id": "gpg.passphrase",
+            "passphrase": "${{ secrets.GPG_PASSPHRASE }}",
+            "configuration": {}
+          }]
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: Publish to Maven Central
+      run: |
+        mvn clean install org.apache.maven.plugins:maven-gpg-plugin:sign -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }};
+        mvn -P release-sign-artifacts deploy
+      env:
+        MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+        MAVEN_OPTS: "-Dgpg.executable=gpg -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} -Dgpg.loopback=true"
+

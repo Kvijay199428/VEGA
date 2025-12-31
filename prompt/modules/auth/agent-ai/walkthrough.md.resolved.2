@@ -1,0 +1,158 @@
+# Enterprise Auth V2 Login Automation - Walkthrough
+
+## Summary
+
+Implemented enterprise-grade Upstox V2 login automation with CAPTCHA detection, token quarantine, and audit logging. **Critical finding:** Cloudflare Turnstile blocks ALL Selenium automation.
+
+---
+
+## What Was Implemented
+
+### New V2 Package Structure
+All classes under `com.vegatrader.upstox.auth.selenium.v2`:
+
+| Component | File | Description |
+|-----------|------|-------------|
+| Credentials | [LoginCredentialsV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginCredentialsV2.java) | TOTP generation, PIN, mobile |
+| Config | [LoginConfigV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginConfigV2.java) | Builder pattern config |
+| Config | [SeleniumConfigV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/SeleniumConfigV2.java) | Chrome/Firefox WebDriver |
+| Config | [EnvConfigLoaderV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/EnvConfigLoaderV2.java) | .env file loading |
+| Config | [AuthConfigV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/AuthConfigV2.java) | Kill switch, timeouts |
+| Page Objects | [LoginPageV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginPageV2.java) | Login flow + CAPTCHA detection |
+| Page Objects | [ConsentPageV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/ConsentPageV2.java) | OAuth consent handling |
+| Auth Flow | [AuthCodeCaptureV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/AuthCodeCaptureV2.java) | Redirect URL capture |
+| Auth Flow | [TokenExchangeClientV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenExchangeClientV2.java) | Code → Token exchange |
+| Verification | [ProfileVerifierV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/ProfileVerifierV2.java) | Profile API validation |
+| Orchestrator | [OAuthLoginAutomationV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/OAuthLoginAutomationV2.java) | Main flow coordinator |
+| State | [TokenStateV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenStateV2.java) | Quarantine/cooldown |
+| Audit | [TokenAuditService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenAuditService.java) | Event logging |
+| Test | [LoginAutomationV2Test.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginAutomationV2Test.java) | Integration test |
+
+### Exception Classes (`v2.exception` package)
+
+| Exception | Purpose |
+|-----------|---------|
+| [TokenFailureReason.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/exception/TokenFailureReason.java) | Failure taxonomy enum |
+| [AuthException.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/exception/AuthException.java) | Base exception class |
+| [CaptchaDetectedException.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/exception/CaptchaDetectedException.java) | CAPTCHA trigger |
+| [NetworkTimeoutException.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/exception/NetworkTimeoutException.java) | Timeout handling |
+| [SeleniumDomException.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/exception/SeleniumDomException.java) | DOM change detection |
+
+---
+
+## Test Results
+
+### What Works ✅
+1. **Chrome browser opens** - WebDriver created successfully
+2. **Navigation** - Login page loads correctly
+3. **Mobile auto-fill** - Mobile number entered: `95****81`
+4. **Audit logging** - Events logged with timestamps
+5. **Screenshot capture** - Error screenshots saved
+6. **Enterprise failure handling** - Proper classification
+
+### What Fails ❌
+**Cloudflare Turnstile blocks automation**
+
+Console error:
+```
+TurnstileError: [Cloudflare Turnstile] Error: 600010
+```
+
+![Cloudflare Turnstile Error](uploaded_image_1766987069216.png)
+
+---
+
+## Critical Finding: Cloudflare Turnstile
+
+> [!CAUTION]
+> **Upstox has implemented Cloudflare Turnstile** on their login page, which detects and blocks ALL Selenium automation attempts.
+
+### What Happens
+1. Browser opens → ✅
+2. Page loads → ✅
+3. Mobile entered → ✅
+4. **Cloudflare Turnstile runs** → ❌ Detects automation
+5. "Get OTP" button **disabled** due to Turnstile failure
+6. Login cannot proceed
+
+### Error Code Analysis
+- `Error: 600010` = Cloudflare bot detection triggered
+- `401 Unauthorized` on Private Access Token challenge
+- Turnstile iframe shows "Error" with Cloudflare logo
+
+---
+
+## Recommended Solutions
+
+### Option 1: Use Real Browser Profile (Recommended)
+```java
+// Use existing Chrome user data directory
+options.addArguments("--user-data-dir=C:/Users/.../AppData/Local/Google/Chrome/User Data");
+options.addArguments("--profile-directory=Default");
+```
+This reuses cookies and browser fingerprint from manual browsing.
+
+### Option 2: Manual Token Entry
+Create a UI for users to:
+1. Login manually in their browser
+2. Copy/paste the authorization code
+3. System exchanges code for token automatically
+
+### Option 3: Undetected ChromeDriver
+Use `undetected-chromedriver` (Python) or equivalent Java library that patches ChromeDriver to avoid detection.
+
+### Option 4: Playwright/Puppeteer
+Switch to Playwright which has better anti-detection capabilities.
+
+---
+
+## Enterprise Features Working
+
+Despite Turnstile blocking, these enterprise features are functional:
+
+| Feature | Status | Evidence |
+|---------|--------|----------|
+| Audit Logging | ✅ | `[AUDIT] 2025-12-29 11:21:44 | API: PRIMARY | Event: FAILED` |
+| Screenshot Capture | ✅ | `error_PRIMARY_NETWORK_TIMEOUT_2025_12_29_11_21_44.png` |
+| Failure Classification | ✅ | `Failure Reason: NETWORK_TIMEOUT` |
+| Kill Switch | ✅ | `AuthConfigV2.seleniumEnabled` |
+| Token State | ✅ | [TokenStateV2](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenStateV2.java#14-154) quarantine/cooldown |
+| Exception Taxonomy | ✅ | `TokenFailureReason` enum |
+
+---
+
+## Files Created
+
+```
+backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/
+├── LoginCredentialsV2.java
+├── TokenExpiryCalculatorV2.java
+├── LoginPageV2.java (with CAPTCHA detection)
+├── AuthCodeCaptureV2.java
+├── TokenExchangeClientV2.java
+├── ProfileVerifierV2.java
+├── LoginConfigV2.java
+├── LoginResultV2.java
+├── ConsentPageV2.java
+├── SeleniumConfigV2.java
+├── OAuthLoginAutomationV2.java (with enterprise handling)
+├── EnvConfigLoaderV2.java
+├── AuthConfigV2.java
+├── TokenStateV2.java
+├── TokenAuditService.java
+├── LoginAutomationV2Test.java
+└── exception/
+    ├── TokenFailureReason.java
+    ├── AuthException.java
+    ├── CaptchaDetectedException.java
+    ├── NetworkTimeoutException.java
+    └── SeleniumDomException.java
+```
+
+---
+
+## Next Steps
+
+1. **Immediate**: Implement browser profile reuse (Option 1)
+2. **Fallback**: Create manual code entry UI (Option 2)
+3. **Research**: Test undetected-chromedriver approach

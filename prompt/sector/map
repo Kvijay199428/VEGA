@@ -1,0 +1,143 @@
+URL Pattern
+The general pattern for all sectoral indices is:
+
+text
+https: //iislliveblob.niftyindices.com/jsonfiles/Basic%20Industry/SectorialIndexData[INDEX_NAME]_BasicIndustry.js
+Where [INDEX_NAME
+] follows the format: NIFTY [SECTOR_NAME
+] (with spaces)
+
+headers:
+https: //iislliveblob.niftyindices.com/jsonfiles/Basic%20Industry/SectorialIndexDataNIFTY%20AUTO_BasicIndustry.js
+
+response:
+modelDataAvailable({
+    "groups": [
+        {
+            "label": "Commercial Vehicles 3.7%",
+            "colour": "",
+            "weight": 3.7,
+            "groups": [
+                {
+                    "label": "ASHOKLEY 3.7%",
+                    "weight": 3.7,
+                    "id": "1",
+                    "date": "05-12-2025"
+                },
+            ],
+            "id": "0"
+        },
+        {
+            "label": "2/3 Wheelers 29.64%",
+            "colour": "",
+            "weight": 29.64,
+            "groups": [
+                {
+                    "label": "BAJAJ-AUTO 8.12%",
+                    "weight": 8.12,
+                    "id": "2",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "EICHERMOT 7.97%",
+                    "weight": 7.97,
+                    "id": "3",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "HEROMOTOCO 6.63%",
+                    "weight": 6.63,
+                    "id": "4",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "TVSMOTOR 6.92%",
+                    "weight": 6.92,
+                    "id": "5",
+                    "date": "05-12-2025"
+                },
+            ],
+            "id": "1"
+        },
+        {
+            "label": "Auto Components & Equipments 17.06%",
+            "colour": "",
+            "weight": 17.06,
+            "groups": [
+                {
+                    "label": "BHARATFORG 3.01%",
+                    "weight": 3.01,
+                    "id": "6",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "BOSCHLTD 2.57%",
+                    "weight": 2.57,
+                    "id": "7",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "EXIDEIND 1.39%",
+                    "weight": 1.39,
+                    "id": "8",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "MOTHERSON 4.18%",
+                    "weight": 4.18,
+                    "id": "9",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "SONACOMS 1.78%",
+                    "weight": 1.78,
+                    "id": "10",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "TIINDIA 2.29%",
+                    "weight": 2.29,
+                    "id": "11",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "UNOMINDA 1.84%",
+                    "weight": 1.84,
+                    "id": "12",
+                    "date": "05-12-2025"
+                },
+            ],
+            "id": "2"
+        },
+        {
+            "label": "Passenger Cars & Utility Vehicles 49.6%",
+            "colour": "",
+            "weight": 49.6,
+            "groups": [
+                {
+                    "label": "M&M 26.49%",
+                    "weight": 26.49,
+                    "id": "13",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "MARUTI 17.18%",
+                    "weight": 17.18,
+                    "id": "14",
+                    "date": "05-12-2025"
+                },
+                {
+                    "label": "TMPV 5.94%",
+                    "weight": 5.94,
+                    "id": "15",
+                    "date": "05-12-2025"
+                },
+            ],
+            "id": "3"
+        },
+    ]
+},
+{
+    label: "NIFTY AUTO ",
+    file: "SectorialIndexDataNIFTY AUTO.jsonp "
+});

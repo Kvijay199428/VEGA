@@ -1,0 +1,61 @@
+# Live Market Data Feed V3 Test - Walkthrough
+
+## Summary
+
+Successfully tested live market data streaming from Upstox Market Data Feed V3 WebSocket API.
+
+## Test Execution
+
+**Date:** 2025-12-28 22:20 IST
+
+### Commands Run
+
+```powershell
+cd d:\projects\VEGA TRADER\ws-test
+mvn compile -q
+java -cp "target/classes;lib/*" MarketFeederClient
+```
+
+### Results
+
+✅ **WebSocket Connection:** Successful  
+✅ **Authentication:** Access token validated  
+✅ **Subscription:** Subscribed to `NSE_INDEX|Nifty Bank` and `NSE_INDEX|Nifty 50`  
+✅ **Data Received:** Initial feed with 2 instruments  
+
+### Market Status (at test time)
+
+| Segment | Status |
+|---------|--------|
+| BSE_EQ | CLOSING_END |
+| BSE_FO | NORMAL_CLOSE |
+
+> [!NOTE]
+> Market was closed at test time (22:20 IST). Initial feed was received successfully.
+
+### Log Output
+
+```
+2025-12-28T22:20:05 - Starting MarketFeederClient...
+2025-12-28T22:20:05 - Access Token read successfully.
+2025-12-28T22:20:06 - Resolved WebSocket URL: wss://...
+2025-12-28T22:20:06 - Opened connection
+2025-12-28T22:20:06 - Sending Subscription Request: {guid:..., method:sub, data:{mode:full_d30...}}
+2025-12-28T22:20:06 - Received Binary Message (FeedResponse)
+2025-12-28T22:20:06 - Type: initial_feed
+2025-12-28T22:20:06 - Feeds Count: 2
+2025-12-28T22:20:06 - Key: NSE_INDEX|Nifty Bank
+2025-12-28T22:20:06 - Key: NSE_INDEX|Nifty 50
+```
+
+## Files Created
+
+- Log copied to: [ws_market_data.log](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/logs/ws_market_data.log)
+
+## Key Files Used
+
+| File | Purpose |
+|------|---------|
+| [MarketFeederClient.java](file:///d:/projects/VEGA%20TRADER/ws-test/src/main/java/MarketFeederClient.java) | WebSocket client implementation |
+| [MarketDataFeedV3.java](file:///d:/projects/VEGA%20TRADER/ws-test/src/main/java/com/upstox/marketdatafeederv3udapi/rpc/proto/MarketDataFeedV3.java) | Protobuf generated classes |
+| [access_token.txt](file:///d:/projects/VEGA%20TRADER/ws-test/access_token.txt) | JWT access token |

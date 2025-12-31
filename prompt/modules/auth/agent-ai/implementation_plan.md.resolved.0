@@ -1,0 +1,235 @@
+# New Login Automation Module (V2)
+
+This plan implements a new, separate login automation module based on the documentation in `prompt/modules/auth/parts`. The new module will coexist with existing scripts until verified working.
+
+## Background
+
+The auth documentation defines a complete Upstox OAuth login automation flow including:
+- Selenium-based login (Mobile → OTP/TOTP → PIN)
+- XPath selectors for Upstox login page elements
+- TOTP generation algorithm
+- Token expiry rules (3:30 AM next day)
+- Profile API verification
+- Token storage service
+
+## Proposed Changes
+
+### New Package: `auth.selenium.v2`
+
+All new classes will be in `auth/selenium/v2/` to keep them completely separate from existing implementation.
+
+---
+
+#### [NEW] [LoginPageV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginPageV2.java)
+
+Page Object for Upstox login page with documented XPath selectors:
+
+| Element | XPath |
+|---------|-------|
+| Mobile Number | `//*[@id='mobileNum']` |
+| Get OTP Button | `//*[@id='getOtp']` |
+| OTP/TOTP Input | `//*[@id='otpNum']` |
+| Continue Button | `//*[@id='continueBtn']` |
+| PIN Input | `//*[@id='pinCode']` |
+| PIN Continue | `//*[@id='pinContinueBtn']` |
+
+**Methods:**
+- `navigateToAuthUrl(String url)` - Navigate to OAuth URL
+- `enterMobileNumber(String mobile)` - Enter mobile
+- `clickGetOtp()` - Click Get OTP button
+- `enterTotp(String code)` - Enter TOTP/OTP
+- `clickContinueAfterOtp()` - Continue after OTP
+- `enterPin(String pin)` - Enter 6-digit PIN
+- `clickContinueAfterPin()` - Final continue
+- `isErrorDisplayed()` / `getErrorMessage()` - Error handling
+
+---
+
+#### [NEW] [LoginCredentialsV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginCredentialsV2.java)
+
+Credentials DTO with TOTP generation (as per part3 documentation):
+
+```java
+public class LoginCredentialsV2 {
+    private String mobileNumber;   // 10-digit mobile
+    private String pin;            // 6-digit PIN
+    private String totpSecret;     // Base32 TOTP secret
+    
+    public String generateTotpCode();  // RFC 6238 TOTP
+    public void validate();
+}
+```
+
+---
+
+#### [NEW] [TokenExpiryCalculatorV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenExpiryCalculatorV2.java)
+
+Token expiry logic per part4 documentation:
+- Tokens expire at **3:30 AM the next day**
+- If generated before 3:30 AM → expires same day at 3:30 AM
+- If generated after 3:30 AM → expires next day at 3:30 AM
+
+**Static methods:**
+- `calculateValidityAtString()` → "yyyy-MM-dd HH:mm:ss"
+- `isExpired(String validityAt)` → boolean
+- `calculateSecondsUntilExpiry()` → long
+- `getTimeUntilExpiryString()` → "Xh Ym"
+
+---
+
+#### [NEW] [AuthCodeCaptureV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/AuthCodeCaptureV2.java)
+
+Captures authorization code from redirect URL:
+- Wait for redirect to callback URI
+- Extract `code` parameter from URL
+- Handle timeout and error conditions
+
+---
+
+#### [NEW] [TokenExchangeClientV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/TokenExchangeClientV2.java)
+
+Exchange authorization code for access token:
+- POST to `https://api.upstox.com/v2/login/authorization/token`
+- Handle response and parse TokenResponse
+- Return access_token, refresh_token, expires_in
+
+---
+
+#### [NEW] [ProfileVerifierV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/ProfileVerifierV2.java)
+
+Verify token by calling Profile API (part2 documentation):
+- GET `https://api.upstox.com/v2/user/profile`
+- Verify 200 OK response
+- Parse and return profile data
+
+---
+
+#### [NEW] [OAuthLoginAutomationV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/OAuthLoginAutomationV2.java)
+
+Main orchestrator combining all components:
+
+```java
+public class OAuthLoginAutomationV2 {
+    public LoginResult performLogin(LoginConfig config);
+}
+```
+
+**Flow:**
+1. Create WebDriver (Chrome/Firefox, headless configurable)
+2. Navigate to authorization URL
+3. Enter mobile number → Click Get OTP
+4. Generate TOTP code → Enter → Click Continue
+5. Enter PIN → Click Continue
+6. Handle consent page (if shown)
+7. Capture authorization code from redirect
+8. Exchange code for access token
+9. Verify token with Profile API
+10. Return result with token and profile
+
+---
+
+#### [NEW] [LoginConfigV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginConfigV2.java)
+
+Configuration DTO:
+
+```java
+public class LoginConfigV2 {
+    private String apiName;      // PRIMARY, WEBSOCKET1, etc.
+    private String clientId;
+    private String clientSecret;
+    private String redirectUri;
+    private LoginCredentialsV2 credentials;
+    private boolean headless;
+    private String browser;      // chrome, firefox
+}
+```
+
+---
+
+#### [NEW] [LoginResultV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/LoginResultV2.java)
+
+Result DTO:
+
+```java
+public class LoginResultV2 {
+    private boolean success;
+    private String accessToken;
+    private String refreshToken;
+    private long expiresIn;
+    private String validityAt;
+    private ProfileData profile;
+    private String errorMessage;
+}
+```
+
+---
+
+#### [NEW] [LoginAutomationV2Test.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/selenium/v2/test/LoginAutomationV2Test.java)
+
+Integration test for new login flow with actual credentials.
+
+---
+
+## Verification Plan
+
+### 1. Compilation Test
+
+Run Maven compile to verify all new classes compile without errors:
+
+```bash
+cd d:\projects\VEGA TRADER\backend\java\vega-trader
+mvn compile -q
+```
+
+**Expected:** Build SUCCESS with no compilation errors.
+
+### 2. Unit Test - TOTP Generation
+
+Test that TOTP code generation matches expected output:
+
+```bash
+mvn test -Dtest=LoginCredentialsV2Test -q
+```
+
+### 3. Unit Test - Token Expiry Calculator
+
+Test expiry calculation logic:
+
+```bash
+mvn test -Dtest=TokenExpiryCalculatorV2Test -q
+```
+
+### 4. Integration Test - Live Login Flow
+
+> [!IMPORTANT]
+> This test requires actual Upstox credentials. The user must provide:
+> - Mobile number
+> - 6-digit PIN
+> - TOTP secret (Base32)
+> - Client ID and Secret from Upstox Developer Portal
+
+Run the integration test:
+
+```bash
+mvn test -Dtest=LoginAutomationV2Test -q
+```
+
+**Expected:** 
+- Browser opens (visible mode for debugging)
+- Login flow completes successfully
+- Authorization code captured
+- Token exchanged
+- Profile verified
+- Token stored in database
+
+### 5. Manual Verification
+
+1. After successful test, check database:
+   ```sql
+   SELECT api_name, validity_at, is_active FROM upstox_tokens WHERE api_name = 'PRIMARY';
+   ```
+
+2. Verify token works by calling Profile API manually:
+   ```bash
+   curl -H "Authorization: Bearer <token>" https://api.upstox.com/v2/user/profile
+   ```

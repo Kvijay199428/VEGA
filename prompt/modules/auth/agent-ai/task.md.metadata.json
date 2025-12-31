@@ -1,0 +1,6 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_TASK",
+  "summary":  "Task checklist for implementing database-backed token persistence system with SQLite, validity engine, profile verification, and REST API.",
+  "updatedAt":  "2025-12-29T15:04:35.348133700Z",
+  "version":  "4"
+}

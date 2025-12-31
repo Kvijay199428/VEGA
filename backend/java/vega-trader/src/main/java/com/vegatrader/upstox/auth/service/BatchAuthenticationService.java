@@ -181,33 +181,62 @@ public class BatchAuthenticationService {
         return new BatchAuthResult(apps.size(), successCount, errors);
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CONFIGURED API NAMES (AUTHORITATIVE SOURCE OF TRUTH)
+    // ═══════════════════════════════════════════════════════════════════════════
+    // These are the 6 APIs that MUST be configured for full functionality.
+    // This is the SINGLE source of truth - not environment variables, not database.
+    private static final List<String> CONFIGURED_API_NAMES = List.of(
+            "PRIMARY", // Main trading API (MANDATORY)
+            "WEBSOCKET_1", // Market data stream 1
+            "WEBSOCKET_2", // Market data stream 2
+            "WEBSOCKET_3", // Market data stream 3
+            "OPTION_CHAIN_1", // Option chain data 1
+            "OPTION_CHAIN_2" // Option chain data 2
+    );
+
+    /**
+     * Get list of all configured API names.
+     * This is the authoritative source of truth for required APIs.
+     */
+    public List<String> getConfiguredApiNames() {
+        return CONFIGURED_API_NAMES;
+    }
+
     /**
      * Get current authentication status.
-     * Includes cache status, cooldown info, valid tokens list, and missing APIs.
+     * Uses CONFIG-DRIVEN logic: missingApis = configuredApis - validTokens
      * 
-     * Authentication is based on PRIMARY token validity (MANDATORY).
-     * Other tokens (WEBSOCKET_x, OPTION_CHAIN_x) are OPTIONAL.
+     * Authentication model:
+     * - primaryReady: PRIMARY token is valid (MANDATORY for dashboard access)
+     * - fullyReady: ALL configured APIs have valid tokens
+     * - canProceed: Same as primaryReady
+     * - canGenerateRemaining: primaryReady AND missing tokens exist
      */
     public AuthStatus getStatus() {
         TokenCacheService.CacheStatus cacheStatus = tokenCacheService.getStatus();
         CooldownService.CooldownStatus cooldownStatus = cooldownService.getStatus();
 
-        // Get valid tokens and missing APIs
+        // Get valid tokens from database
         List<String> validTokens = getValidTokenNames();
-        List<String> missingApis = getMissingApiNames(validTokens);
         int generated = validTokens.size();
 
-        // Configured APIs: use discovery count OR fallback to 6 (standard config)
-        int configuredApis = apiDiscovery.getAppCount();
-        if (configuredApis == 0) {
-            configuredApis = 6; // Fallback: PRIMARY + 3 WEBSOCKET + 2 OPTION_CHAIN
+        // AUTHORITATIVE: Use static configured API names
+        int configuredApis = CONFIGURED_API_NAMES.size(); // Always 6
+
+        // CORRECT: missingApis = configuredApis - validTokens
+        List<String> missingApis = new ArrayList<>();
+        for (String apiName : CONFIGURED_API_NAMES) {
+            if (!validTokens.contains(apiName)) {
+                missingApis.add(apiName);
+            }
         }
 
         // PRIMARY token determines dashboard access (MANDATORY token)
         boolean primaryReady = validTokens.contains("PRIMARY");
 
         // Fully ready means ALL configured APIs have valid tokens
-        boolean fullyReady = generated == configuredApis && configuredApis > 0;
+        boolean fullyReady = missingApis.isEmpty();
 
         // Can proceed to dashboard if PRIMARY is valid
         boolean canProceed = primaryReady;
@@ -254,13 +283,14 @@ public class BatchAuthenticationService {
     }
 
     /**
-     * Get list of missing API names (required but not yet authenticated).
+     * Get list of missing API names (configured but not yet authenticated).
+     * Uses CONFIGURED_API_NAMES as source of truth, not environment discovery.
      */
     private List<String> getMissingApiNames(List<String> validTokens) {
         List<String> missingApis = new ArrayList<>();
-        for (ApiCredentialsDiscovery.UpstoxAppCredentials app : apiDiscovery.getAllApps()) {
-            if (!validTokens.contains(app.getPurpose())) {
-                missingApis.add(app.getPurpose());
+        for (String apiName : CONFIGURED_API_NAMES) {
+            if (!validTokens.contains(apiName)) {
+                missingApis.add(apiName);
             }
         }
         return missingApis;

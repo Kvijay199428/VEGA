@@ -1,0 +1,49 @@
+# Instrument Module Upgrade - Task Checklist
+
+## Phase 1: Database Schema & Flyway Migrations
+- [x] Create Flyway migration directory structure
+- [x] Create V10__instrument_master.sql
+- [x] Create V11__instrument_overlays.sql (MIS, MTF, Suspension)
+- [x] Create V12__product_risk_profile.sql
+- [x] Add necessary indexes for search/autocomplete
+
+## Phase 2: Entity & Repository Layer
+- [x] Create InstrumentMasterEntity.java
+- [x] Create overlay entities (MIS, MTF, Suspension)
+- [x] Create InstrumentMasterRepository.java
+- [x] Create overlay repositories
+- [x] Create InstrumentSearchResponse DTO (in InstrumentSearchService)
+
+## Phase 3: Loader Service (GZIP + Streaming)
+- [x] Create InstrumentFileSource enum
+- [x] Create InstrumentLoaderService.java
+- [x] Implement Jackson streaming JSON parser
+- [x] Implement batch insert logic
+- [x] Create DailyRefreshScheduler.java
+
+## Phase 4: Validation Layer (Regex Patterns)
+- [x] Create InstrumentKeyPattern.java
+- [x] Create Bean Validation annotations (ValidInstrumentKey, ValidExchange)
+- [x] Add Flyway dependency and configuration
+
+## Phase 5: Search & Autocomplete API
+- [x] Create InstrumentSearchService.java
+- [x] Create InstrumentController.java (includes autocomplete)
+- [x] Create REST endpoints for search/resolve
+
+## Phase 6: Risk Engine Integration
+- [x] Create ProductType enum
+- [x] Create ProductRiskProfileEntity.java
+- [x] Create RiskValidationService.java
+- [x] Implement margin calculation
+
+## Phase 7: Migration & Integration
+- [x] Create DatabaseBackedInstrumentKeyProvider.java
+- [x] Update SectoralIndex enum with new sectors
+- [x] Add Flyway configuration to application.properties
+
+---
+
+*Status: ✅ ALL CORE TASKS COMPLETE*
+*Maven Compile: ✅ Passed*
+

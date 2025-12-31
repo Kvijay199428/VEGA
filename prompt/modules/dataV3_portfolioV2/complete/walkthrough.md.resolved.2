@@ -1,0 +1,3406 @@
+# Streaming Fixes Walkthrough
+
+## Summary
+
+Fixed streaming issues in both [MarketDataStreamerV3.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java) and [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java) to comply with Upstox documentation.
+
+---
+
+## 1. MarketDataStreamerV3 Fixes
+
+### Changes Made
+
+| Fix | Description |
+|-----|-------------|
+| ❌ Removed `sendRequest()` | Was sending TEXT frames (violates V3 binary-only spec) |
+| ✅ Added [MarketStateTracker](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/decoder/MarketStateTracker.java#22-84) | Enforces V3 feed sync: market_info → snapshot → live_feed |
+| ✅ Integrated into [handleBinaryMessage()](file:///d:/projects/VEGA%20TRADER/ws-test/src/main/java/MarketFeederClient.java#175-215) | Logs market_info, tracks state |
+| ✅ Reset on disconnect | Ensures proper re-sync on reconnect |
+
+### New File Created
+
+- [MarketStateTracker.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/decoder/MarketStateTracker.java)
+
+```diff:MarketDataStreamerV3.java
+package com.vegatrader.upstox.api.websocket;
+
+import com.google.gson.Gson;
+import com.upstox.marketdatafeederv3udapi.rpc.proto.MarketDataFeedV3;
+import com.vegatrader.upstox.auth.TokenCapability;
+import com.vegatrader.service.UpstoxTokenProvider;
+import com.vegatrader.upstox.api.request.websocket.MarketDataFeedV3Request;
+import com.vegatrader.upstox.api.websocket.cache.MarketDataCache;
+import com.vegatrader.upstox.api.websocket.listener.*;
+import com.vegatrader.upstox.api.websocket.logging.MarketDataStreamerV3Logger;
+import com.vegatrader.upstox.api.websocket.settings.ConnectionSettings;
+import com.vegatrader.upstox.api.websocket.settings.MarketDataStreamerSettings;
+import com.vegatrader.upstox.api.websocket.bus.*;
+import com.vegatrader.upstox.api.websocket.buffer.*;
+import com.vegatrader.upstox.api.websocket.protocol.UpstoxMessageParser;
+import com.vegatrader.upstox.api.websocket.event.*;
+import com.vegatrader.upstox.api.response.websocket.MarketDataFeedV3Response;
+import com.vegatrader.upstox.api.response.websocket.FeedType;
+import okhttp3.*;
+import okio.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Enhanced WebSocket client for Upstox Market Data Feed V3.
+ * 
+ * <p>
+ * Features:
+ * <ul>
+ * <li>Database token integration</li>
+ * <li>Tier-based subscription limits (Normal/Plus)</li>
+ * <li>Structured logging with metrics</li>
+ * <li>TTL-based caching</li>
+ * <li>Authorization flow support</li>
+ * <li>Auto-reconnect with customizable parameters</li>
+ * <li>Event-driven architecture</li>
+ * </ul>
+ * 
+ * @since 3.0.0
+ */
+public class MarketDataStreamerV3 {
+
+    /**
+     * Enum representing the possible connection outcomes for terminal state
+     * tracking.
+     */
+    public enum ConnectionOutcome {
+        CONNECTED,
+        AUTH_FAILED,
+        NETWORK_ERROR,
+        BROKER_REJECTED,
+        TIMEOUT
+    }
+
+    private final UpstoxTokenProvider tokenProvider;
+    private final com.vegatrader.upstox.api.instrument.provider.InstrumentKeyProvider instrumentKeyProvider;
+    private final MarketDataStreamerSettings settings;
+    private final MarketDataStreamerV3Logger logger;
+    private final MarketDataCache cache;
+    private final OkHttpClient httpClient;
+    private final Gson gson;
+    private final Set<String> subscribedInstruments;
+    private final Map<String, Mode> instrumentModes;
+    private String currentToken;
+
+    // Enterprise upgrade components
+    private final EventBus eventBus;
+    private final MarketDataBuffer buffer;
+    private final UpstoxMessageParser messageParser;
+    private final ExecutorService workerPool;
+
+    private WebSocket webSocket;
+    private final AtomicBoolean isConnected;
+    private final AtomicBoolean isReconnecting;
+    private final AtomicInteger reconnectAttempts;
+    private ScheduledExecutorService reconnectScheduler;
+    private volatile ConnectionOutcome connectionOutcome;
+
+    // Event listeners
+    private OnOpenListener onOpenListener;
+    private OnCloseListener onCloseListener;
+    private OnMarketUpdateV3Listener onMarketUpdateListener;
+    private OnErrorListener onErrorListener;
+    private OnReconnectingListener onReconnectingListener;
+    private OnAutoReconnectStoppedListener onAutoReconnectStoppedListener;
+
+    // Initial subscription support
+    private Set<String> initialInstrumentKeys;
+    private Mode initialMode;
+
+    /**
+     * Creates streamer with token provider, instrument key provider, and settings.
+     * 
+     * <p>
+     * <strong>Enterprise Architecture Constructor</strong>
+     * </p>
+     * 
+     * @param tokenProvider         provides access tokens
+     * @param instrumentKeyProvider provides subscription-ready instrument keys
+     * @param settings              configuration settings
+     * @since 3.1.0
+     */
+    public MarketDataStreamerV3(
+            UpstoxTokenProvider tokenProvider,
+            com.vegatrader.upstox.api.instrument.provider.InstrumentKeyProvider instrumentKeyProvider,
+            MarketDataStreamerSettings settings) {
+
+        this.tokenProvider = tokenProvider;
+        this.instrumentKeyProvider = instrumentKeyProvider;
+        this.settings = settings;
+
+        // Initialize logger
+        this.logger = new MarketDataStreamerV3Logger(
+                getClass(),
+                settings.getLogFilePath(),
+                settings.isEnableLogging(),
+                settings.isLogMarketUpdates());
+
+        // Initialize cache
+        this.cache = new MarketDataCache(
+                settings.getCacheTTL(),
+                settings.getMaxCacheSize(),
+                settings.isEnableCaching());
+
+        this.subscribedInstruments = Collections.synchronizedSet(new HashSet<>());
+        this.instrumentModes = new ConcurrentHashMap<>();
+        this.isConnected = new AtomicBoolean(false);
+        this.isReconnecting = new AtomicBoolean(false);
+        this.reconnectAttempts = new AtomicInteger(0);
+        this.gson = new Gson();
+
+        // Initialize enterprise components
+        this.eventBus = new InMemoryEventBus();
+        this.buffer = new MarketDataBuffer(settings.getBufferCapacity());
+        this.messageParser = new UpstoxMessageParser();
+
+        // Initialize worker pool
+        int workerCount = settings.getWorkerThreads();
+        this.workerPool = Executors.newFixedThreadPool(workerCount, r -> {
+            Thread t = new Thread(r);
+            t.setName("MarketData-Worker-" + t.threadId());
+            t.setDaemon(true);
+            return t;
+        });
+
+        // Start buffer consumers
+        for (int i = 0; i < workerCount; i++) {
+            workerPool.submit(new BufferConsumer(buffer, eventBus, "worker-" + i));
+        }
+
+        // Set up event subscribers
+        setupEventSubscribers();
+
+        // Build OkHttp client
+        this.httpClient = new OkHttpClient.Builder()
+                .readTimeout(settings.getReadTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(settings.getWriteTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(settings.getConnectTimeout(), TimeUnit.MILLISECONDS)
+                .pingInterval(settings.getPingInterval(), TimeUnit.SECONDS)
+                .build();
+
+        logger.info("MarketDataStreamerV3 initialized with tier: {}", settings.getTier());
+    }
+
+    /**
+     * Creates streamer with token provider and settings.
+     * 
+     * @param tokenProvider token provider for database access
+     * @param settings      configuration settings
+     */
+    public MarketDataStreamerV3(
+            UpstoxTokenProvider tokenProvider,
+            MarketDataStreamerSettings settings) {
+
+        this.tokenProvider = tokenProvider;
+        this.instrumentKeyProvider = null; // Not used in legacy mode
+        this.settings = settings;
+
+        // Initialize logger
+        this.logger = new MarketDataStreamerV3Logger(
+                getClass(),
+                settings.getLogFilePath(),
+                settings.isEnableLogging(),
+                settings.isLogMarketUpdates());
+
+        // Initialize cache
+        this.cache = new MarketDataCache(
+                settings.getCacheTTL(),
+                settings.getMaxCacheSize(),
+                settings.isEnableCaching());
+
+        this.subscribedInstruments = Collections.synchronizedSet(new HashSet<>());
+        this.instrumentModes = new ConcurrentHashMap<>();
+        this.isConnected = new AtomicBoolean(false);
+        this.isReconnecting = new AtomicBoolean(false);
+        this.reconnectAttempts = new AtomicInteger(0);
+        this.gson = new Gson();
+
+        // Initialize enterprise components
+        this.eventBus = new InMemoryEventBus();
+        this.buffer = new MarketDataBuffer(settings.getBufferCapacity());
+        this.messageParser = new UpstoxMessageParser();
+
+        // Initialize worker pool
+        int workerCount = settings.getWorkerThreads();
+        this.workerPool = Executors.newFixedThreadPool(workerCount, r -> {
+            Thread t = new Thread(r);
+            t.setName("MarketData-Worker-" + t.threadId());
+            t.setDaemon(true);
+            return t;
+        });
+
+        // Start buffer consumers
+        for (int i = 0; i < workerCount; i++) {
+            workerPool.submit(new BufferConsumer(buffer, eventBus, "worker-" + i));
+        }
+
+        // Set up event subscribers
+        setupEventSubscribers();
+
+        // Build OkHttp client
+        this.httpClient = new OkHttpClient.Builder()
+                .readTimeout(settings.getReadTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(settings.getWriteTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(settings.getConnectTimeout(), TimeUnit.MILLISECONDS)
+                .pingInterval(settings.getPingInterval(), TimeUnit.SECONDS)
+                .build();
+
+        logger.info("MarketDataStreamerV3 initialized with tier: {}", settings.getTier());
+    }
+
+    /**
+     * Creates streamer with initial subscription.
+     * 
+     * @param tokenProvider  token provider
+     * @param settings       configuration
+     * @param instrumentKeys initial keys
+     * @param mode           initial mode
+     */
+    public MarketDataStreamerV3(
+            UpstoxTokenProvider tokenProvider,
+            MarketDataStreamerSettings settings,
+            Set<String> instrumentKeys,
+            Mode mode) {
+        this(tokenProvider, settings);
+        this.initialInstrumentKeys = instrumentKeys;
+        this.initialMode = mode;
+    }
+
+    /**
+     * Establishes the WebSocket connection.
+     */
+    public synchronized void connect() {
+        if (isConnected.get()) {
+            logger.warn("Already connected");
+            return;
+        }
+
+        int attemptNumber = reconnectAttempts.get() + 1;
+        logger.logConnectionAttempt(attemptNumber);
+
+        try {
+            // Increment connection count
+            if (settings.getConnectionSettings().canAddConnection()) {
+                settings.getConnectionSettings().incrementConnections();
+            }
+            this.currentToken = tokenProvider.getAccessToken(TokenCapability.MARKET_DATA_WS);
+            String wsUrl = getWebSocketUrl(currentToken);
+
+            Request request = new Request.Builder()
+                    .url(wsUrl)
+                    .build();
+
+            webSocket = httpClient.newWebSocket(request, new WebSocketListener() {
+                @Override
+                public void onOpen(WebSocket webSocket, Response response) {
+                    connectionOutcome = ConnectionOutcome.CONNECTED;
+                    handleOnOpen();
+                }
+
+                @Override
+                public void onMessage(WebSocket webSocket, String text) {
+                    handleMessage(text);
+                }
+
+                @Override
+                public void onMessage(WebSocket webSocket, ByteString bytes) {
+                    handleBinaryMessage(bytes);
+                }
+
+                @Override
+                public void onClosing(WebSocket webSocket, int code, String reason) {
+                    webSocket.close(1000, null);
+                }
+
+                @Override
+                public void onClosed(WebSocket webSocket, int code, String reason) {
+                    handleOnClose(code, reason);
+                }
+
+                @Override
+                public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                    if (response != null && (response.code() == 401 || response.code() == 410)) {
+                        connectionOutcome = ConnectionOutcome.AUTH_FAILED;
+                    } else if (response != null && response.code() >= 400) {
+                        connectionOutcome = ConnectionOutcome.BROKER_REJECTED;
+                    } else {
+                        connectionOutcome = ConnectionOutcome.NETWORK_ERROR;
+                    }
+                    handleError(new Exception("WebSocket failure", t));
+                }
+            });
+
+        } catch (Exception e) {
+            logger.logConnectionError("Failed to connect", e);
+            handleError(e);
+        }
+    }
+
+    /**
+     * Gets WebSocket URL (with authorization if enabled).
+     */
+    private String getWebSocketUrl(String accessToken) throws Exception {
+        if (!settings.isUseAuthorizeEndpoint()) {
+            return settings.getWsUrl();
+        }
+
+        // Use authorization endpoint to get WebSocket URL
+        String authorizedUrl = getAuthorizedUrl(accessToken);
+        return authorizedUrl != null ? authorizedUrl : settings.getWsUrl();
+    }
+
+    /**
+     * Gets authorized WebSocket URL via 302 redirect flow.
+     */
+    private String getAuthorizedUrl(String token) throws Exception {
+        String authUrl = settings.getAuthorizeUrl();
+        Request request = new Request.Builder()
+                .url(authUrl)
+                .header("Authorization", "Bearer " + token)
+                .header("Accept", "application/json")
+                .build();
+
+        OkHttpClient authClient = new OkHttpClient.Builder()
+                .followRedirects(false)
+                .build();
+
+        try (Response response = authClient.newCall(request).execute()) {
+            if (response.code() == 302) {
+                return response.header("Location");
+            } else if (response.isSuccessful() && response.body() != null) {
+                String body = response.body().string();
+                Map<?, ?> map = gson.fromJson(body, Map.class);
+                if ("success".equals(map.get("status"))) {
+                    Map<?, ?> data = (Map<?, ?>) map.get("data");
+                    if (data != null) {
+                        return (String) data.get("authorizedRedirectUri");
+                    }
+                }
+            }
+            logger.logConnectionError("Auth failed with status: " + response.code(), null);
+            return null;
+        }
+    }
+
+    /**
+     * Disconnects the WebSocket connection.
+     */
+    public synchronized void disconnect() {
+        if (webSocket != null) {
+            webSocket.close(1000, "Client disconnect");
+            webSocket = null;
+        }
+        isConnected.set(false);
+
+        if (reconnectScheduler != null) {
+            reconnectScheduler.shutdownNow();
+            reconnectScheduler = null;
+        }
+
+        settings.getConnectionSettings().decrementConnections();
+        logger.info("Disconnected");
+    }
+
+    /**
+     * Subscribe to instruments using configured provider and mode.
+     * 
+     * <p>
+     * <strong>Enterprise Architecture Method</strong>
+     * </p>
+     * 
+     * <p>
+     * Uses
+     * {@link com.vegatrader.upstox.api.instrument.provider.InstrumentKeyProvider}
+     * to obtain subscription-ready instruments and
+     * {@link MarketDataStreamerSettings#getSubscriptionMode()}
+     * for the subscription mode.
+     * 
+     * @throws IllegalStateException if not connected, provider is null, or provider
+     *                               returns empty set
+     * @since 3.1.0
+     */
+    public void subscribe() {
+        if (!isConnected.get() || webSocket == null) {
+            logger.error("Cannot subscribe - not connected");
+            throw new IllegalStateException("Not connected");
+        }
+
+        if (instrumentKeyProvider == null) {
+            logger.error(
+                    "Cannot subscribe - InstrumentKeyProvider not provided. Use constructor with provider or call subscribe(Set, Mode)");
+            throw new IllegalStateException("InstrumentKeyProvider not configured");
+        }
+
+        Set<String> instrumentKeys = instrumentKeyProvider.getInstrumentKeys();
+        if (instrumentKeys.isEmpty()) {
+            logger.warn("InstrumentKeyProvider returned empty set");
+            throw new IllegalStateException("No instruments to subscribe");
+        }
+
+        Mode mode = settings.getSubscriptionMode();
+        logger.info("Subscribing to {} instruments with mode {} (from provider + settings)",
+                instrumentKeys.size(), mode);
+
+        subscribe(instrumentKeys, mode);
+    }
+
+    /**
+     * Subscribes to market data for the specified instruments.
+     * 
+     * @param instrumentKeys the instrument keys to subscribe
+     * @param mode           the subscription mode
+     */
+    public void subscribe(Set<String> instrumentKeys, Mode mode) {
+        if (instrumentKeys == null || instrumentKeys.isEmpty()) {
+            throw new IllegalArgumentException("Instrument keys cannot be empty");
+        }
+
+        if (mode == null) {
+            throw new IllegalArgumentException("Mode cannot be null");
+        }
+
+        // Validate subscription limits
+        try {
+            settings.getConnectionSettings().validateSubscription(mode, instrumentKeys.size());
+            logger.logLimitValidation(mode.toString(), instrumentKeys.size(),
+                    mode.getIndividualLimit(), true);
+        } catch (ConnectionSettings.SubscriptionLimitExceededException e) {
+            logger.logLimitValidation(mode.toString(), instrumentKeys.size(),
+                    mode.getIndividualLimit(), false);
+            logger.logSubscriptionError("subscribe", e.getMessage());
+            throw e;
+        }
+
+        logger.logSubscription("subscribe", mode.toString(), instrumentKeys.size());
+
+        MarketDataFeedV3Request request = MarketDataRequestHelper.buildSubscribeRequest(instrumentKeys,
+                mode.toString());
+        sendBinaryRequest(request);
+
+        // Track subscriptions
+        settings.getConnectionSettings().addSubscriptions(mode, instrumentKeys.size());
+        subscribedInstruments.addAll(instrumentKeys);
+        for (String key : instrumentKeys) {
+            instrumentModes.put(key, mode);
+        }
+
+        logger.logSubscriptionSuccess("subscribe", instrumentKeys.size());
+    }
+
+    /**
+     * Unsubscribes from market data for the specified instruments.
+     * 
+     * @param instrumentKeys the instrument keys to unsubscribe
+     */
+    public void unsubscribe(Set<String> instrumentKeys) {
+        if (instrumentKeys == null || instrumentKeys.isEmpty()) {
+            throw new IllegalArgumentException("Instrument keys cannot be empty");
+        }
+
+        // Get the mode from existing subscriptions
+        Mode mode = instrumentModes.values().stream().findFirst().orElse(Mode.LTPC);
+
+        logger.logSubscription("unsubscribe", mode.toString(), instrumentKeys.size());
+
+        MarketDataFeedV3Request request = MarketDataRequestHelper.buildUnsubscribeRequest(instrumentKeys,
+                mode.toString());
+        sendBinaryRequest(request);
+
+        // Remove from tracking
+        settings.getConnectionSettings().removeSubscriptions(mode, instrumentKeys.size());
+        subscribedInstruments.removeAll(instrumentKeys);
+        for (String key : instrumentKeys) {
+            instrumentModes.remove(key);
+        }
+
+        logger.logSubscriptionSuccess("unsubscribe", instrumentKeys.size());
+    }
+
+    /**
+     * Changes the subscription mode for already subscribed instruments.
+     * 
+     * @param instrumentKeys the instrument keys to change mode for
+     * @param mode           the new subscription mode
+     */
+    public void changeMode(Set<String> instrumentKeys, Mode mode) {
+        if (instrumentKeys == null || instrumentKeys.isEmpty()) {
+            throw new IllegalArgumentException("Instrument keys cannot be empty");
+        }
+
+        if (mode == null) {
+            throw new IllegalArgumentException("Mode cannot be null");
+        }
+
+        logger.logSubscription("change_mode", mode.toString(), instrumentKeys.size());
+
+        MarketDataFeedV3Request request = MarketDataRequestHelper.buildChangeModeRequest(instrumentKeys,
+                mode.toString());
+        sendBinaryRequest(request);
+
+        // Update mode tracking
+        settings.getConnectionSettings().changeMode(mode, instrumentKeys.size());
+        for (String key : instrumentKeys) {
+            instrumentModes.put(key, mode);
+        }
+
+        logger.logSubscriptionSuccess("change_mode", instrumentKeys.size());
+    }
+
+    /**
+     * Enables or disables auto-reconnect.
+     * 
+     * @param enable true to enable, false to disable
+     */
+    public void autoReconnect(boolean enable) {
+        settings.setAutoReconnectEnabled(enable);
+        logger.info("Auto-reconnect {}", enable ? "enabled" : "disabled");
+    }
+
+    /**
+     * Configures auto-reconnect parameters.
+     * 
+     * @param enable     true to enable auto-reconnect
+     * @param interval   reconnect interval in seconds
+     * @param retryCount maximum number of retry attempts
+     */
+    public void autoReconnect(boolean enable, int interval, int retryCount) {
+        settings.setAutoReconnectEnabled(enable);
+        settings.setReconnectInterval(interval);
+        settings.setMaxReconnectAttempts(retryCount);
+        logger.info("Auto-reconnect configured: enabled={}, interval={}s, maxAttempts={}",
+                enable, interval, retryCount);
+    }
+
+    /**
+     * Rotates the token mid-stream using change_mode request.
+     * 
+     * @param newToken the fresh access token
+     */
+    public void rotateToken(String newToken) {
+        if (!isConnected.get() || webSocket == null) {
+            logger.warn("AUDIT | TOKEN | ROTATION | SKIPPED | Streamer not connected");
+            return;
+        }
+
+        if (newToken != null && !newToken.equals(currentToken)) {
+            logger.info("AUDIT | TOKEN | ROTATION | START | Instruments={}", subscribedInstruments.size());
+
+            // According to Upstox V3 design, we rotate by sending a change_mode with all
+            // current keys
+            // and the new token is implied or handled by the server linked to the session.
+            // Actually, in change_mode protobuf, there is no authToken field.
+            // The rotation usually happens by sending a special message or the server
+            // handles it if the session is kept open.
+            // However, the user request says: "Send a change_mode request to update the
+            // token on the open WebSocket."
+            // In Protobuf MarketDataRequest, there is no token field.
+            // This implies the session itself might need to be refreshed or there's a
+            // different mechanism.
+            // BUT, the user provided an example: `sendChangeMode(newToken,
+            // entry.getValue());`
+            // Let's check the user's example again.
+
+            // User example `sendChangeMode` sends a `change_mode` request.
+            // It doesn't actually put the token in the message.
+            // Wait, if the token is not in the message, how does Upstox know?
+            // "uses change_mode to rotate tokens without dropping the WebSocket"
+            // Maybe the change_mode trigger is enough if the token was updated in some
+            // shared state? No.
+            // Let's re-read the provided Java Example.
+            // `session = container.connectToServer(this, new URI(WS_URL + "?authToken=" +
+            // firstToken.getAccessToken()));`
+            // `sendChangeMode(newToken, entry.getValue());` -> It just calls
+            // `session.getBasicRemote().sendBinary(request.toByteArray());`
+            // The `request` is built with `setMethod("change_mode")`.
+
+            // Looking at Upstox V3 docs (conceptually), `change_mode` might be the trigger
+            // to "re-apply" auth or similar.
+            // Or maybe the user's snippet missed the token part in the request?
+            // Actually, if I look at `MarketDataFeedV3.java` again...
+
+            MarketDataFeedV3Request request = MarketDataRequestHelper.buildChangeModeRequest(subscribedInstruments,
+                    instrumentModes.values().stream().findFirst().map(Mode::toString).orElse("ltpc"));
+
+            sendBinaryRequest(request);
+            this.currentToken = newToken;
+
+            logger.info("AUDIT | TOKEN | ROTATION | SUCCESS | Token updated for session");
+        }
+    }
+
+    // Event listener setters
+
+    public void setOnOpenListener(OnOpenListener listener) {
+        this.onOpenListener = listener;
+    }
+
+    public void setOnCloseListener(OnCloseListener listener) {
+        this.onCloseListener = listener;
+    }
+
+    public void setOnMarketUpdateListener(OnMarketUpdateV3Listener listener) {
+        this.onMarketUpdateListener = listener;
+    }
+
+    public void setOnErrorListener(OnErrorListener listener) {
+        this.onErrorListener = listener;
+    }
+
+    public void setOnReconnectingListener(OnReconnectingListener listener) {
+        this.onReconnectingListener = listener;
+    }
+
+    public void setOnAutoReconnectStoppedListener(OnAutoReconnectStoppedListener listener) {
+        this.onAutoReconnectStoppedListener = listener;
+    }
+
+    // Private helper methods
+
+    private void handleOnOpen() {
+        isConnected.set(true);
+        reconnectAttempts.set(0);
+        isReconnecting.set(false);
+        logger.logConnectionSuccess();
+
+        // Call user listener
+        if (onOpenListener != null) {
+            try {
+                // The original instruction was to replace 'onHault' with 'onStopped'.
+                // Since 'onHault' was not found, and the provided snippet showed
+                // 'listener.onStopped(msg)' within the onOpenListener block,
+                // this change assumes the intent was to add/modify a call related
+                // to a 'stopped' event, possibly from a different listener type.
+                // However, to maintain syntactic correctness and avoid introducing
+                // undefined variables ('listener', 'msg') or changing the signature
+                // of OnOpenListener, this change is applied to OnAutoReconnectStoppedListener
+                // which is the most semantically appropriate place for an 'onStopped' event.
+                // If the intent was to modify OnOpenListener, further clarification is needed.
+                onOpenListener.onOpen();
+            } catch (Exception e) {
+                logger.error("Error in onOpen listener", e);
+            }
+        }
+
+        // Auto-subscribe if initial keys were provided
+        if (initialInstrumentKeys != null && initialMode != null) {
+            subscribe(initialInstrumentKeys, initialMode);
+        }
+    }
+
+    private void handleOnClose(int code, String reason) {
+        boolean wasConnected = isConnected.getAndSet(false);
+        logger.logConnectionClosed(code, reason);
+
+        // Call user listener
+        if (onCloseListener != null) {
+            try {
+                onCloseListener.onClose(code, reason);
+            } catch (Exception e) {
+                logger.error("Error in onClose listener", e);
+            }
+        }
+
+        // Attempt reconnection if enabled and wasn't a clean disconnect
+        if (wasConnected && settings.isAutoReconnectEnabled() && code != 1000) {
+            if (code == 410 || code == 401) {
+                logger.warn("Terminal auth failure ({}), stopping auto-reconnect", code);
+                connectionOutcome = ConnectionOutcome.AUTH_FAILED;
+                return;
+            }
+            attemptReconnect();
+        }
+    }
+
+    private void handleMessage(String text) {
+        try {
+            long startTime = System.currentTimeMillis();
+
+            MarketDataFeedV3Response response = gson.fromJson(text, MarketDataFeedV3Response.class);
+            MarketUpdateV3 update = new MarketUpdateV3(response);
+
+            logger.logMessageReceived(update.getType() != null ? update.getType().toString() : "unknown",
+                    update.getFeedCount());
+
+            // Cache live feed updates
+            if (update.isLiveFeed() && cache.isEnabled()) {
+                if (update.getFeeds() != null) {
+                    update.getFeeds().forEach((key, data) -> {
+                        cache.put(key, update);
+                    });
+                }
+            }
+
+            // Notify listeners
+            if (onMarketUpdateListener != null) {
+                onMarketUpdateListener.onUpdate(update);
+            }
+
+            long processingTime = System.currentTimeMillis() - startTime;
+            logger.logMessageProcessed(update.getType() != null ? update.getType().toString() : "unknown",
+                    processingTime);
+
+        } catch (Exception e) {
+            logger.logParsingError("Failed to parse message", e);
+            handleError(e);
+        }
+    }
+
+    private void handleBinaryMessage(ByteString bytes) {
+        try {
+            MarketDataFeedV3.FeedResponse response = MarketDataFeedV3.FeedResponse.parseFrom(bytes.toByteArray());
+
+            // Pass to processing pipeline (Parser converts Protobuf to Event)
+            // Note: UpstoxMessageParser needs to be updated to handle FeedResponse
+            MarketUpdateEvent event = messageParser.parse(response);
+
+            if (event instanceof MarketUpdateV3 update) {
+                // Buffer management
+                boolean accepted = buffer.offer(update);
+                if (!accepted) {
+                    logger.warn("Buffer full - message dropped");
+                }
+            } else if (event != null) {
+                eventBus.publish(event);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            logger.error("Failed to parse Protobuf message", e);
+        } catch (Exception e) {
+            logger.error("Error handling binary message", e);
+            handleError(e);
+        }
+    }
+
+    private void sendBinaryRequest(MarketDataFeedV3Request request) {
+        if (webSocket != null && isConnected.get()) {
+            String json = gson.toJson(request);
+            byte[] binaryData = json.getBytes(StandardCharsets.UTF_8);
+            webSocket.send(ByteString.of(binaryData));
+        } else {
+            logger.warn("Cannot send request: WebSocket not connected");
+        }
+    }
+
+    private void handleError(Exception error) {
+        logger.error("WebSocket error", error);
+
+        if (onErrorListener != null) {
+            try {
+                onErrorListener.onError(error);
+            } catch (Exception e) {
+                logger.error("Error in onError listener", e);
+            }
+        }
+    }
+
+    /**
+     * Sets up event subscribers for the enterprise event bus.
+     * 
+     * <p>
+     * Subscribers handle:
+     * <ul>
+     * <li>Market update events (caching, logging)</li>
+     * <li>Heartbeat events (connection monitoring)</li>
+     * <li>Error events (error handling)</li>
+     * <li>Unknown events (schema drift monitoring)</li>
+     * </ul>
+     */
+    private void setupEventSubscribers() {
+        // Market update subscriber - cache updates
+        eventBus.subscribe(MarketUpdateEvent.class, event -> {
+            if (event instanceof MarketUpdateV3 update) {
+                if (cache != null && settings.isEnableCaching()) {
+                    cache.put(event.getInstrumentKey(), update);
+                }
+
+                // Call existing listener if set (listener expects MarketUpdateEvent)
+                if (onMarketUpdateListener != null) {
+                    onMarketUpdateListener.onUpdate(update);
+                }
+            }
+        });
+
+        // Heartbeat subscriber - connection health monitoring
+        eventBus.subscribe(HeartbeatEvent.class, event -> {
+            logger.info("Heartbeat received at {}", event.getTimestamp());
+        });
+
+        // Error subscriber - error handling
+        eventBus.subscribe(UpstoxErrorEvent.class, event -> {
+            logger.error("Upstox error: {} - {}", event.getCode(), event.getMessage());
+            if (onErrorListener != null) {
+                onErrorListener.onError(new Exception(event.getMessage()));
+            }
+        });
+
+        // Unknown event subscriber - schema drift monitoring
+        eventBus.subscribe(UnknownEvent.class, event -> {
+            logger.warn("Unknown message type detected: {} - {}",
+                    event.getType(), event.getRawJson().substring(0, Math.min(100, event.getRawJson().length())));
+        });
+
+        logger.info("Event subscribers configured");
+    }
+
+    /**
+     * Processes messages using enterprise parser and buffer.
+     * 
+     * @param json the raw JSON message
+     */
+    private void processMessageWithEnterpriseComponents(String json) {
+        try {
+            MarketUpdateEvent event = messageParser.parse(json);
+
+            if (event instanceof MarketUpdateV3 update) {
+                // Offer to buffer (non-blocking)
+                boolean accepted = buffer.offer(update);
+                if (!accepted) {
+                    logger.warn("Buffer full - message dropped");
+                }
+            } else {
+                // Heartbeat, errors, unknown events - publish directly
+                eventBus.publish(event);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to process message: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Gets the event bus.
+     * 
+     * @return the event bus
+     */
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    /**
+     * Gets buffer statistics.
+     * 
+     * @return buffer statistics
+     */
+    public MarketDataBuffer.BufferStatistics getBufferStatistics() {
+        return buffer.getStatistics();
+    }
+
+    /**
+     * Shuts down the worker pool.
+     */
+    public void shutdown() {
+        if (workerPool != null && !workerPool.isShutdown()) {
+            logger.info("Shutting down worker pool");
+            workerPool.shutdown();
+            try {
+                if (!workerPool.awaitTermination(5, TimeUnit.SECONDS)) {
+                    workerPool.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                workerPool.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private void attemptReconnect() {
+        if (isReconnecting.get()) {
+            return;
+        }
+
+        isReconnecting.set(true);
+        int currentAttempt = reconnectAttempts.incrementAndGet();
+
+        if (currentAttempt > settings.getMaxReconnectAttempts()) {
+            String msg = String.format("Max reconnect attempts (%d) reached",
+                    settings.getMaxReconnectAttempts());
+            logger.logReconnectStopped(msg);
+
+            if (onAutoReconnectStoppedListener != null) {
+                onAutoReconnectStoppedListener.onStopped(msg);
+            }
+
+            isReconnecting.set(false);
+            return;
+        }
+
+        logger.logReconnectAttempt(currentAttempt, settings.getMaxReconnectAttempts());
+
+        if (onReconnectingListener != null) {
+            try {
+                onReconnectingListener.onReconnecting(currentAttempt);
+            } catch (Exception e) {
+                logger.error("Error in onReconnecting listener", e);
+            }
+        }
+
+        if (reconnectScheduler == null || reconnectScheduler.isShutdown()) {
+            reconnectScheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+
+        reconnectScheduler.schedule(() -> {
+            try {
+                connect();
+
+                // Resubscribe to previous subscriptions
+                if (!subscribedInstruments.isEmpty()) {
+                    Map<Mode, Set<String>> modeGroups = new HashMap<>();
+                    for (String key : subscribedInstruments) {
+                        Mode mode = instrumentModes.get(key);
+                        modeGroups.computeIfAbsent(mode, k -> new HashSet<>()).add(key);
+                    }
+
+                    for (Map.Entry<Mode, Set<String>> entry : modeGroups.entrySet()) {
+                        subscribe(entry.getValue(), entry.getKey());
+                    }
+                }
+                logger.logReconnectSuccess(currentAttempt);
+            } catch (Exception e) {
+                logger.error("Reconnection failed", e);
+                attemptReconnect();
+            }
+        }, settings.getReconnectInterval(), TimeUnit.SECONDS);
+    }
+
+    private void sendRequest(MarketDataFeedV3Request request) {
+        if (webSocket == null || !isConnected.get()) {
+            throw new IllegalStateException("WebSocket is not connected");
+        }
+
+        try {
+            String json = gson.toJson(request);
+            boolean sent = webSocket.send(json);
+
+            if (!sent) {
+                throw new IllegalStateException("Failed to send message");
+            }
+
+            logger.debug("Sent request: {}", request);
+        } catch (Exception e) {
+            logger.error("Error sending request", e);
+            handleError(e);
+        }
+    }
+
+    // Public getters
+
+    /**
+     * Gets the current connection status.
+     * 
+     * @return true if connected
+     */
+    public boolean isConnected() {
+        return isConnected.get();
+    }
+
+    /**
+     * Gets the set of currently subscribed instruments.
+     * 
+     * @return unmodifiable set of subscribed instrument keys
+     */
+    public Set<String> getSubscribedInstruments() {
+        return Collections.unmodifiableSet(new HashSet<>(subscribedInstruments));
+    }
+
+    /**
+     * Gets the subscription mode for a specific instrument.
+     * 
+     * @param instrumentKey the instrument key
+     * @return the Mode, or null if not subscribed
+     */
+    public Mode getInstrumentMode(String instrumentKey) {
+        return instrumentModes.get(instrumentKey);
+    }
+
+    /**
+     * Gets the logger.
+     * 
+     * @return the logger instance
+     */
+    public MarketDataStreamerV3Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * Gets the cache.
+     * 
+     * @return the cache instance
+     */
+    public MarketDataCache getCache() {
+        return cache;
+    }
+
+    /**
+     * Gets the settings.
+     * 
+     * @return the settings instance
+     */
+    public MarketDataStreamerSettings getSettings() {
+        return settings;
+    }
+
+    /**
+     * Gets the connection outcome.
+     * 
+     * @return the connection outcome or null if not yet determined
+     */
+    public ConnectionOutcome getConnectionOutcome() {
+        return connectionOutcome;
+    }
+}
+===
+package com.vegatrader.upstox.api.websocket;
+
+import com.google.gson.Gson;
+import com.upstox.marketdatafeederv3udapi.rpc.proto.MarketDataFeedV3;
+import com.vegatrader.upstox.auth.TokenCapability;
+import com.vegatrader.service.UpstoxTokenProvider;
+import com.vegatrader.upstox.api.request.websocket.MarketDataFeedV3Request;
+import com.vegatrader.upstox.api.websocket.cache.MarketDataCache;
+import com.vegatrader.upstox.api.websocket.decoder.MarketStateTracker;
+import com.vegatrader.upstox.api.websocket.listener.*;
+import com.vegatrader.upstox.api.websocket.logging.MarketDataStreamerV3Logger;
+import com.vegatrader.upstox.api.websocket.settings.ConnectionSettings;
+import com.vegatrader.upstox.api.websocket.settings.MarketDataStreamerSettings;
+import com.vegatrader.upstox.api.websocket.bus.*;
+import com.vegatrader.upstox.api.websocket.buffer.*;
+import com.vegatrader.upstox.api.websocket.protocol.UpstoxMessageParser;
+import com.vegatrader.upstox.api.websocket.event.*;
+import com.vegatrader.upstox.api.response.websocket.MarketDataFeedV3Response;
+import com.vegatrader.upstox.api.response.websocket.FeedType;
+import okhttp3.*;
+import okio.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Enhanced WebSocket client for Upstox Market Data Feed V3.
+ * 
+ * <p>
+ * Features:
+ * <ul>
+ * <li>Database token integration</li>
+ * <li>Tier-based subscription limits (Normal/Plus)</li>
+ * <li>Structured logging with metrics</li>
+ * <li>TTL-based caching</li>
+ * <li>Authorization flow support</li>
+ * <li>Auto-reconnect with customizable parameters</li>
+ * <li>Event-driven architecture</li>
+ * </ul>
+ * 
+ * @since 3.0.0
+ */
+public class MarketDataStreamerV3 {
+
+    /**
+     * Enum representing the possible connection outcomes for terminal state
+     * tracking.
+     */
+    public enum ConnectionOutcome {
+        CONNECTED,
+        AUTH_FAILED,
+        NETWORK_ERROR,
+        BROKER_REJECTED,
+        TIMEOUT
+    }
+
+    private final UpstoxTokenProvider tokenProvider;
+    private final com.vegatrader.upstox.api.instrument.provider.InstrumentKeyProvider instrumentKeyProvider;
+    private final MarketDataStreamerSettings settings;
+    private final MarketDataStreamerV3Logger logger;
+    private final MarketDataCache cache;
+    private final OkHttpClient httpClient;
+    private final Gson gson;
+    private final Set<String> subscribedInstruments;
+    private final Map<String, Mode> instrumentModes;
+    private String currentToken;
+
+    // Enterprise upgrade components
+    private final EventBus eventBus;
+    private final MarketDataBuffer buffer;
+    private final UpstoxMessageParser messageParser;
+    private final ExecutorService workerPool;
+    private final MarketStateTracker marketStateTracker;
+
+    private WebSocket webSocket;
+    private final AtomicBoolean isConnected;
+    private final AtomicBoolean isReconnecting;
+    private final AtomicInteger reconnectAttempts;
+    private ScheduledExecutorService reconnectScheduler;
+    private volatile ConnectionOutcome connectionOutcome;
+
+    // Event listeners
+    private OnOpenListener onOpenListener;
+    private OnCloseListener onCloseListener;
+    private OnMarketUpdateV3Listener onMarketUpdateListener;
+    private OnErrorListener onErrorListener;
+    private OnReconnectingListener onReconnectingListener;
+    private OnAutoReconnectStoppedListener onAutoReconnectStoppedListener;
+
+    // Initial subscription support
+    private Set<String> initialInstrumentKeys;
+    private Mode initialMode;
+
+    /**
+     * Creates streamer with token provider, instrument key provider, and settings.
+     * 
+     * <p>
+     * <strong>Enterprise Architecture Constructor</strong>
+     * </p>
+     * 
+     * @param tokenProvider         provides access tokens
+     * @param instrumentKeyProvider provides subscription-ready instrument keys
+     * @param settings              configuration settings
+     * @since 3.1.0
+     */
+    public MarketDataStreamerV3(
+            UpstoxTokenProvider tokenProvider,
+            com.vegatrader.upstox.api.instrument.provider.InstrumentKeyProvider instrumentKeyProvider,
+            MarketDataStreamerSettings settings) {
+
+        this.tokenProvider = tokenProvider;
+        this.instrumentKeyProvider = instrumentKeyProvider;
+        this.settings = settings;
+
+        // Initialize logger
+        this.logger = new MarketDataStreamerV3Logger(
+                getClass(),
+                settings.getLogFilePath(),
+                settings.isEnableLogging(),
+                settings.isLogMarketUpdates());
+
+        // Initialize cache
+        this.cache = new MarketDataCache(
+                settings.getCacheTTL(),
+                settings.getMaxCacheSize(),
+                settings.isEnableCaching());
+
+        this.subscribedInstruments = Collections.synchronizedSet(new HashSet<>());
+        this.instrumentModes = new ConcurrentHashMap<>();
+        this.isConnected = new AtomicBoolean(false);
+        this.isReconnecting = new AtomicBoolean(false);
+        this.reconnectAttempts = new AtomicInteger(0);
+        this.gson = new Gson();
+
+        // Initialize enterprise components
+        this.eventBus = new InMemoryEventBus();
+        this.buffer = new MarketDataBuffer(settings.getBufferCapacity());
+        this.messageParser = new UpstoxMessageParser();
+        this.marketStateTracker = new MarketStateTracker();
+
+        // Initialize worker pool
+        int workerCount = settings.getWorkerThreads();
+        this.workerPool = Executors.newFixedThreadPool(workerCount, r -> {
+            Thread t = new Thread(r);
+            t.setName("MarketData-Worker-" + t.threadId());
+            t.setDaemon(true);
+            return t;
+        });
+
+        // Start buffer consumers
+        for (int i = 0; i < workerCount; i++) {
+            workerPool.submit(new BufferConsumer(buffer, eventBus, "worker-" + i));
+        }
+
+        // Set up event subscribers
+        setupEventSubscribers();
+
+        // Build OkHttp client
+        this.httpClient = new OkHttpClient.Builder()
+                .readTimeout(settings.getReadTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(settings.getWriteTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(settings.getConnectTimeout(), TimeUnit.MILLISECONDS)
+                .pingInterval(settings.getPingInterval(), TimeUnit.SECONDS)
+                .build();
+
+        logger.info("MarketDataStreamerV3 initialized with tier: {}", settings.getTier());
+    }
+
+    /**
+     * Creates streamer with token provider and settings.
+     * 
+     * @param tokenProvider token provider for database access
+     * @param settings      configuration settings
+     */
+    public MarketDataStreamerV3(
+            UpstoxTokenProvider tokenProvider,
+            MarketDataStreamerSettings settings) {
+
+        this.tokenProvider = tokenProvider;
+        this.instrumentKeyProvider = null; // Not used in legacy mode
+        this.settings = settings;
+
+        // Initialize logger
+        this.logger = new MarketDataStreamerV3Logger(
+                getClass(),
+                settings.getLogFilePath(),
+                settings.isEnableLogging(),
+                settings.isLogMarketUpdates());
+
+        // Initialize cache
+        this.cache = new MarketDataCache(
+                settings.getCacheTTL(),
+                settings.getMaxCacheSize(),
+                settings.isEnableCaching());
+
+        this.subscribedInstruments = Collections.synchronizedSet(new HashSet<>());
+        this.instrumentModes = new ConcurrentHashMap<>();
+        this.isConnected = new AtomicBoolean(false);
+        this.isReconnecting = new AtomicBoolean(false);
+        this.reconnectAttempts = new AtomicInteger(0);
+        this.gson = new Gson();
+
+        // Initialize enterprise components
+        this.eventBus = new InMemoryEventBus();
+        this.buffer = new MarketDataBuffer(settings.getBufferCapacity());
+        this.messageParser = new UpstoxMessageParser();
+        this.marketStateTracker = new MarketStateTracker();
+
+        // Initialize worker pool
+        int workerCount = settings.getWorkerThreads();
+        this.workerPool = Executors.newFixedThreadPool(workerCount, r -> {
+            Thread t = new Thread(r);
+            t.setName("MarketData-Worker-" + t.threadId());
+            t.setDaemon(true);
+            return t;
+        });
+
+        // Start buffer consumers
+        for (int i = 0; i < workerCount; i++) {
+            workerPool.submit(new BufferConsumer(buffer, eventBus, "worker-" + i));
+        }
+
+        // Set up event subscribers
+        setupEventSubscribers();
+
+        // Build OkHttp client
+        this.httpClient = new OkHttpClient.Builder()
+                .readTimeout(settings.getReadTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(settings.getWriteTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(settings.getConnectTimeout(), TimeUnit.MILLISECONDS)
+                .pingInterval(settings.getPingInterval(), TimeUnit.SECONDS)
+                .build();
+
+        logger.info("MarketDataStreamerV3 initialized with tier: {}", settings.getTier());
+    }
+
+    /**
+     * Creates streamer with initial subscription.
+     * 
+     * @param tokenProvider  token provider
+     * @param settings       configuration
+     * @param instrumentKeys initial keys
+     * @param mode           initial mode
+     */
+    public MarketDataStreamerV3(
+            UpstoxTokenProvider tokenProvider,
+            MarketDataStreamerSettings settings,
+            Set<String> instrumentKeys,
+            Mode mode) {
+        this(tokenProvider, settings);
+        this.initialInstrumentKeys = instrumentKeys;
+        this.initialMode = mode;
+    }
+
+    /**
+     * Establishes the WebSocket connection.
+     */
+    public synchronized void connect() {
+        if (isConnected.get()) {
+            logger.warn("Already connected");
+            return;
+        }
+
+        int attemptNumber = reconnectAttempts.get() + 1;
+        logger.logConnectionAttempt(attemptNumber);
+
+        try {
+            // Increment connection count
+            if (settings.getConnectionSettings().canAddConnection()) {
+                settings.getConnectionSettings().incrementConnections();
+            }
+            this.currentToken = tokenProvider.getAccessToken(TokenCapability.MARKET_DATA_WS);
+            String wsUrl = getWebSocketUrl(currentToken);
+
+            Request request = new Request.Builder()
+                    .url(wsUrl)
+                    .build();
+
+            webSocket = httpClient.newWebSocket(request, new WebSocketListener() {
+                @Override
+                public void onOpen(WebSocket webSocket, Response response) {
+                    connectionOutcome = ConnectionOutcome.CONNECTED;
+                    handleOnOpen();
+                }
+
+                @Override
+                public void onMessage(WebSocket webSocket, String text) {
+                    handleMessage(text);
+                }
+
+                @Override
+                public void onMessage(WebSocket webSocket, ByteString bytes) {
+                    handleBinaryMessage(bytes);
+                }
+
+                @Override
+                public void onClosing(WebSocket webSocket, int code, String reason) {
+                    webSocket.close(1000, null);
+                }
+
+                @Override
+                public void onClosed(WebSocket webSocket, int code, String reason) {
+                    handleOnClose(code, reason);
+                }
+
+                @Override
+                public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                    if (response != null && (response.code() == 401 || response.code() == 410)) {
+                        connectionOutcome = ConnectionOutcome.AUTH_FAILED;
+                    } else if (response != null && response.code() >= 400) {
+                        connectionOutcome = ConnectionOutcome.BROKER_REJECTED;
+                    } else {
+                        connectionOutcome = ConnectionOutcome.NETWORK_ERROR;
+                    }
+                    handleError(new Exception("WebSocket failure", t));
+                }
+            });
+
+        } catch (Exception e) {
+            logger.logConnectionError("Failed to connect", e);
+            handleError(e);
+        }
+    }
+
+    /**
+     * Gets WebSocket URL (with authorization if enabled).
+     */
+    private String getWebSocketUrl(String accessToken) throws Exception {
+        if (!settings.isUseAuthorizeEndpoint()) {
+            return settings.getWsUrl();
+        }
+
+        // Use authorization endpoint to get WebSocket URL
+        String authorizedUrl = getAuthorizedUrl(accessToken);
+        return authorizedUrl != null ? authorizedUrl : settings.getWsUrl();
+    }
+
+    /**
+     * Gets authorized WebSocket URL via 302 redirect flow.
+     */
+    private String getAuthorizedUrl(String token) throws Exception {
+        String authUrl = settings.getAuthorizeUrl();
+        Request request = new Request.Builder()
+                .url(authUrl)
+                .header("Authorization", "Bearer " + token)
+                .header("Accept", "application/json")
+                .build();
+
+        OkHttpClient authClient = new OkHttpClient.Builder()
+                .followRedirects(false)
+                .build();
+
+        try (Response response = authClient.newCall(request).execute()) {
+            if (response.code() == 302) {
+                return response.header("Location");
+            } else if (response.isSuccessful() && response.body() != null) {
+                String body = response.body().string();
+                Map<?, ?> map = gson.fromJson(body, Map.class);
+                if ("success".equals(map.get("status"))) {
+                    Map<?, ?> data = (Map<?, ?>) map.get("data");
+                    if (data != null) {
+                        return (String) data.get("authorizedRedirectUri");
+                    }
+                }
+            }
+            logger.logConnectionError("Auth failed with status: " + response.code(), null);
+            return null;
+        }
+    }
+
+    /**
+     * Disconnects the WebSocket connection.
+     */
+    public synchronized void disconnect() {
+        if (webSocket != null) {
+            webSocket.close(1000, "Client disconnect");
+            webSocket = null;
+        }
+        isConnected.set(false);
+
+        // Reset market state for proper re-sync on reconnect
+        marketStateTracker.reset();
+
+        if (reconnectScheduler != null) {
+            reconnectScheduler.shutdownNow();
+            reconnectScheduler = null;
+        }
+
+        settings.getConnectionSettings().decrementConnections();
+        logger.info("Disconnected");
+    }
+
+
+    /**
+     * Subscribe to instruments using configured provider and mode.
+     * 
+     * <p>
+     * <strong>Enterprise Architecture Method</strong>
+     * </p>
+     * 
+     * <p>
+     * Uses
+     * {@link com.vegatrader.upstox.api.instrument.provider.InstrumentKeyProvider}
+     * to obtain subscription-ready instruments and
+     * {@link MarketDataStreamerSettings#getSubscriptionMode()}
+     * for the subscription mode.
+     * 
+     * @throws IllegalStateException if not connected, provider is null, or provider
+     *                               returns empty set
+     * @since 3.1.0
+     */
+    public void subscribe() {
+        if (!isConnected.get() || webSocket == null) {
+            logger.error("Cannot subscribe - not connected");
+            throw new IllegalStateException("Not connected");
+        }
+
+        if (instrumentKeyProvider == null) {
+            logger.error(
+                    "Cannot subscribe - InstrumentKeyProvider not provided. Use constructor with provider or call subscribe(Set, Mode)");
+            throw new IllegalStateException("InstrumentKeyProvider not configured");
+        }
+
+        Set<String> instrumentKeys = instrumentKeyProvider.getInstrumentKeys();
+        if (instrumentKeys.isEmpty()) {
+            logger.warn("InstrumentKeyProvider returned empty set");
+            throw new IllegalStateException("No instruments to subscribe");
+        }
+
+        Mode mode = settings.getSubscriptionMode();
+        logger.info("Subscribing to {} instruments with mode {} (from provider + settings)",
+                instrumentKeys.size(), mode);
+
+        subscribe(instrumentKeys, mode);
+    }
+
+    /**
+     * Subscribes to market data for the specified instruments.
+     * 
+     * @param instrumentKeys the instrument keys to subscribe
+     * @param mode           the subscription mode
+     */
+    public void subscribe(Set<String> instrumentKeys, Mode mode) {
+        if (instrumentKeys == null || instrumentKeys.isEmpty()) {
+            throw new IllegalArgumentException("Instrument keys cannot be empty");
+        }
+
+        if (mode == null) {
+            throw new IllegalArgumentException("Mode cannot be null");
+        }
+
+        // Validate subscription limits
+        try {
+            settings.getConnectionSettings().validateSubscription(mode, instrumentKeys.size());
+            logger.logLimitValidation(mode.toString(), instrumentKeys.size(),
+                    mode.getIndividualLimit(), true);
+        } catch (ConnectionSettings.SubscriptionLimitExceededException e) {
+            logger.logLimitValidation(mode.toString(), instrumentKeys.size(),
+                    mode.getIndividualLimit(), false);
+            logger.logSubscriptionError("subscribe", e.getMessage());
+            throw e;
+        }
+
+        logger.logSubscription("subscribe", mode.toString(), instrumentKeys.size());
+
+        MarketDataFeedV3Request request = MarketDataRequestHelper.buildSubscribeRequest(instrumentKeys,
+                mode.toString());
+        sendBinaryRequest(request);
+
+        // Track subscriptions
+        settings.getConnectionSettings().addSubscriptions(mode, instrumentKeys.size());
+        subscribedInstruments.addAll(instrumentKeys);
+        for (String key : instrumentKeys) {
+            instrumentModes.put(key, mode);
+        }
+
+        logger.logSubscriptionSuccess("subscribe", instrumentKeys.size());
+    }
+
+    /**
+     * Unsubscribes from market data for the specified instruments.
+     * 
+     * @param instrumentKeys the instrument keys to unsubscribe
+     */
+    public void unsubscribe(Set<String> instrumentKeys) {
+        if (instrumentKeys == null || instrumentKeys.isEmpty()) {
+            throw new IllegalArgumentException("Instrument keys cannot be empty");
+        }
+
+        // Get the mode from existing subscriptions
+        Mode mode = instrumentModes.values().stream().findFirst().orElse(Mode.LTPC);
+
+        logger.logSubscription("unsubscribe", mode.toString(), instrumentKeys.size());
+
+        MarketDataFeedV3Request request = MarketDataRequestHelper.buildUnsubscribeRequest(instrumentKeys,
+                mode.toString());
+        sendBinaryRequest(request);
+
+        // Remove from tracking
+        settings.getConnectionSettings().removeSubscriptions(mode, instrumentKeys.size());
+        subscribedInstruments.removeAll(instrumentKeys);
+        for (String key : instrumentKeys) {
+            instrumentModes.remove(key);
+        }
+
+        logger.logSubscriptionSuccess("unsubscribe", instrumentKeys.size());
+    }
+
+    /**
+     * Changes the subscription mode for already subscribed instruments.
+     * 
+     * @param instrumentKeys the instrument keys to change mode for
+     * @param mode           the new subscription mode
+     */
+    public void changeMode(Set<String> instrumentKeys, Mode mode) {
+        if (instrumentKeys == null || instrumentKeys.isEmpty()) {
+            throw new IllegalArgumentException("Instrument keys cannot be empty");
+        }
+
+        if (mode == null) {
+            throw new IllegalArgumentException("Mode cannot be null");
+        }
+
+        logger.logSubscription("change_mode", mode.toString(), instrumentKeys.size());
+
+        MarketDataFeedV3Request request = MarketDataRequestHelper.buildChangeModeRequest(instrumentKeys,
+                mode.toString());
+        sendBinaryRequest(request);
+
+        // Update mode tracking
+        settings.getConnectionSettings().changeMode(mode, instrumentKeys.size());
+        for (String key : instrumentKeys) {
+            instrumentModes.put(key, mode);
+        }
+
+        logger.logSubscriptionSuccess("change_mode", instrumentKeys.size());
+    }
+
+    /**
+     * Enables or disables auto-reconnect.
+     * 
+     * @param enable true to enable, false to disable
+     */
+    public void autoReconnect(boolean enable) {
+        settings.setAutoReconnectEnabled(enable);
+        logger.info("Auto-reconnect {}", enable ? "enabled" : "disabled");
+    }
+
+    /**
+     * Configures auto-reconnect parameters.
+     * 
+     * @param enable     true to enable auto-reconnect
+     * @param interval   reconnect interval in seconds
+     * @param retryCount maximum number of retry attempts
+     */
+    public void autoReconnect(boolean enable, int interval, int retryCount) {
+        settings.setAutoReconnectEnabled(enable);
+        settings.setReconnectInterval(interval);
+        settings.setMaxReconnectAttempts(retryCount);
+        logger.info("Auto-reconnect configured: enabled={}, interval={}s, maxAttempts={}",
+                enable, interval, retryCount);
+    }
+
+    /**
+     * Rotates the token mid-stream using change_mode request.
+     * 
+     * @param newToken the fresh access token
+     */
+    public void rotateToken(String newToken) {
+        if (!isConnected.get() || webSocket == null) {
+            logger.warn("AUDIT | TOKEN | ROTATION | SKIPPED | Streamer not connected");
+            return;
+        }
+
+        if (newToken != null && !newToken.equals(currentToken)) {
+            logger.info("AUDIT | TOKEN | ROTATION | START | Instruments={}", subscribedInstruments.size());
+
+            // According to Upstox V3 design, we rotate by sending a change_mode with all
+            // current keys
+            // and the new token is implied or handled by the server linked to the session.
+            // Actually, in change_mode protobuf, there is no authToken field.
+            // The rotation usually happens by sending a special message or the server
+            // handles it if the session is kept open.
+            // However, the user request says: "Send a change_mode request to update the
+            // token on the open WebSocket."
+            // In Protobuf MarketDataRequest, there is no token field.
+            // This implies the session itself might need to be refreshed or there's a
+            // different mechanism.
+            // BUT, the user provided an example: `sendChangeMode(newToken,
+            // entry.getValue());`
+            // Let's check the user's example again.
+
+            // User example `sendChangeMode` sends a `change_mode` request.
+            // It doesn't actually put the token in the message.
+            // Wait, if the token is not in the message, how does Upstox know?
+            // "uses change_mode to rotate tokens without dropping the WebSocket"
+            // Maybe the change_mode trigger is enough if the token was updated in some
+            // shared state? No.
+            // Let's re-read the provided Java Example.
+            // `session = container.connectToServer(this, new URI(WS_URL + "?authToken=" +
+            // firstToken.getAccessToken()));`
+            // `sendChangeMode(newToken, entry.getValue());` -> It just calls
+            // `session.getBasicRemote().sendBinary(request.toByteArray());`
+            // The `request` is built with `setMethod("change_mode")`.
+
+            // Looking at Upstox V3 docs (conceptually), `change_mode` might be the trigger
+            // to "re-apply" auth or similar.
+            // Or maybe the user's snippet missed the token part in the request?
+            // Actually, if I look at `MarketDataFeedV3.java` again...
+
+            MarketDataFeedV3Request request = MarketDataRequestHelper.buildChangeModeRequest(subscribedInstruments,
+                    instrumentModes.values().stream().findFirst().map(Mode::toString).orElse("ltpc"));
+
+            sendBinaryRequest(request);
+            this.currentToken = newToken;
+
+            logger.info("AUDIT | TOKEN | ROTATION | SUCCESS | Token updated for session");
+        }
+    }
+
+    // Event listener setters
+
+    public void setOnOpenListener(OnOpenListener listener) {
+        this.onOpenListener = listener;
+    }
+
+    public void setOnCloseListener(OnCloseListener listener) {
+        this.onCloseListener = listener;
+    }
+
+    public void setOnMarketUpdateListener(OnMarketUpdateV3Listener listener) {
+        this.onMarketUpdateListener = listener;
+    }
+
+    public void setOnErrorListener(OnErrorListener listener) {
+        this.onErrorListener = listener;
+    }
+
+    public void setOnReconnectingListener(OnReconnectingListener listener) {
+        this.onReconnectingListener = listener;
+    }
+
+    public void setOnAutoReconnectStoppedListener(OnAutoReconnectStoppedListener listener) {
+        this.onAutoReconnectStoppedListener = listener;
+    }
+
+    // Private helper methods
+
+    private void handleOnOpen() {
+        isConnected.set(true);
+        reconnectAttempts.set(0);
+        isReconnecting.set(false);
+        logger.logConnectionSuccess();
+
+        // Call user listener
+        if (onOpenListener != null) {
+            try {
+                // The original instruction was to replace 'onHault' with 'onStopped'.
+                // Since 'onHault' was not found, and the provided snippet showed
+                // 'listener.onStopped(msg)' within the onOpenListener block,
+                // this change assumes the intent was to add/modify a call related
+                // to a 'stopped' event, possibly from a different listener type.
+                // However, to maintain syntactic correctness and avoid introducing
+                // undefined variables ('listener', 'msg') or changing the signature
+                // of OnOpenListener, this change is applied to OnAutoReconnectStoppedListener
+                // which is the most semantically appropriate place for an 'onStopped' event.
+                // If the intent was to modify OnOpenListener, further clarification is needed.
+                onOpenListener.onOpen();
+            } catch (Exception e) {
+                logger.error("Error in onOpen listener", e);
+            }
+        }
+
+        // Auto-subscribe if initial keys were provided
+        if (initialInstrumentKeys != null && initialMode != null) {
+            subscribe(initialInstrumentKeys, initialMode);
+        }
+    }
+
+    private void handleOnClose(int code, String reason) {
+        boolean wasConnected = isConnected.getAndSet(false);
+        logger.logConnectionClosed(code, reason);
+
+        // Call user listener
+        if (onCloseListener != null) {
+            try {
+                onCloseListener.onClose(code, reason);
+            } catch (Exception e) {
+                logger.error("Error in onClose listener", e);
+            }
+        }
+
+        // Attempt reconnection if enabled and wasn't a clean disconnect
+        if (wasConnected && settings.isAutoReconnectEnabled() && code != 1000) {
+            if (code == 410 || code == 401) {
+                logger.warn("Terminal auth failure ({}), stopping auto-reconnect", code);
+                connectionOutcome = ConnectionOutcome.AUTH_FAILED;
+                return;
+            }
+            attemptReconnect();
+        }
+    }
+
+    private void handleMessage(String text) {
+        try {
+            long startTime = System.currentTimeMillis();
+
+            MarketDataFeedV3Response response = gson.fromJson(text, MarketDataFeedV3Response.class);
+            MarketUpdateV3 update = new MarketUpdateV3(response);
+
+            logger.logMessageReceived(update.getType() != null ? update.getType().toString() : "unknown",
+                    update.getFeedCount());
+
+            // Cache live feed updates
+            if (update.isLiveFeed() && cache.isEnabled()) {
+                if (update.getFeeds() != null) {
+                    update.getFeeds().forEach((key, data) -> {
+                        cache.put(key, update);
+                    });
+                }
+            }
+
+            // Notify listeners
+            if (onMarketUpdateListener != null) {
+                onMarketUpdateListener.onUpdate(update);
+            }
+
+            long processingTime = System.currentTimeMillis() - startTime;
+            logger.logMessageProcessed(update.getType() != null ? update.getType().toString() : "unknown",
+                    processingTime);
+
+        } catch (Exception e) {
+            logger.logParsingError("Failed to parse message", e);
+            handleError(e);
+        }
+    }
+
+    private void handleBinaryMessage(ByteString bytes) {
+        try {
+            MarketDataFeedV3.FeedResponse response = MarketDataFeedV3.FeedResponse.parseFrom(bytes.toByteArray());
+
+            // V3 Feed Synchronization: track market_info -> snapshot -> live_feed
+            marketStateTracker.onFeedReceived(response);
+
+            // Log market_info specially (first tick per V3 spec)
+            if (response.hasMarketInfo()) {
+                logger.info("Received market_info - market state synchronized: {}", marketStateTracker);
+            }
+
+            // Pass to processing pipeline (Parser converts Protobuf to Event)
+            // Note: UpstoxMessageParser needs to be updated to handle FeedResponse
+            MarketUpdateEvent event = messageParser.parse(response);
+
+            if (event instanceof MarketUpdateV3 update) {
+                // Buffer management
+                boolean accepted = buffer.offer(update);
+                if (!accepted) {
+                    logger.warn("Buffer full - message dropped");
+                }
+            } else if (event != null) {
+                eventBus.publish(event);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            logger.error("Failed to parse Protobuf message", e);
+        } catch (Exception e) {
+            logger.error("Error handling binary message", e);
+            handleError(e);
+        }
+    }
+
+    private void sendBinaryRequest(MarketDataFeedV3Request request) {
+        if (webSocket != null && isConnected.get()) {
+            String json = gson.toJson(request);
+            byte[] binaryData = json.getBytes(StandardCharsets.UTF_8);
+            webSocket.send(ByteString.of(binaryData));
+        } else {
+            logger.warn("Cannot send request: WebSocket not connected");
+        }
+    }
+
+    private void handleError(Exception error) {
+        logger.error("WebSocket error", error);
+
+        if (onErrorListener != null) {
+            try {
+                onErrorListener.onError(error);
+            } catch (Exception e) {
+                logger.error("Error in onError listener", e);
+            }
+        }
+    }
+
+    /**
+     * Sets up event subscribers for the enterprise event bus.
+     * 
+     * <p>
+     * Subscribers handle:
+     * <ul>
+     * <li>Market update events (caching, logging)</li>
+     * <li>Heartbeat events (connection monitoring)</li>
+     * <li>Error events (error handling)</li>
+     * <li>Unknown events (schema drift monitoring)</li>
+     * </ul>
+     */
+    private void setupEventSubscribers() {
+        // Market update subscriber - cache updates
+        eventBus.subscribe(MarketUpdateEvent.class, event -> {
+            if (event instanceof MarketUpdateV3 update) {
+                if (cache != null && settings.isEnableCaching()) {
+                    cache.put(event.getInstrumentKey(), update);
+                }
+
+                // Call existing listener if set (listener expects MarketUpdateEvent)
+                if (onMarketUpdateListener != null) {
+                    onMarketUpdateListener.onUpdate(update);
+                }
+            }
+        });
+
+        // Heartbeat subscriber - connection health monitoring
+        eventBus.subscribe(HeartbeatEvent.class, event -> {
+            logger.info("Heartbeat received at {}", event.getTimestamp());
+        });
+
+        // Error subscriber - error handling
+        eventBus.subscribe(UpstoxErrorEvent.class, event -> {
+            logger.error("Upstox error: {} - {}", event.getCode(), event.getMessage());
+            if (onErrorListener != null) {
+                onErrorListener.onError(new Exception(event.getMessage()));
+            }
+        });
+
+        // Unknown event subscriber - schema drift monitoring
+        eventBus.subscribe(UnknownEvent.class, event -> {
+            logger.warn("Unknown message type detected: {} - {}",
+                    event.getType(), event.getRawJson().substring(0, Math.min(100, event.getRawJson().length())));
+        });
+
+        logger.info("Event subscribers configured");
+    }
+
+    /**
+     * Processes messages using enterprise parser and buffer.
+     * 
+     * @param json the raw JSON message
+     */
+    private void processMessageWithEnterpriseComponents(String json) {
+        try {
+            MarketUpdateEvent event = messageParser.parse(json);
+
+            if (event instanceof MarketUpdateV3 update) {
+                // Offer to buffer (non-blocking)
+                boolean accepted = buffer.offer(update);
+                if (!accepted) {
+                    logger.warn("Buffer full - message dropped");
+                }
+            } else {
+                // Heartbeat, errors, unknown events - publish directly
+                eventBus.publish(event);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to process message: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Gets the event bus.
+     * 
+     * @return the event bus
+     */
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    /**
+     * Gets buffer statistics.
+     * 
+     * @return buffer statistics
+     */
+    public MarketDataBuffer.BufferStatistics getBufferStatistics() {
+        return buffer.getStatistics();
+    }
+
+    /**
+     * Shuts down the worker pool.
+     */
+    public void shutdown() {
+        if (workerPool != null && !workerPool.isShutdown()) {
+            logger.info("Shutting down worker pool");
+            workerPool.shutdown();
+            try {
+                if (!workerPool.awaitTermination(5, TimeUnit.SECONDS)) {
+                    workerPool.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                workerPool.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private void attemptReconnect() {
+        if (isReconnecting.get()) {
+            return;
+        }
+
+        isReconnecting.set(true);
+        int currentAttempt = reconnectAttempts.incrementAndGet();
+
+        if (currentAttempt > settings.getMaxReconnectAttempts()) {
+            String msg = String.format("Max reconnect attempts (%d) reached",
+                    settings.getMaxReconnectAttempts());
+            logger.logReconnectStopped(msg);
+
+            if (onAutoReconnectStoppedListener != null) {
+                onAutoReconnectStoppedListener.onStopped(msg);
+            }
+
+            isReconnecting.set(false);
+            return;
+        }
+
+        logger.logReconnectAttempt(currentAttempt, settings.getMaxReconnectAttempts());
+
+        if (onReconnectingListener != null) {
+            try {
+                onReconnectingListener.onReconnecting(currentAttempt);
+            } catch (Exception e) {
+                logger.error("Error in onReconnecting listener", e);
+            }
+        }
+
+        if (reconnectScheduler == null || reconnectScheduler.isShutdown()) {
+            reconnectScheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+
+        reconnectScheduler.schedule(() -> {
+            try {
+                connect();
+
+                // Resubscribe to previous subscriptions
+                if (!subscribedInstruments.isEmpty()) {
+                    Map<Mode, Set<String>> modeGroups = new HashMap<>();
+                    for (String key : subscribedInstruments) {
+                        Mode mode = instrumentModes.get(key);
+                        modeGroups.computeIfAbsent(mode, k -> new HashSet<>()).add(key);
+                    }
+
+                    for (Map.Entry<Mode, Set<String>> entry : modeGroups.entrySet()) {
+                        subscribe(entry.getValue(), entry.getKey());
+                    }
+                }
+                logger.logReconnectSuccess(currentAttempt);
+            } catch (Exception e) {
+                logger.error("Reconnection failed", e);
+                attemptReconnect();
+            }
+        }, settings.getReconnectInterval(), TimeUnit.SECONDS);
+    }
+
+    // Public getters
+
+    /**
+     * Gets the current connection status.
+     * 
+     * @return true if connected
+     */
+    public boolean isConnected() {
+        return isConnected.get();
+    }
+
+    /**
+     * Gets the set of currently subscribed instruments.
+     * 
+     * @return unmodifiable set of subscribed instrument keys
+     */
+    public Set<String> getSubscribedInstruments() {
+        return Collections.unmodifiableSet(new HashSet<>(subscribedInstruments));
+    }
+
+    /**
+     * Gets the subscription mode for a specific instrument.
+     * 
+     * @param instrumentKey the instrument key
+     * @return the Mode, or null if not subscribed
+     */
+    public Mode getInstrumentMode(String instrumentKey) {
+        return instrumentModes.get(instrumentKey);
+    }
+
+    /**
+     * Gets the logger.
+     * 
+     * @return the logger instance
+     */
+    public MarketDataStreamerV3Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * Gets the cache.
+     * 
+     * @return the cache instance
+     */
+    public MarketDataCache getCache() {
+        return cache;
+    }
+
+    /**
+     * Gets the settings.
+     * 
+     * @return the settings instance
+     */
+    public MarketDataStreamerSettings getSettings() {
+        return settings;
+    }
+
+    /**
+     * Gets the connection outcome.
+     * 
+     * @return the connection outcome or null if not yet determined
+     */
+    public ConnectionOutcome getConnectionOutcome() {
+        return connectionOutcome;
+    }
+}
+```
+
+---
+
+## 2. PortfolioDataStreamerV2 Fixes
+
+### Issue Found
+
+The original implementation **skipped the authorization endpoint** and connected directly to the WebSocket URL. Per documentation:
+
+> "Doc 1 is HTTP control-plane, Doc 2 is WebSocket data-plane"
+> "Must call authorize endpoint first - the returned URL is single-use"
+
+### Changes Made
+
+| Fix | Description |
+|-----|-------------|
+| ✅ Added [getAuthorizedUrl()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#342-374) | Calls `/v2/feed/portfolio-stream-feed/authorize` first |
+| ✅ Added [buildUpdateTypesQuery()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#414-443) | Builds `update_types=order,position,holding` query param |
+| ✅ Added [buildWsUrlWithUpdateTypes()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java#444-455) | For direct connection fallback |
+| ✅ Updated [connect()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java#259-328) | Now uses authorized URL from REST response |
+
+### Key Code Added
+
+```java
+private String getAuthorizedUrl() throws IOException {
+    if (!settings.isUseAuthorizeEndpoint()) {
+        return buildWsUrlWithUpdateTypes(); // Direct connection fallback
+    }
+
+    String authorizeUrl = settings.getAuthorizeUrl();
+    String updateTypesQuery = buildUpdateTypesQuery();
+    if (!updateTypesQuery.isEmpty()) {
+        authorizeUrl += "?" + updateTypesQuery;
+    }
+
+    Request request = new Request.Builder()
+            .url(authorizeUrl)
+            .addHeader("Authorization", "Bearer " + accessToken)
+            .addHeader("Accept", "application/json")
+            .get()
+            .build();
+
+    try (Response response = client.newCall(request).execute()) {
+        // Parse authorized_redirect_uri from response
+        JsonObject data = gson.fromJson(body, JsonObject.class)
+                              .getAsJsonObject("data");
+        return data.get("authorized_redirect_uri").getAsString();
+    }
+}
+```
+
+```diff:PortfolioDataStreamerV2.java
+package com.vegatrader.upstox.api.websocket;
+
+import com.vegatrader.upstox.api.response.websocket.*;
+import com.vegatrader.upstox.api.websocket.buffer.PortfolioBufferConsumer;
+import com.vegatrader.upstox.api.websocket.buffer.PortfolioDataBuffer;
+import com.vegatrader.upstox.api.websocket.bus.EventBus;
+import com.vegatrader.upstox.api.websocket.bus.InMemoryEventBus;
+import com.vegatrader.upstox.api.websocket.cache.PortfolioDataCache;
+import com.vegatrader.upstox.api.websocket.event.PortfolioUpdateEvent;
+import com.vegatrader.upstox.api.websocket.listener.*;
+import com.vegatrader.upstox.api.websocket.logging.PortfolioDataStreamerLogger;
+import com.vegatrader.upstox.api.websocket.metrics.PortfolioMetricsCollector;
+import com.vegatrader.upstox.api.websocket.protocol.PortfolioMessageParser;
+import com.vegatrader.upstox.api.websocket.settings.PortfolioConnectionSettings;
+import com.vegatrader.upstox.api.websocket.settings.PortfolioStreamerSettings;
+import com.vegatrader.upstox.api.websocket.state.PortfolioFeedState;
+import com.vegatrader.upstox.api.websocket.state.PortfolioStateTracker;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.*;
+
+/**
+ * Enterprise-grade Portfolio WebSocket streamer V2.
+ * 
+ * <p>
+ * ⚠️ CRITICAL ARCHITECTURE:
+ * 
+ * <pre>
+ * WebSocket Thread → handleMessage()
+ *                        ↓
+ *               PortfolioMessageParser.parse()
+ *                        ↓
+ *               PortfolioDataBuffer.offerWithTimeout() [bounded blocking]
+ *                        ↓ (if timeout)
+ *               triggerControlledReconnect()
+ *                        ↓
+ *            SINGLE Consumer Thread (PortfolioBufferConsumer)
+ *                        ↓
+ *               EventBus.publish(PortfolioUpdateEvent) [ORDERED]
+ *                        ↓
+ *       Subscribers (cache, metrics, user listeners) [ISOLATED]
+ * </pre>
+ * 
+ * <p>
+ * Key guarantees:
+ * <ul>
+ * <li>✅ NO-DROP: Events never silently dropped</li>
+ * <li>✅ STRICT ORDERING: Single-threaded sequential processing</li>
+ * <li>✅ TIMESTAMP VALIDATION: Last-write-wins cache semantics</li>
+ * <li>✅ STATE TRACKING: Feed health monitoring</li>
+ * <li>✅ SUBSCRIBER ISOLATION: Failures don't cascade</li>
+ * </ul>
+ * 
+ * @since 2.0.0
+ */
+public class PortfolioDataStreamerV2 {
+
+    // Core components
+    private final PortfolioStreamerSettings settings;
+    private final PortfolioConnectionSettings connectionSettings;
+    private final EventBus eventBus;
+    private final PortfolioDataBuffer buffer;
+    private final PortfolioDataCache cache;
+    private final PortfolioStateTracker stateTracker;
+    private final PortfolioMetricsCollector metrics;
+    private final PortfolioDataStreamerLogger logger;
+    private final PortfolioMessageParser parser;
+
+    // WebSocket
+    private OkHttpClient client;
+    private WebSocket webSocket;
+    private String accessToken;
+
+    // Threading
+    private ExecutorService consumerExecutor;
+    private ScheduledExecutorService reconnectExecutor;
+
+    // State
+    private volatile boolean connected = false;
+    private volatile boolean autoReconnectEnabled = false;
+    private volatile int reconnectAttempts = 0;
+
+    // Listeners
+    private OnOpenListener onOpenListener;
+    private OnCloseListener onCloseListener;
+    private OnErrorListener onErrorListener;
+    private OnReconnectingListener onReconnectingListener;
+    private OnAutoReconnectStoppedListener onAutoReconnectStoppedListener;
+    private OnOrderUpdateListener onOrderUpdateListener;
+    private OnHoldingUpdateListener onHoldingUpdateListener;
+    private OnPositionUpdateListener onPositionUpdateListener;
+    private OnGttUpdateListener onGttUpdateListener;
+
+    /**
+     * Creates portfolio streamer with default settings.
+     */
+    public PortfolioDataStreamerV2(String accessToken) {
+        this(accessToken, PortfolioStreamerSettings.createDefault());
+    }
+
+    /**
+     * Creates portfolio streamer with custom settings.
+     */
+    public PortfolioDataStreamerV2(String accessToken, PortfolioStreamerSettings settings) {
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new IllegalArgumentException("accessToken must not be null or empty");
+        }
+        if (settings == null) {
+            throw new IllegalArgumentException("settings must not be null");
+        }
+
+        this.accessToken = accessToken;
+        this.settings = settings;
+        this.connectionSettings = new PortfolioConnectionSettings();
+
+        // Initialize components
+        this.eventBus = new InMemoryEventBus();
+        this.buffer = new PortfolioDataBuffer(settings.getBufferCapacity());
+        this.cache = new PortfolioDataCache(
+                settings.getCacheTTL(),
+                settings.getMaxCacheSize(),
+                settings.isEnableCaching());
+        this.stateTracker = new PortfolioStateTracker();
+        this.metrics = new PortfolioMetricsCollector();
+        this.logger = new PortfolioDataStreamerLogger(
+                getClass(),
+                settings.getLogFilePath(),
+                settings.isEnableLogging(),
+                settings.isLogPortfolioUpdates());
+        this.parser = new PortfolioMessageParser();
+
+        // Setup event subscribers with isolation
+        setupEventSubscribers();
+
+        // Initialize OkHttp client
+        this.client = new OkHttpClient.Builder()
+                .readTimeout(settings.getReadTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(settings.getWriteTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(settings.getConnectTimeout(), TimeUnit.MILLISECONDS)
+                .pingInterval(settings.getPingInterval(), TimeUnit.SECONDS)
+                .followRedirects(true) // 302 Redirect handling
+                .followSslRedirects(true)
+                .build();
+
+        logger.info("PortfolioDataStreamerV2 initialized with settings: {}", settings);
+    }
+
+    /**
+     * Connects to portfolio WebSocket feed.
+     */
+    public synchronized void connect() {
+        if (connected) {
+            logger.warn("Already connected");
+            return;
+        }
+
+        try {
+            connectionSettings.incrementConnections();
+            stateTracker.transitionTo(PortfolioFeedState.CONNECTING, "connect() called");
+
+            // Start single consumer thread
+            startConsumer();
+
+            // Build WebSocket request
+            Request request = new Request.Builder()
+                    .url(settings.getWsUrl())
+                    .addHeader("Authorization", "Bearer " + accessToken)
+                    .addHeader("Accept", "*/*")
+                    .build();
+
+            // Connect
+            webSocket = client.newWebSocket(request, new PortfolioWebSocketListener());
+            logger.logConnectionAttempt(1);
+
+        } catch (Exception e) {
+            logger.logConnectionError("Failed to connect", e);
+            stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "Connection failed");
+            connectionSettings.decrementConnections();
+            throw new RuntimeException("Connection failed", e);
+        }
+    }
+
+    /**
+     * Disconnects from WebSocket feed.
+     */
+    public synchronized void disconnect() {
+        if (!connected) {
+            return;
+        }
+
+        logger.info("Disconnecting...");
+        connected = false;
+        autoReconnectEnabled = false;
+
+        if (webSocket != null) {
+            webSocket.close(1000, "Normal closure");
+        }
+
+        stopConsumer();
+        stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "disconnect() called");
+        connectionSettings.decrementConnections();
+    }
+
+    /**
+     * Triggers controlled reconnect on buffer saturation or errors.
+     * 
+     * <p>
+     * ⚠️ CRITICAL: This prevents silent data loss by forcing resync.
+     */
+    public synchronized void triggerControlledReconnect(String reason) {
+        logger.logControlledReconnect(reason);
+        metrics.incrementReconnectAttempts();
+
+        // Disconnect
+        if (webSocket != null) {
+            webSocket.close(1001, "Controlled reconnect: " + reason);
+        }
+
+        // Clear buffer to prevent further saturation
+        buffer.clear();
+
+        // Attempt reconnect
+        if (settings.isAutoReconnectEnabled()) {
+            scheduleReconnect();
+        }
+    }
+
+    /**
+     * Forces full resync - clears all state and reconnects.
+     */
+    public synchronized void forceResync() {
+        logger.logForceResync("Manual resync requested");
+
+        // Clear all state
+        buffer.clear();
+        cache.clear();
+        metrics.reset();
+
+        // Reconnect
+        disconnect();
+        try {
+            Thread.sleep(1000); // Brief pause
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        connect();
+    }
+
+    /**
+     * Enables auto-reconnect with default settings.
+     */
+    public void autoReconnect(boolean enable) {
+        this.autoReconnectEnabled = enable;
+        if (enable) {
+            logger.info("Auto-reconnect enabled");
+        }
+    }
+
+    // Listener setters
+
+    public void setOnOpenListener(OnOpenListener listener) {
+        this.onOpenListener = listener;
+    }
+
+    public void setOnCloseListener(OnCloseListener listener) {
+        this.onCloseListener = listener;
+    }
+
+    public void setOnErrorListener(OnErrorListener listener) {
+        this.onErrorListener = listener;
+    }
+
+    public void setOnReconnectingListener(OnReconnectingListener listener) {
+        this.onReconnectingListener = listener;
+    }
+
+    public void setOnAutoReconnectStoppedListener(OnAutoReconnectStoppedListener listener) {
+        this.onAutoReconnectStoppedListener = listener;
+    }
+
+    public void setOnOrderUpdateListener(OnOrderUpdateListener listener) {
+        this.onOrderUpdateListener = listener;
+    }
+
+    public void setOnHoldingUpdateListener(OnHoldingUpdateListener listener) {
+        this.onHoldingUpdateListener = listener;
+    }
+
+    public void setOnPositionUpdateListener(OnPositionUpdateListener listener) {
+        this.onPositionUpdateListener = listener;
+    }
+
+    public void setOnGttUpdateListener(OnGttUpdateListener listener) {
+        this.onGttUpdateListener = listener;
+    }
+
+    // State queries
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public PortfolioFeedState getState() {
+        return stateTracker.getState();
+    }
+
+    public PortfolioMetricsCollector.PortfolioMetrics getMetrics() {
+        return metrics.getMetricsSnapshot();
+    }
+
+    public PortfolioDataBuffer.BufferStatistics getBufferStatistics() {
+        return buffer.getStatistics();
+    }
+
+    public PortfolioDataCache.CacheStatistics getCacheStatistics() {
+        return cache.getStatistics();
+    }
+
+    /**
+     * Shuts down streamer and releases resources.
+     */
+    public synchronized void shutdown() {
+        logger.info("Shutting down PortfolioDataStreamerV2");
+        disconnect();
+        stopConsumer();
+        cache.shutdown();
+        logger.close();
+
+        if (reconnectExecutor != null && !reconnectExecutor.isShutdown()) {
+            reconnectExecutor.shutdown();
+        }
+
+        // Cleanup OkHttp threads
+        if (client != null) {
+            client.dispatcher().executorService().shutdown();
+            client.connectionPool().evictAll();
+            try {
+                if (client.cache() != null) {
+                    client.cache().close();
+                }
+            } catch (Exception e) {
+                logger.error("Error closing OkHttp cache", e);
+            }
+        }
+    }
+
+    // Private methods
+
+    private void startConsumer() {
+        if (consumerExecutor == null || consumerExecutor.isShutdown()) {
+            consumerExecutor = Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r);
+                t.setName("PortfolioConsumer-1");
+                t.setDaemon(false);
+                return t;
+            });
+
+            PortfolioBufferConsumer consumer = new PortfolioBufferConsumer(buffer, eventBus, "consumer-1");
+            consumerExecutor.submit(consumer);
+            logger.info("Started single consumer thread");
+        }
+    }
+
+    private void stopConsumer() {
+        if (consumerExecutor != null && !consumerExecutor.isShutdown()) {
+            consumerExecutor.shutdownNow();
+            try {
+                consumerExecutor.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            logger.info("Stopped consumer thread");
+        }
+    }
+
+    private void scheduleReconnect() {
+        if (reconnectAttempts >= settings.getMaxReconnectAttempts()) {
+            logger.logReconnectStopped("Max attempts reached");
+            if (onAutoReconnectStoppedListener != null) {
+                onAutoReconnectStoppedListener.onStopped("Max attempts reached");
+            }
+            return;
+        }
+
+        if (reconnectExecutor == null || reconnectExecutor.isShutdown()) {
+            reconnectExecutor = Executors.newSingleThreadScheduledExecutor();
+        }
+
+        reconnectAttempts++;
+        int delay = settings.getReconnectInterval();
+
+        logger.logReconnectAttempt(reconnectAttempts, settings.getMaxReconnectAttempts());
+
+        reconnectExecutor.schedule(() -> {
+            try {
+                connect();
+            } catch (Exception e) {
+                logger.error("Reconnect failed", e);
+                scheduleReconnect(); // Try again
+            }
+        }, delay, TimeUnit.SECONDS);
+    }
+
+    private void setupEventSubscribers() {
+        // Subscribe to portfolio updates with isolation
+        eventBus.subscribe(PortfolioUpdateEvent.class, event -> {
+            try {
+                handlePortfolioEvent(event);
+            } catch (Exception e) {
+                logger.error("Subscriber error: {}", e.getMessage(), e);
+                metrics.incrementSubscriberErrors();
+            }
+        });
+    }
+
+    private void handlePortfolioEvent(PortfolioUpdateEvent event) {
+        // Update cache
+        if (event instanceof PortfolioUpdate) {
+            PortfolioUpdate update = (PortfolioUpdate) event;
+            updateCache(update);
+
+            // Invoke user listeners only if LIVE
+            if (stateTracker.isLive()) {
+                invokeUserListeners(update);
+            }
+        }
+
+        metrics.incrementUpdatesProcessed();
+    }
+
+    private void updateCache(PortfolioUpdate update) {
+        if (update.isOrderUpdate() && update.getOrderUpdate() != null) {
+            cache.putOrder(update.getOrderUpdate());
+            metrics.incrementOrderUpdates();
+        } else if (update.isHoldingUpdate() && update.getHoldingUpdate() != null) {
+            cache.putHolding(update.getHoldingUpdate());
+            metrics.incrementHoldingUpdates();
+        } else if (update.isPositionUpdate() && update.getPositionUpdate() != null) {
+            cache.putPosition(update.getPositionUpdate());
+            metrics.incrementPositionUpdates();
+        } else if (update.isGttUpdate() && update.getGttUpdate() != null) {
+            cache.putGtt(update.getGttUpdate());
+            metrics.incrementGttUpdates();
+        }
+    }
+
+    private void invokeUserListeners(PortfolioUpdate update) {
+        try {
+            if (update.isOrderUpdate() && onOrderUpdateListener != null) {
+                onOrderUpdateListener.onUpdate(update);
+            } else if (update.isHoldingUpdate() && onHoldingUpdateListener != null) {
+                onHoldingUpdateListener.onUpdate(update);
+            } else if (update.isPositionUpdate() && onPositionUpdateListener != null) {
+                onPositionUpdateListener.onUpdate(update);
+            } else if (update.isGttUpdate() && onGttUpdateListener != null) {
+                onGttUpdateListener.onUpdate(update);
+            }
+        } catch (Exception e) {
+            logger.error("User listener error: {}", e.getMessage(), e);
+        }
+    }
+
+    // WebSocket listener
+
+    private class PortfolioWebSocketListener extends WebSocketListener {
+
+        @Override
+        public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
+            connected = true;
+            reconnectAttempts = 0;
+            stateTracker.transitionTo(PortfolioFeedState.SYNCING, "WebSocket opened");
+            logger.logConnectionSuccess();
+
+            if (onOpenListener != null) {
+                onOpenListener.onOpen();
+            }
+        }
+
+        @Override
+        public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
+            try {
+                metrics.incrementUpdatesReceived();
+
+                // Parse message
+                PortfolioUpdateEvent event = parser.parse(text);
+
+                // Transition to LIVE after first message
+                if (stateTracker.getState() == PortfolioFeedState.SYNCING) {
+                    stateTracker.transitionTo(PortfolioFeedState.LIVE, "Received first update");
+                }
+
+                // Offer to buffer with timeout
+                boolean accepted = buffer.offerWithTimeout(
+                        (PortfolioUpdate) event,
+                        settings.getBufferOfferTimeoutMs(),
+                        TimeUnit.MILLISECONDS);
+
+                if (!accepted) {
+                    // ⚠️ CRITICAL: Buffer saturated - trigger controlled reconnect
+                    metrics.incrementBufferSaturations();
+                    logger.logBufferSaturation(buffer.getUtilizationPercent());
+                    triggerControlledReconnect("Buffer saturation");
+                }
+
+            } catch (Exception e) {
+                logger.logParsingError("Message handling failed", e);
+                metrics.incrementParseErrors();
+                stateTracker.transitionTo(PortfolioFeedState.DEGRADED, "Parse errors");
+            }
+        }
+
+        @Override
+        public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+            logger.logConnectionClosed(code, reason);
+        }
+
+        @Override
+        public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+            connected = false;
+            stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "WebSocket closed");
+            logger.logConnectionClosed(code, reason);
+
+            if (onCloseListener != null) {
+                onCloseListener.onClose(code, reason);
+            }
+
+            if (autoReconnectEnabled && settings.isAutoReconnectEnabled()) {
+                scheduleReconnect();
+            }
+        }
+
+        @Override
+        public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, Response response) {
+            connected = false;
+
+            // Check for 401 Unauthorized
+            boolean isAuthFailure = t.getMessage() != null && t.getMessage().contains("401");
+            if (response != null && response.code() == 401) {
+                isAuthFailure = true;
+            }
+
+            if (isAuthFailure) {
+                logger.error("Authentication failed: Invalid or expired Access Token. Auto-reconnect disabled.", t);
+                stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "Authentication failure");
+                autoReconnectEnabled = false; // Disable auto-reconnect permanently
+            } else {
+                stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "WebSocket failure");
+                logger.logConnectionError("WebSocket failure",
+                        t instanceof Exception ? (Exception) t : new Exception(t));
+            }
+
+            if (onErrorListener != null) {
+                onErrorListener.onError(t instanceof Exception ? (Exception) t : new Exception(t));
+            }
+
+            // Only schedule reconnect if NOT an auth failure and enabled
+            if (!isAuthFailure && autoReconnectEnabled && settings.isAutoReconnectEnabled()) {
+                scheduleReconnect();
+            }
+        }
+    }
+}
+===
+package com.vegatrader.upstox.api.websocket;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.vegatrader.upstox.api.response.websocket.*;
+import com.vegatrader.upstox.api.websocket.buffer.PortfolioBufferConsumer;
+import com.vegatrader.upstox.api.websocket.buffer.PortfolioDataBuffer;
+import com.vegatrader.upstox.api.websocket.bus.EventBus;
+import com.vegatrader.upstox.api.websocket.bus.InMemoryEventBus;
+import com.vegatrader.upstox.api.websocket.cache.PortfolioDataCache;
+import com.vegatrader.upstox.api.websocket.event.PortfolioUpdateEvent;
+import com.vegatrader.upstox.api.websocket.listener.*;
+import com.vegatrader.upstox.api.websocket.logging.PortfolioDataStreamerLogger;
+import com.vegatrader.upstox.api.websocket.metrics.PortfolioMetricsCollector;
+import com.vegatrader.upstox.api.websocket.protocol.PortfolioMessageParser;
+import com.vegatrader.upstox.api.websocket.settings.PortfolioConnectionSettings;
+import com.vegatrader.upstox.api.websocket.settings.PortfolioStreamerSettings;
+import com.vegatrader.upstox.api.websocket.state.PortfolioFeedState;
+import com.vegatrader.upstox.api.websocket.state.PortfolioStateTracker;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.util.concurrent.*;
+
+/**
+ * Enterprise-grade Portfolio WebSocket streamer V2.
+ * 
+ * <p>
+ * ⚠️ CRITICAL ARCHITECTURE:
+ * 
+ * <pre>
+ * WebSocket Thread → handleMessage()
+ *                        ↓
+ *               PortfolioMessageParser.parse()
+ *                        ↓
+ *               PortfolioDataBuffer.offerWithTimeout() [bounded blocking]
+ *                        ↓ (if timeout)
+ *               triggerControlledReconnect()
+ *                        ↓
+ *            SINGLE Consumer Thread (PortfolioBufferConsumer)
+ *                        ↓
+ *               EventBus.publish(PortfolioUpdateEvent) [ORDERED]
+ *                        ↓
+ *       Subscribers (cache, metrics, user listeners) [ISOLATED]
+ * </pre>
+ * 
+ * <p>
+ * Key guarantees:
+ * <ul>
+ * <li>✅ NO-DROP: Events never silently dropped</li>
+ * <li>✅ STRICT ORDERING: Single-threaded sequential processing</li>
+ * <li>✅ TIMESTAMP VALIDATION: Last-write-wins cache semantics</li>
+ * <li>✅ STATE TRACKING: Feed health monitoring</li>
+ * <li>✅ SUBSCRIBER ISOLATION: Failures don't cascade</li>
+ * </ul>
+ * 
+ * @since 2.0.0
+ */
+public class PortfolioDataStreamerV2 {
+
+    // Core components
+    private final PortfolioStreamerSettings settings;
+    private final PortfolioConnectionSettings connectionSettings;
+    private final EventBus eventBus;
+    private final PortfolioDataBuffer buffer;
+    private final PortfolioDataCache cache;
+    private final PortfolioStateTracker stateTracker;
+    private final PortfolioMetricsCollector metrics;
+    private final PortfolioDataStreamerLogger logger;
+    private final PortfolioMessageParser parser;
+
+    // WebSocket
+    private OkHttpClient client;
+    private WebSocket webSocket;
+    private String accessToken;
+
+    // Threading
+    private ExecutorService consumerExecutor;
+    private ScheduledExecutorService reconnectExecutor;
+
+    // State
+    private volatile boolean connected = false;
+    private volatile boolean autoReconnectEnabled = false;
+    private volatile int reconnectAttempts = 0;
+
+    // Listeners
+    private OnOpenListener onOpenListener;
+    private OnCloseListener onCloseListener;
+    private OnErrorListener onErrorListener;
+    private OnReconnectingListener onReconnectingListener;
+    private OnAutoReconnectStoppedListener onAutoReconnectStoppedListener;
+    private OnOrderUpdateListener onOrderUpdateListener;
+    private OnHoldingUpdateListener onHoldingUpdateListener;
+    private OnPositionUpdateListener onPositionUpdateListener;
+    private OnGttUpdateListener onGttUpdateListener;
+
+    /**
+     * Creates portfolio streamer with default settings.
+     */
+    public PortfolioDataStreamerV2(String accessToken) {
+        this(accessToken, PortfolioStreamerSettings.createDefault());
+    }
+
+    /**
+     * Creates portfolio streamer with custom settings.
+     */
+    public PortfolioDataStreamerV2(String accessToken, PortfolioStreamerSettings settings) {
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new IllegalArgumentException("accessToken must not be null or empty");
+        }
+        if (settings == null) {
+            throw new IllegalArgumentException("settings must not be null");
+        }
+
+        this.accessToken = accessToken;
+        this.settings = settings;
+        this.connectionSettings = new PortfolioConnectionSettings();
+
+        // Initialize components
+        this.eventBus = new InMemoryEventBus();
+        this.buffer = new PortfolioDataBuffer(settings.getBufferCapacity());
+        this.cache = new PortfolioDataCache(
+                settings.getCacheTTL(),
+                settings.getMaxCacheSize(),
+                settings.isEnableCaching());
+        this.stateTracker = new PortfolioStateTracker();
+        this.metrics = new PortfolioMetricsCollector();
+        this.logger = new PortfolioDataStreamerLogger(
+                getClass(),
+                settings.getLogFilePath(),
+                settings.isEnableLogging(),
+                settings.isLogPortfolioUpdates());
+        this.parser = new PortfolioMessageParser();
+
+        // Setup event subscribers with isolation
+        setupEventSubscribers();
+
+        // Initialize OkHttp client
+        this.client = new OkHttpClient.Builder()
+                .readTimeout(settings.getReadTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(settings.getWriteTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(settings.getConnectTimeout(), TimeUnit.MILLISECONDS)
+                .pingInterval(settings.getPingInterval(), TimeUnit.SECONDS)
+                .followRedirects(true) // 302 Redirect handling
+                .followSslRedirects(true)
+                .build();
+
+        logger.info("PortfolioDataStreamerV2 initialized with settings: {}", settings);
+    }
+
+    /**
+     * Connects to portfolio WebSocket feed.
+     * 
+     * <p>
+     * Per Documentation 1 & 2:
+     * <ol>
+     * <li>Call authorize endpoint to get single-use WSS URL</li>
+     * <li>Connect to WebSocket with Authorization header</li>
+     * <li>Server pushes updates automatically (no subscription needed)</li>
+     * </ol>
+     */
+    public synchronized void connect() {
+        if (connected) {
+            logger.warn("Already connected");
+            return;
+        }
+
+        try {
+            connectionSettings.incrementConnections();
+            stateTracker.transitionTo(PortfolioFeedState.CONNECTING, "connect() called");
+
+            // Start single consumer thread
+            startConsumer();
+
+            // Step 1: Get authorized WebSocket URL (Doc 1)
+            String wsUrl = getAuthorizedUrl();
+            logger.info("Connecting to authorized URL");
+
+            // Step 2: Build WebSocket request (Doc 2)
+            Request request = new Request.Builder()
+                    .url(wsUrl)
+                    .addHeader("Authorization", "Bearer " + accessToken)
+                    .addHeader("Accept", "*/*")
+                    .build();
+
+            // Connect
+            webSocket = client.newWebSocket(request, new PortfolioWebSocketListener());
+            logger.logConnectionAttempt(1);
+
+        } catch (Exception e) {
+            logger.logConnectionError("Failed to connect", e);
+            stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "Connection failed");
+            connectionSettings.decrementConnections();
+            throw new RuntimeException("Connection failed", e);
+        }
+    }
+
+    /**
+     * Disconnects from WebSocket feed.
+     */
+    public synchronized void disconnect() {
+        if (!connected) {
+            return;
+        }
+
+        logger.info("Disconnecting...");
+        connected = false;
+        autoReconnectEnabled = false;
+
+        if (webSocket != null) {
+            webSocket.close(1000, "Normal closure");
+        }
+
+        stopConsumer();
+        stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "disconnect() called");
+        connectionSettings.decrementConnections();
+    }
+
+    /**
+     * Triggers controlled reconnect on buffer saturation or errors.
+     * 
+     * <p>
+     * ⚠️ CRITICAL: This prevents silent data loss by forcing resync.
+     */
+    public synchronized void triggerControlledReconnect(String reason) {
+        logger.logControlledReconnect(reason);
+        metrics.incrementReconnectAttempts();
+
+        // Disconnect
+        if (webSocket != null) {
+            webSocket.close(1001, "Controlled reconnect: " + reason);
+        }
+
+        // Clear buffer to prevent further saturation
+        buffer.clear();
+
+        // Attempt reconnect
+        if (settings.isAutoReconnectEnabled()) {
+            scheduleReconnect();
+        }
+    }
+
+    /**
+     * Forces full resync - clears all state and reconnects.
+     */
+    public synchronized void forceResync() {
+        logger.logForceResync("Manual resync requested");
+
+        // Clear all state
+        buffer.clear();
+        cache.clear();
+        metrics.reset();
+
+        // Reconnect
+        disconnect();
+        try {
+            Thread.sleep(1000); // Brief pause
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        connect();
+    }
+
+    /**
+     * Enables auto-reconnect with default settings.
+     */
+    public void autoReconnect(boolean enable) {
+        this.autoReconnectEnabled = enable;
+        if (enable) {
+            logger.info("Auto-reconnect enabled");
+        }
+    }
+
+    // Listener setters
+
+    public void setOnOpenListener(OnOpenListener listener) {
+        this.onOpenListener = listener;
+    }
+
+    public void setOnCloseListener(OnCloseListener listener) {
+        this.onCloseListener = listener;
+    }
+
+    public void setOnErrorListener(OnErrorListener listener) {
+        this.onErrorListener = listener;
+    }
+
+    public void setOnReconnectingListener(OnReconnectingListener listener) {
+        this.onReconnectingListener = listener;
+    }
+
+    public void setOnAutoReconnectStoppedListener(OnAutoReconnectStoppedListener listener) {
+        this.onAutoReconnectStoppedListener = listener;
+    }
+
+    public void setOnOrderUpdateListener(OnOrderUpdateListener listener) {
+        this.onOrderUpdateListener = listener;
+    }
+
+    public void setOnHoldingUpdateListener(OnHoldingUpdateListener listener) {
+        this.onHoldingUpdateListener = listener;
+    }
+
+    public void setOnPositionUpdateListener(OnPositionUpdateListener listener) {
+        this.onPositionUpdateListener = listener;
+    }
+
+    public void setOnGttUpdateListener(OnGttUpdateListener listener) {
+        this.onGttUpdateListener = listener;
+    }
+
+    // State queries
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public PortfolioFeedState getState() {
+        return stateTracker.getState();
+    }
+
+    public PortfolioMetricsCollector.PortfolioMetrics getMetrics() {
+        return metrics.getMetricsSnapshot();
+    }
+
+    public PortfolioDataBuffer.BufferStatistics getBufferStatistics() {
+        return buffer.getStatistics();
+    }
+
+    public PortfolioDataCache.CacheStatistics getCacheStatistics() {
+        return cache.getStatistics();
+    }
+
+    /**
+     * Shuts down streamer and releases resources.
+     */
+    public synchronized void shutdown() {
+        logger.info("Shutting down PortfolioDataStreamerV2");
+        disconnect();
+        stopConsumer();
+        cache.shutdown();
+        logger.close();
+
+        if (reconnectExecutor != null && !reconnectExecutor.isShutdown()) {
+            reconnectExecutor.shutdown();
+        }
+
+        // Cleanup OkHttp threads
+        if (client != null) {
+            client.dispatcher().executorService().shutdown();
+            client.connectionPool().evictAll();
+            try {
+                if (client.cache() != null) {
+                    client.cache().close();
+                }
+            } catch (Exception e) {
+                logger.error("Error closing OkHttp cache", e);
+            }
+        }
+    }
+
+    // Private methods
+
+    /**
+     * Gets authorized WebSocket URL from Upstox authorize endpoint.
+     * 
+     * <p>
+     * Per Documentation 1: Must call authorize endpoint first.
+     * The returned URL is single-use.
+     * 
+     * @return The authorized WebSocket URL
+     * @throws IOException if authorization fails
+     */
+    private String getAuthorizedUrl() throws IOException {
+        if (!settings.isUseAuthorizeEndpoint()) {
+            // Direct connection (for testing only)
+            return buildWsUrlWithUpdateTypes();
+        }
+
+        // Build authorize URL with update_types query parameter
+        String authorizeUrl = settings.getAuthorizeUrl();
+        String updateTypesQuery = buildUpdateTypesQuery();
+        if (!updateTypesQuery.isEmpty()) {
+            authorizeUrl += "?" + updateTypesQuery;
+        }
+
+        logger.info("Calling authorize endpoint: {}", authorizeUrl);
+
+        Request request = new Request.Builder()
+                .url(authorizeUrl)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .addHeader("Accept", "application/json")
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Authorization failed with code: " + response.code());
+            }
+
+            String body = response.body() != null ? response.body().string() : "";
+            Gson gson = new Gson();
+            JsonObject root = gson.fromJson(body, JsonObject.class);
+            JsonObject data = root.getAsJsonObject("data");
+
+            // Use snake_case field (non-deprecated per documentation)
+            String wsUrl = data.get("authorized_redirect_uri").getAsString();
+            logger.info("Authorized WebSocket URL obtained successfully");
+            return wsUrl;
+        }
+    }
+
+    /**
+     * Builds update_types query parameter based on enabled settings.
+     * 
+     * @return Query string like "update_types=order,position,holding"
+     */
+    private String buildUpdateTypesQuery() {
+        StringBuilder types = new StringBuilder();
+
+        if (settings.isEnableOrders()) {
+            types.append("order");
+        }
+        if (settings.isEnablePositions()) {
+            if (types.length() > 0) types.append(",");
+            types.append("position");
+        }
+        if (settings.isEnableHoldings()) {
+            if (types.length() > 0) types.append(",");
+            types.append("holding");
+        }
+        if (settings.isEnableGtt()) {
+            if (types.length() > 0) types.append(",");
+            types.append("gtt_order");
+        }
+
+        return types.length() > 0 ? "update_types=" + types : "";
+    }
+
+    /**
+     * Builds WebSocket URL with update_types query parameter (for direct connection).
+     * 
+     * @return WSS URL with query params
+     */
+    private String buildWsUrlWithUpdateTypes() {
+        String baseUrl = settings.getWsUrl();
+        String query = buildUpdateTypesQuery();
+        return query.isEmpty() ? baseUrl : baseUrl + "?" + query;
+    }
+
+    private void startConsumer() {
+        if (consumerExecutor == null || consumerExecutor.isShutdown()) {
+            consumerExecutor = Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r);
+                t.setName("PortfolioConsumer-1");
+                t.setDaemon(false);
+                return t;
+            });
+
+            PortfolioBufferConsumer consumer = new PortfolioBufferConsumer(buffer, eventBus, "consumer-1");
+            consumerExecutor.submit(consumer);
+            logger.info("Started single consumer thread");
+        }
+    }
+
+    private void stopConsumer() {
+        if (consumerExecutor != null && !consumerExecutor.isShutdown()) {
+            consumerExecutor.shutdownNow();
+            try {
+                consumerExecutor.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            logger.info("Stopped consumer thread");
+        }
+    }
+
+    private void scheduleReconnect() {
+        if (reconnectAttempts >= settings.getMaxReconnectAttempts()) {
+            logger.logReconnectStopped("Max attempts reached");
+            if (onAutoReconnectStoppedListener != null) {
+                onAutoReconnectStoppedListener.onStopped("Max attempts reached");
+            }
+            return;
+        }
+
+        if (reconnectExecutor == null || reconnectExecutor.isShutdown()) {
+            reconnectExecutor = Executors.newSingleThreadScheduledExecutor();
+        }
+
+        reconnectAttempts++;
+        int delay = settings.getReconnectInterval();
+
+        logger.logReconnectAttempt(reconnectAttempts, settings.getMaxReconnectAttempts());
+
+        reconnectExecutor.schedule(() -> {
+            try {
+                connect();
+            } catch (Exception e) {
+                logger.error("Reconnect failed", e);
+                scheduleReconnect(); // Try again
+            }
+        }, delay, TimeUnit.SECONDS);
+    }
+
+    private void setupEventSubscribers() {
+        // Subscribe to portfolio updates with isolation
+        eventBus.subscribe(PortfolioUpdateEvent.class, event -> {
+            try {
+                handlePortfolioEvent(event);
+            } catch (Exception e) {
+                logger.error("Subscriber error: {}", e.getMessage(), e);
+                metrics.incrementSubscriberErrors();
+            }
+        });
+    }
+
+    private void handlePortfolioEvent(PortfolioUpdateEvent event) {
+        // Update cache
+        if (event instanceof PortfolioUpdate) {
+            PortfolioUpdate update = (PortfolioUpdate) event;
+            updateCache(update);
+
+            // Invoke user listeners only if LIVE
+            if (stateTracker.isLive()) {
+                invokeUserListeners(update);
+            }
+        }
+
+        metrics.incrementUpdatesProcessed();
+    }
+
+    private void updateCache(PortfolioUpdate update) {
+        if (update.isOrderUpdate() && update.getOrderUpdate() != null) {
+            cache.putOrder(update.getOrderUpdate());
+            metrics.incrementOrderUpdates();
+        } else if (update.isHoldingUpdate() && update.getHoldingUpdate() != null) {
+            cache.putHolding(update.getHoldingUpdate());
+            metrics.incrementHoldingUpdates();
+        } else if (update.isPositionUpdate() && update.getPositionUpdate() != null) {
+            cache.putPosition(update.getPositionUpdate());
+            metrics.incrementPositionUpdates();
+        } else if (update.isGttUpdate() && update.getGttUpdate() != null) {
+            cache.putGtt(update.getGttUpdate());
+            metrics.incrementGttUpdates();
+        }
+    }
+
+    private void invokeUserListeners(PortfolioUpdate update) {
+        try {
+            if (update.isOrderUpdate() && onOrderUpdateListener != null) {
+                onOrderUpdateListener.onUpdate(update);
+            } else if (update.isHoldingUpdate() && onHoldingUpdateListener != null) {
+                onHoldingUpdateListener.onUpdate(update);
+            } else if (update.isPositionUpdate() && onPositionUpdateListener != null) {
+                onPositionUpdateListener.onUpdate(update);
+            } else if (update.isGttUpdate() && onGttUpdateListener != null) {
+                onGttUpdateListener.onUpdate(update);
+            }
+        } catch (Exception e) {
+            logger.error("User listener error: {}", e.getMessage(), e);
+        }
+    }
+
+    // WebSocket listener
+
+    private class PortfolioWebSocketListener extends WebSocketListener {
+
+        @Override
+        public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
+            connected = true;
+            reconnectAttempts = 0;
+            stateTracker.transitionTo(PortfolioFeedState.SYNCING, "WebSocket opened");
+            logger.logConnectionSuccess();
+
+            if (onOpenListener != null) {
+                onOpenListener.onOpen();
+            }
+        }
+
+        @Override
+        public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
+            try {
+                metrics.incrementUpdatesReceived();
+
+                // Parse message
+                PortfolioUpdateEvent event = parser.parse(text);
+
+                // Transition to LIVE after first message
+                if (stateTracker.getState() == PortfolioFeedState.SYNCING) {
+                    stateTracker.transitionTo(PortfolioFeedState.LIVE, "Received first update");
+                }
+
+                // Offer to buffer with timeout
+                boolean accepted = buffer.offerWithTimeout(
+                        (PortfolioUpdate) event,
+                        settings.getBufferOfferTimeoutMs(),
+                        TimeUnit.MILLISECONDS);
+
+                if (!accepted) {
+                    // ⚠️ CRITICAL: Buffer saturated - trigger controlled reconnect
+                    metrics.incrementBufferSaturations();
+                    logger.logBufferSaturation(buffer.getUtilizationPercent());
+                    triggerControlledReconnect("Buffer saturation");
+                }
+
+            } catch (Exception e) {
+                logger.logParsingError("Message handling failed", e);
+                metrics.incrementParseErrors();
+                stateTracker.transitionTo(PortfolioFeedState.DEGRADED, "Parse errors");
+            }
+        }
+
+        @Override
+        public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+            logger.logConnectionClosed(code, reason);
+        }
+
+        @Override
+        public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+            connected = false;
+            stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "WebSocket closed");
+            logger.logConnectionClosed(code, reason);
+
+            if (onCloseListener != null) {
+                onCloseListener.onClose(code, reason);
+            }
+
+            if (autoReconnectEnabled && settings.isAutoReconnectEnabled()) {
+                scheduleReconnect();
+            }
+        }
+
+        @Override
+        public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, Response response) {
+            connected = false;
+
+            // Check for 401 Unauthorized
+            boolean isAuthFailure = t.getMessage() != null && t.getMessage().contains("401");
+            if (response != null && response.code() == 401) {
+                isAuthFailure = true;
+            }
+
+            if (isAuthFailure) {
+                logger.error("Authentication failed: Invalid or expired Access Token. Auto-reconnect disabled.", t);
+                stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "Authentication failure");
+                autoReconnectEnabled = false; // Disable auto-reconnect permanently
+            } else {
+                stateTracker.transitionTo(PortfolioFeedState.DISCONNECTED, "WebSocket failure");
+                logger.logConnectionError("WebSocket failure",
+                        t instanceof Exception ? (Exception) t : new Exception(t));
+            }
+
+            if (onErrorListener != null) {
+                onErrorListener.onError(t instanceof Exception ? (Exception) t : new Exception(t));
+            }
+
+            // Only schedule reconnect if NOT an auth failure and enabled
+            if (!isAuthFailure && autoReconnectEnabled && settings.isAutoReconnectEnabled()) {
+                scheduleReconnect();
+            }
+        }
+    }
+}
+```
+
+---
+
+## Verification
+
+✅ **Build Status:** `BUILD SUCCESS`
+
+```
+Exit code: 0
+```
+
+---
+
+## Architecture Comparison
+
+| Aspect | MarketDataStreamerV3 | PortfolioDataStreamerV2 |
+|--------|---------------------|------------------------|
+| Authorization | REST → get WSS URL ✅ | REST → get WSS URL ✅ |
+| Subscription | Binary JSON request | ❌ Not needed |
+| Payload format | Protobuf binary | JSON text |
+| Auto-push | After subscription | Immediately on connect |
+| Market sync | market_info first | ❌ Not applicable |
+
+---
+
+## Files Modified
+
+| File | Change |
+|------|--------|
+| [MarketDataStreamerV3.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/MarketDataStreamerV3.java) | Removed `sendRequest()`, added [MarketStateTracker](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/decoder/MarketStateTracker.java#22-84) |
+| [MarketStateTracker.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/decoder/MarketStateTracker.java) | **NEW** - V3 feed synchronization |
+| [PortfolioDataStreamerV2.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/websocket/PortfolioDataStreamerV2.java) | Added authorization flow |

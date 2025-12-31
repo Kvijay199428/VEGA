@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vegatrader.com/schemas/user-priority-settings.json",
+  "title": "UserPrioritySettings",
+  "description": "SEBI-compliant user preference settings. Settings affect ORDER of operations, not AUTHORITY.",
+  "type": "object",
+  "properties": {
+    "instrumentLoadPriority": {
+      "type": "array",
+      "description": "Order of instrument categories to load/display",
+      "items": {
+        "type": "string",
+        "enum": ["INDEX", "DERIVATIVES", "EQUITY", "SECTORAL"]
+      },
+      "default": ["INDEX", "DERIVATIVES", "EQUITY"]
+    },
+    "preferredSectors": {
+      "type": "array",
+      "description": "Preferred sectors for search ranking and cache pre-warm",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z_]+$"
+      },
+      "default": []
+    },
+    "validationPriority": {
+      "type": "array",
+      "description": "Order of validation checks (within allowed bounds)",
+      "items": {
+        "type": "string",
+        "enum": [
+          "INSTRUMENT_ELIGIBILITY",
+          "CLIENT_RISK",
+          "QUANTITY_CAP"
+        ]
+      },
+      "default": ["INSTRUMENT_ELIGIBILITY", "CLIENT_RISK", "QUANTITY_CAP"]
+    },
+    "brokerRoutingPriority": {
+      "type": "array",
+      "description": "Preferred broker order for multi-broker routing",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z]+$"
+      },
+      "default": ["PRIMARY"]
+    },
+    "defaultProductType": {
+      "type": "string",
+      "description": "Default product type for orders",
+      "enum": ["INTRADAY", "DELIVERY", "CNC", "MIS"],
+      "default": "INTRADAY"
+    },
+    "defaultExchange": {
+      "type": "string",
+      "description": "Default exchange for instrument search",
+      "enum": ["NSE", "BSE"],
+      "default": "NSE"
+    },
+    "confirmBeforePlace": {
+      "type": "boolean",
+      "description": "Require confirmation before order placement",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

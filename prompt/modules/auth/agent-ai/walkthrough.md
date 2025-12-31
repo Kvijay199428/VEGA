@@ -1,0 +1,75 @@
+# Token Persistence Implementation - Walkthrough
+
+## Summary
+
+Implemented enterprise-grade database-backed token persistence for Upstox V2 OAuth login automation as specified in `a1.md` and `a2.md`.
+
+## Files Created (13 new files)
+
+### Database Layer (`com.vegatrader.upstox.auth.db`)
+| File | Purpose |
+|------|---------|
+| [ApiName.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/ApiName.java) | Enum for 6 API types (PRIMARY, WEBSOCKET1-3, OPTIONCHAIN1-2) |
+| [SqliteDataSourceFactory.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/SqliteDataSourceFactory.java) | Auto-detects `vega_trade.db` in working directory |
+| [UpstoxTokenRepository.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/UpstoxTokenRepository.java) | Repository interface |
+| [UpstoxTokenRepositoryImpl.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/UpstoxTokenRepositoryImpl.java) | REPLACE semantics (DELETE + INSERT) |
+
+### Entity (`com.vegatrader.upstox.auth.db.entity`)
+| File | Purpose |
+|------|---------|
+| [UpstoxTokenEntity.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/entity/UpstoxTokenEntity.java) | Exact `upstox_tokens` table mapping |
+
+### Services (`com.vegatrader.upstox.auth.service`)
+| File | Purpose |
+|------|---------|
+| [TokenValidityService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenValidityService.java) | Layer 1: Time-based validity (3:30 AM IST rule) |
+| [ProfileVerificationService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/ProfileVerificationService.java) | Layer 2: Profile API verification |
+| [TokenDecisionReport.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenDecisionReport.java) | Classification report DTO |
+| [TokenDecisionEngine.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenDecisionEngine.java) | Core intelligence for token classification |
+| [UpstoxTokenMapper.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/UpstoxTokenMapper.java) | LoginResult → Entity mapper |
+| [TokenGenerationService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenGenerationService.java) | Orchestrates generation with immediate DB persistence |
+
+### REST Controllers (`com.vegatrader.upstox.auth.controller`)
+| File | Purpose |
+|------|---------|
+| [TokenStatusController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/TokenStatusController.java) | `GET /api/auth/upstox/tokens/status` |
+| [TokenGenerationController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/TokenGenerationController.java) | `POST /api/auth/upstox/tokens/generate` |
+
+## REST API Endpoints
+
+### GET Token Status
+```
+GET /api/auth/upstox/tokens/status
+```
+**Response:**
+```json
+{
+  "valid": ["PRIMARY", "WEBSOCKET1"],
+  "invalid": ["WEBSOCKET2"],
+  "missing": ["OPTIONCHAIN2"],
+  "total": 6,
+  "allValid": false
+}
+```
+
+### POST Generate Tokens
+```
+POST /api/auth/upstox/tokens/generate
+```
+**Request:**
+```json
+{
+  "mode": "INVALID_ONLY",
+  "apiNames": ["WEBSOCKET2"]
+}
+```
+**Modes:** `ALL`, `INVALID_ONLY`, `PARTIAL`
+
+## Verification
+
+- ✅ Compilation: `mvn compile` - SUCCESS (Exit code: 0)
+- ✅ All 277 source files compiled
+- ✅ SQLite integration with auto-detection
+- ✅ 2-layer validity checking (time + profile API)
+- ✅ REPLACE semantics for token persistence
+- ✅ REST API for frontend integration

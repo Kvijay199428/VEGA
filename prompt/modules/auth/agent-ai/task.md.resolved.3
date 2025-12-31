@@ -1,0 +1,26 @@
+# New Login Script Implementation
+
+## Objective
+Create a new, separate login automation module based on the auth documentation in `prompt/modules/auth/parts`. This new implementation will be developed and tested separately from existing scripts, and will replace them once verified.
+
+## Tasks
+
+- [x] Research and read all auth documentation (parts 1-6)
+- [x] Review existing login implementation structure
+- [x] Create implementation plan
+- [x] Implement new login automation module (separate from existing)
+  - [x] Create new package structure: `auth/selenium/v2`
+  - [x] Implement `LoginPageV2.java` - Page object with updated XPath selectors
+  - [x] Implement `LoginCredentialsV2.java` - Credentials DTO with TOTP generation
+  - [x] Implement `OAuthLoginAutomationV2.java` - Main orchestrator
+  - [x] Implement `TokenExpiryCalculatorV2.java` - Token expiry logic (3:30 AM rule)
+  - [x] Implement `AuthCodeCaptureV2.java` - Authorization code capture
+  - [x] Implement `TokenExchangeClientV2.java` - Exchange code for access token
+  - [x] Implement `ProfileVerifierV2.java` - Profile API verification
+  - [x] Implement `ConsentPageV2.java` - Consent page handling
+  - [x] Implement `SeleniumConfigV2.java` - WebDriver configuration
+  - [x] Implement `LoginConfigV2.java` - Configuration DTO
+  - [x] Implement `LoginResultV2.java` - Result DTO
+- [x] Create integration test for new login flow
+- [x] Build and test the new module
+- [x] Document new module usage

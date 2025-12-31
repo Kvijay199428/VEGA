@@ -1,0 +1,41 @@
+sequenceDiagram
+    participant User as User/System
+    participant TGC as TokenGenerationController
+    participant ATO as AsyncTokenOrchestrator
+    participant Repo as TokenRepository (DB)
+    participant Verifier as ProfileVerificationService
+    participant TGS as TokenGenerationService
+    participant Selenium as Selenium/Browser
+    participant Upstox as Upstox Auth Server
+
+    User->>TGC: POST /generate (Mode=ALL)
+    TGC->>ATO: execute(Request)
+    ATO->>Repo: loadTokens()
+    Repo-->>ATO: List<UpstoxTokenEntity>
+    
+    par Parallel Verification
+        ATO->>Verifier: verify(Token 1)
+        ATO->>Verifier: verify(Token 2)
+        Verifier->>Upstox: GET /user/profile
+        Upstox-->>Verifier: 200 OK / 401 Unauthorized
+    end
+    
+    Verifier-->>ATO: TokenDecisionReport (Valid/Invalid)
+    
+    alt All Tokens Valid
+        ATO->>User: Return Success (Fast Exit)
+    else Tokens Invalid
+        ATO->>TGS: generatePartial(Invalid APIs)
+        loop For each API
+            TGS->>Selenium: Launch Browser
+            Selenium->>Upstox: Login (User/Pass/TOTP)
+            Selenium->>Upstox: Allow Consent
+            Upstox-->>Selenium: Redirect with Auth Code
+            Selenium->>TGS: Capture Auth Code
+            TGS->>Upstox: POST /login/authorization/token
+            Upstox-->>TGS: Access Token
+            TGS->>Repo: save(New Token)
+        end
+        TGS-->>ATO: GenerationResult
+        ATO->>User: Return Execution Result
+    end

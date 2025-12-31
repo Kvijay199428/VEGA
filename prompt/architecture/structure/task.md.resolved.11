@@ -1,0 +1,12 @@
+# Task: Generate Detailed Component Reports
+
+- [ ] Create Core & Auth Report [ ]
+    - [ ] `report_core_auth.md`: Authentication, Token Management, Startup
+- [ ] Create Market Data V3 Report [ ]
+    - [ ] `report_market_data_v3.md`: Streaming, Disruptor, Persistence, Architecture
+- [ ] Create Portfolio & Orders Report [ ]
+    - [ ] `report_portfolio_orders.md`: Portfolio Streamer, Order Endpoints
+- [ ] Create REST & Instruments Report [ ]
+    - [ ] `report_rest_instruments.md`: DTOs, Rate Limiting, Instrument Services
+- [ ] Review and Verify [ ]
+    - [ ] Ensure all diagrams and file trees are accurate

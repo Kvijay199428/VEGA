@@ -1,0 +1,70 @@
+# Token Persistence Implementation - Complete Walkthrough
+
+## Summary
+
+Implemented **enterprise-grade token persistence** with all features from a1.md through d2.md.
+
+## Components Created (25+ files)
+
+### Core Database Layer
+| File | Purpose |
+|------|---------|
+| [ApiName.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/ApiName.java) | 6 API types enum |
+| [SqliteDataSourceFactory.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/SqliteDataSourceFactory.java) | Auto-creates `database/vega_trade.db` |
+| [UpstoxTokenRepositoryImpl.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/UpstoxTokenRepositoryImpl.java) | REPLACE semantics + auto table |
+| [UpstoxTokenEntity.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/entity/UpstoxTokenEntity.java) | Token schema mapping |
+
+### Enterprise Services (d1/d2)
+| File | Purpose |
+|------|---------|
+| [TokenExecutionState.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenExecutionState.java) | Persistent resume brain |
+| [ExecutionStateRepository.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/ExecutionStateRepository.java) | SQLite state persistence |
+| [CooldownManager.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/CooldownManager.java) | **11-minute broker-safe halt** |
+| [BrokerCooldownException.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/BrokerCooldownException.java) | Explicit cooldown signal |
+| [ResumeOrchestrator.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/ResumeOrchestrator.java) | **Deterministic resume** |
+
+### Async & Zero-Delay (b1/b2)
+| File | Purpose |
+|------|---------|
+| [AsyncTokenOrchestrator.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/AsyncTokenOrchestrator.java) | Single Selenium, parallel verify |
+| [HotTokenRegistry.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/HotTokenRegistry.java) | In-memory zero-delay tokens |
+
+### REST Controllers (c1)
+| File | Endpoint |
+|------|----------|
+| [TokenStatusController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/TokenStatusController.java) | `GET /api/auth/upstox/tokens/status` |
+| [TokenGenerationController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/TokenGenerationController.java) | `POST /api/auth/upstox/tokens/generate` |
+| [LoginSuccessController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/LoginSuccessController.java) | `GET /api/auth/upstox/login-success/{apiName}` |
+
+## Key Features
+
+### 1. Resume-from-Failure (d1/d2)
+- When broker throttling detected → **11-minute cooldown**
+- State persisted to SQLite → survives crash
+- Resumes from **exact failure point**
+- Never regenerates successful tokens
+
+### 2. Per-Feature Logging
+```
+logs/auth/
+├── token_generation.log
+├── cooldown_events.log
+└── resume_flow.log
+```
+
+### 3. Database
+- Path: `database/vega_trade.db`
+- Auto-creates tables on startup
+- Tables: `upstox_tokens`, `token_execution_state`
+
+## Test Commands
+
+```bash
+# Resume-capable test (continues from failure)
+mvn exec:java -Dexec.mainClass=com.vegatrader.upstox.auth.service.ResumeTokenTest
+
+# Standard test 
+mvn exec:java -Dexec.mainClass=com.vegatrader.upstox.auth.service.TokenPersistenceTest
+```
+
+## Compilation: ✅ SUCCESS

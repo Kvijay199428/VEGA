@@ -1,0 +1,53 @@
+# Instrument Module Upgrade - Task Checklist
+
+## Phase 1: Database Schema & Flyway Migrations
+- [x] Create Flyway migration directory structure
+- [x] Create V10__instrument_master.sql
+- [x] Create V11__instrument_overlays.sql (MIS, MTF, Suspension)
+- [x] Create V12__product_risk_profile.sql
+- [x] Add necessary indexes for search/autocomplete
+
+## Phase 2: Entity & Repository Layer
+- [x] Create InstrumentMasterEntity.java
+- [x] Create overlay entities (MIS, MTF, Suspension)
+- [x] Create InstrumentMasterRepository.java
+- [x] Create overlay repositories
+- [ ] Create InstrumentSearchResponse DTO
+
+## Phase 3: Loader Service (GZIP + Streaming)
+- [/] Create InstrumentFileSource enum
+- [ ] Create InstrumentLoaderService.java
+- [ ] Implement Jackson streaming JSON parser
+- [ ] Implement batch insert logic
+- [ ] Create DailyRefreshScheduler.java
+
+## Phase 4: Validation Layer (Regex Patterns)
+- [ ] Create InstrumentKeyPattern.java
+- [ ] Upgrade InstrumentKeyValidator.java
+- [ ] Add Bean Validation annotations
+- [ ] Create InstrumentValidationService.java
+
+## Phase 5: Search & Autocomplete API
+- [ ] Create InstrumentSearchService.java
+- [ ] Create InstrumentAutocompleteService.java
+- [ ] Create InstrumentSearchController.java
+- [ ] Create InstrumentResolverController.java
+- [ ] Add Redis caching for autocomplete
+
+## Phase 6: Risk Engine Integration
+- [ ] Create ProductType enum
+- [ ] Create RiskProfileEntity.java
+- [ ] Create RiskValidationService.java
+- [ ] Implement margin calculation
+
+## Phase 7: Migration & Integration
+- [ ] Create DatabaseBackedInstrumentKeyProvider.java
+- [ ] Upgrade InstrumentEnrollmentService.java
+- [ ] Upgrade InstrumentResponse.java
+- [ ] Update SectoralIndex enum with new sectors
+- [ ] Create integration tests
+- [ ] Update documentation
+
+---
+
+*Current Focus: Phase 1*

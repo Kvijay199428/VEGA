@@ -1,0 +1,56 @@
+# RMS Control Plane v4.1 - Task Checklist
+
+## Phase A: Database Schema (Flyway V13-V22) ✅
+- [x] V13 - equity_security_type
+- [x] V14 - exchange_series
+- [x] V15 - instrument_master extensions
+- [x] V16 - exchange_series_source
+- [x] V17 - regulatory_watchlist
+- [x] V18 - ipo_calendar
+- [x] V19 - intraday_margin_by_series
+- [x] V20 - symbol_quantity_caps
+- [x] V21 - price_band
+- [x] V22 - fo_contract_lifecycle
+
+## Phase B: Entities ✅
+- [x] EquitySecurityType enum
+- [x] ExchangeSeriesEntity
+- [x] RegulatoryWatchlistEntity
+- [x] IpoCalendarEntity
+- [x] IntradayMarginEntity
+- [x] QuantityCapEntity
+- [x] PriceBandEntity
+- [x] FoContractLifecycleEntity
+
+## Phase C: Repositories ✅
+- [x] ExchangeSeriesRepository
+- [x] RegulatoryWatchlistRepository
+- [x] IpoCalendarRepository
+- [x] IntradayMarginRepository
+- [x] QuantityCapRepository
+- [x] PriceBandRepository
+- [x] FoContractLifecycleRepository
+
+## Phase D: Sync Jobs
+- [ ] ExchangeSeriesSyncJob
+- [ ] RegulatoryWatchlistJob
+- [ ] PriceBandIngestionJob
+- [ ] IpoCalendarSyncJob
+- [ ] FoExpiryDeactivationJob
+
+## Phase E: Eligibility Cache
+- [ ] ProductEligibility record
+- [ ] EligibilityResolver
+- [ ] EligibilityCache (Caffeine)
+
+## Phase F: Risk Engine Enhancement
+- [ ] RmsValidationService
+- [ ] MarginProfile record
+- [ ] Quantity/Price validation
+- [ ] T2T enforcement
+
+## Phase G: Tests
+- [ ] RmsIntegrationTest
+
+---
+*Current: Phase A*

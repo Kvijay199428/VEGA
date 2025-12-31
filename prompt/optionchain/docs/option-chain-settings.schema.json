@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://vegatrader.com/schemas/option-chain-settings.json",
+    "title": "OptionChainSettings",
+    "description": "Configuration schema for Option Chain module",
+    "type": "object",
+    "properties": {
+        "default_priority": {
+            "type": "array",
+            "description": "Fetch priority order: CACHE, API, FALLBACK",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "CACHE",
+                    "UPSTOX_API",
+                    "BSE_API",
+                    "FALLBACK"
+                ]
+            },
+            "default": [
+                "CACHE",
+                "UPSTOX_API",
+                "FALLBACK"
+            ]
+        },
+        "user_overrides": {
+            "type": "object",
+            "description": "Per-user fetch priority overrides",
+            "patternProperties": {
+                "^[a-zA-Z0-9_]+$": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "rate_limit_per_token": {
+            "type": "integer",
+            "description": "Max API requests per second per token",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 5
+        },
+        "cache_ttl_minutes": {
+            "type": "integer",
+            "description": "Cache time-to-live in minutes",
+            "minimum": 5,
+            "maximum": 1440,
+            "default": 60
+        },
+        "prewarm_time": {
+            "type": "string",
+            "description": "T-1 prewarm scheduler time (HH:mm format, IST)",
+            "pattern": "^[0-2][0-9]:[0-5][0-9]$",
+            "default": "18:30"
+        },
+        "enable_bse_support": {
+            "type": "boolean",
+            "description": "Enable BSE option chain fetching",
+            "default": false
+        },
+        "enable_audit_logging": {
+            "type": "boolean",
+            "description": "Log all requests/responses for compliance",
+            "default": true
+        },
+        "fallback_on_error": {
+            "type": "boolean",
+            "description": "Serve cached data if API fails",
+            "default": true
+        },
+        "tokens": {
+            "type": "array",
+            "description": "List of token IDs for option chain fetching",
+            "items": {
+                "type": "string"
+            },
+            "default": [
+                "OPTIONCHAIN1",
+                "OPTIONCHAIN2"
+            ]
+        }
+    },
+    "required": [
+        "default_priority",
+        "rate_limit_per_token"
+    ],
+    "additionalProperties": false
+}

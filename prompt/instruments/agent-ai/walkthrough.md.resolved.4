@@ -1,0 +1,68 @@
+# Token Persistence Implementation - Walkthrough
+
+## Summary
+
+Implemented all features from **a1.md**, **a2.md**, **b1.md**, **b2.md**, **c1.md**, **c2.md**.
+
+## Test Result: ✅ SUCCESS
+
+```
+API Name:     PRIMARY
+User ID:      7EAHBJ
+User Name:    vijay kumar sharma
+Valid Until:  2025-12-30 03:30:00
+✓ Token upserted for: PRIMARY
+✓ Token generated and persisted for: PRIMARY
+```
+
+## Files Created (19 new files)
+
+### Database Layer (`auth.db`)
+| File | Purpose |
+|------|---------|
+| [ApiName.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/ApiName.java) | Enum for 6 API types |
+| [SqliteDataSourceFactory.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/SqliteDataSourceFactory.java) | Auto-detects `vega_trade.db` |
+| [UpstoxTokenRepositoryImpl.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/UpstoxTokenRepositoryImpl.java) | REPLACE semantics + **auto table creation** |
+| [UpstoxTokenEntity.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/entity/UpstoxTokenEntity.java) | Exact schema mapping |
+
+### Services (`auth.service`)
+| File | Purpose |
+|------|---------|
+| [TokenValidityService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenValidityService.java) | Layer 1: Time check (3:30 AM IST) |
+| [ProfileVerificationService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/ProfileVerificationService.java) | Layer 2: Profile API check |
+| [TokenDecisionEngine.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenDecisionEngine.java) | Classifies tokens |
+| [AsyncTokenOrchestrator.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/AsyncTokenOrchestrator.java) | **Single Selenium**, parallel verification |
+| [HotTokenRegistry.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/HotTokenRegistry.java) | In-memory zero-delay tokens |
+| [TokenGenerationService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenGenerationService.java) | Orchestrates login + persist |
+| [UpstoxTokenMapper.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/UpstoxTokenMapper.java) | LoginResult → Entity |
+
+### DTOs (`auth.dto`)
+| File | Purpose |
+|------|---------|
+| [ProfileView.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/dto/ProfileView.java) | Profile data |
+| [LoginSuccessResponse.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/dto/LoginSuccessResponse.java) | Login success DTO |
+
+### REST Controllers (`auth.controller`)
+| File | Purpose |
+|------|---------|
+| [TokenStatusController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/TokenStatusController.java) | `GET /api/auth/upstox/tokens/status` |
+| [TokenGenerationController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/TokenGenerationController.java) | `POST /api/auth/upstox/tokens/generate` |
+| [LoginSuccessController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/LoginSuccessController.java) | `GET /api/auth/upstox/login-success/{apiName}` |
+
+## Key Fixes Applied (from c2.md)
+
+1. ✅ **SQL Schema auto-creation** - [ensureTableExists()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/UpstoxTokenRepositoryImpl.java#35-71) in repository
+2. ✅ **Single Selenium login** - Changed from 2 to 1 concurrent browser
+3. ✅ **HotTokenRegistry** - In-memory zero-delay token access
+4. ✅ **PIN fallback locators** - Added CSS/XPath fallbacks
+
+## REST API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/auth/upstox/tokens/status` | Token status summary |
+| POST | `/api/auth/upstox/tokens/generate` | Generate tokens (ALL/INVALID_ONLY/PARTIAL) |
+| GET | `/api/auth/upstox/login-success/{apiName}` | Login success confirmation |
+
+## Log File
+- [token_test_20251229_210719.log](file:///d:/projects/VEGA%20TRADER/prompt/modules/auth/test-log/token_test_20251229_210719.log)

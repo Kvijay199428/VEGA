@@ -1,0 +1,89 @@
+# Live Market Data Feed V3 Testing
+
+Test live market data streaming using Upstox Market Data Feed V3 WebSocket API, with comprehensive logging of requests, responses, and errors.
+
+## Summary
+
+The `ws-test` project in the workspace already contains a fully working [MarketFeederClient.java](file:///d:/projects/VEGA%20TRADER/ws-test/src/main/java/MarketFeederClient.java) implementation that:
+- Reads access token from [access_token.txt](file:///d:/projects/VEGA%20TRADER/ws-test/access_token.txt)
+- Obtains authorized WebSocket URL from Upstox V3 API
+- Connects to WebSocket and subscribes to market data
+- Parses Protobuf `FeedResponse` messages using `MarketDataFeedV3.java`
+- Logs all activity to `ws.log`
+
+## Approach
+
+Since the `ws-test` project is already configured and working, the fastest approach is:
+
+1. **Execute the existing ws-test client** - The project has all dependencies and protobuf classes in place
+2. **Copy logs to the target logs directory** - After running, copy `ws.log` to `backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/logs/`
+
+---
+
+## Proposed Changes
+
+### Run Existing ws-test Client
+
+The ws-test project is ready to run with:
+- `pom.xml` with all dependencies (Java-WebSocket, protobuf-java, okhttp, gson)
+- `access_token.txt` with valid JWT token
+- `MarketFeederClient.java` with full implementation
+- Protobuf classes at `src/main/java/com/upstox/marketdatafeederv3udapi/rpc/proto/MarketDataFeedV3.java`
+
+**Command to execute:**
+```bash
+cd d:\projects\VEGA TRADER\ws-test
+mvn exec:java -Dexec.mainClass="MarketFeederClient"
+```
+
+### [NEW] Log files in target directory
+
+After successful execution, copy logs to:
+- [ws_request.log](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/logs/ws_request.log)
+- [ws_response.log](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/logs/ws_response.log)
+- [ws_error.log](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/logs/ws_error.log)
+
+---
+
+## Verification Plan
+
+### Automated Test
+
+Run the ws-test MarketFeederClient and verify:
+
+1. **Compile the project:**
+   ```powershell
+   cd d:\projects\VEGA TRADER\ws-test
+   mvn clean compile
+   ```
+
+2. **Execute the client:**
+   ```powershell
+   cd d:\projects\VEGA TRADER\ws-test
+   mvn exec:java -Dexec.mainClass="MarketFeederClient"
+   ```
+
+3. **Expected output in console and ws.log:**
+   - "Starting MarketFeederClient..."
+   - "Access Token read successfully."
+   - "Resolved WebSocket URL: wss://api.upstox.com/..."
+   - "Opened connection to..."
+   - "Sending Subscription Request: {guid:..., method:sub, data:{mode:full_d30...}}"
+   - "Received Binary Message (FeedResponse)" with Type, Feeds Count, LTP values
+
+4. **Check ws.log for logged output:**
+   ```powershell
+   type d:\projects\VEGA TRADER\ws-test\ws.log
+   ```
+
+> [!IMPORTANT]
+> The market must be open for live data. If testing outside market hours, you'll see the connection succeed but may not receive live feed data.
+
+---
+
+## Next Steps After Verification
+
+If the ws-test works, we can:
+1. Create a similar test class in the main vega-trader project
+2. Integrate with `MarketUpdateV3.java` wrapper for processing
+3. Add structured logging with request/response/error separation

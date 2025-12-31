@@ -1,0 +1,364 @@
+# Instrument Module Upgrade - Implementation Plan
+
+## Source Documents Analyzed
+- [main.md](file:///d:/projects/VEGA%20TRADER/prompt/instruments/dev/main.md) - Official Upstox instrument data specification
+- [a1.md](file:///d:/projects/VEGA%20TRADER/prompt/instruments/dev/a1.md) - Engineering interpretation and best practices
+- [a2.md](file:///d:/projects/VEGA%20TRADER/prompt/instruments/dev/a2.md) - Database schema, loader, and microservice design
+- [a3.md](file:///d:/projects/VEGA%20TRADER/prompt/instruments/dev/a3.md) - Field pattern validation (regex)
+- [a4.md](file:///d:/projects/VEGA%20TRADER/prompt/instruments/dev/a4.md) - Complete reference architecture
+- [a5.md](file:///d:/projects/VEGA%20TRADER/prompt/instruments/dev/a5.md) - SQLite-specific implementation
+- [a6.md](file:///d:/projects/VEGA%20TRADER/prompt/instruments/dev/a6.md) - Production-grade implementation blueprint
+
+---
+
+## Current State vs Target State
+
+### Current State (Existing Modules)
+```
+instrument/
+├── enrollment/
+│   └── SubscriptionEligibilityValidator.java
+├── filter/
+│   ├── InstrumentFilterCriteria.java
+│   └── InstrumentFilterService.java
+├── provider/
+│   ├── InstrumentKeyProvider.java
+│   └── FileBackedInstrumentKeyProvider.java
+├── scheduler/
+│   └── InstrumentStagingScheduler.java (empty)
+└── service/
+    └── InstrumentEnrollmentService.java
+
+utils/
+├── InstrumentKeyValidator.java
+└── InstrumentMasterDownloader.java
+
+response/instrument/
+├── InstrumentResponse.java
+└── ExpiredInstrumentResponse.java
+```
+
+### Target State (After Upgrade)
+```
+instrument/
+├── core/
+│   ├── entity/
+│   │   └── InstrumentMasterEntity.java          [NEW]
+│   ├── repository/
+│   │   ├── InstrumentMasterRepository.java      [NEW]
+│   │   ├── InstrumentMisRepository.java         [NEW]
+│   │   ├── InstrumentMtfRepository.java         [NEW]
+│   │   └── InstrumentSuspensionRepository.java  [NEW]
+│   └── dto/
+│       ├── InstrumentSearchResponse.java        [NEW]
+│       └── AutocompleteResult.java              [NEW]
+├── loader/
+│   ├── InstrumentLoaderService.java             [NEW]
+│   ├── InstrumentFileSource.java                [NEW - enum]
+│   └── DailyRefreshScheduler.java               [NEW]
+├── search/
+│   ├── InstrumentSearchService.java             [NEW]
+│   └── InstrumentAutocompleteService.java       [NEW]
+├── validation/
+│   ├── InstrumentKeyPattern.java                [NEW - regex]
+│   ├── InstrumentKeyValidator.java              [UPGRADE]
+│   └── InstrumentValidationService.java         [NEW]
+├── risk/
+│   ├── ProductType.java                         [NEW - enum]
+│   ├── RiskProfileEntity.java                   [NEW]
+│   └── RiskValidationService.java               [NEW]
+├── overlay/
+│   ├── MisOverlayEntity.java                    [NEW]
+│   ├── MtfOverlayEntity.java                    [NEW]
+│   └── SuspensionOverlayEntity.java             [NEW]
+├── controller/
+│   ├── InstrumentSearchController.java          [NEW]
+│   └── InstrumentResolverController.java        [NEW]
+├── enrollment/                                  [KEEP]
+│   └── SubscriptionEligibilityValidator.java
+├── filter/                                      [KEEP]
+│   ├── InstrumentFilterCriteria.java
+│   └── InstrumentFilterService.java
+├── provider/                                    [KEEP]
+│   ├── InstrumentKeyProvider.java
+│   └── FileBackedInstrumentKeyProvider.java
+│   └── DatabaseBackedInstrumentKeyProvider.java [NEW]
+└── service/                                     [UPGRADE]
+    └── InstrumentEnrollmentService.java
+```
+
+---
+
+## Proposed Changes
+
+### Phase 1: Database Schema & Entities
+
+#### 1.1 [NEW] Flyway Migration Scripts
+**Path:** `src/main/resources/db/migration/`
+
+| File | Description |
+|------|-------------|
+| `V10__instrument_master.sql` | Core instrument master table |
+| `V11__instrument_overlays.sql` | MIS, MTF, Suspension tables |
+| `V12__product_risk_profile.sql` | Risk profile lookup table |
+
+**SQLite Schema:**
+```sql
+CREATE TABLE IF NOT EXISTS instrument_master (
+    instrument_key        TEXT PRIMARY KEY,
+    segment               TEXT NOT NULL,
+    exchange              TEXT NOT NULL,
+    instrument_type       TEXT NOT NULL,
+    trading_symbol        TEXT NOT NULL,
+    name                  TEXT,
+    isin                  TEXT,
+    underlying_key        TEXT,
+    underlying_symbol     TEXT,
+    underlying_type       TEXT,
+    expiry                DATE,
+    strike_price          REAL,
+    lot_size              INTEGER NOT NULL,
+    minimum_lot           INTEGER,
+    freeze_quantity       INTEGER,
+    tick_size             REAL,
+    exchange_token        TEXT,
+    weekly                INTEGER DEFAULT 0,
+    security_type         TEXT,
+    short_name            TEXT,
+    trading_date          DATE NOT NULL,
+    created_at            DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS instrument_suspension (
+    instrument_key TEXT PRIMARY KEY,
+    trading_date   DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS instrument_mis (
+    instrument_key      TEXT PRIMARY KEY,
+    intraday_margin     REAL,
+    intraday_leverage   REAL
+);
+
+CREATE TABLE IF NOT EXISTS instrument_mtf (
+    instrument_key TEXT PRIMARY KEY,
+    mtf_enabled    INTEGER,
+    mtf_bracket    REAL
+);
+
+CREATE TABLE IF NOT EXISTS product_risk_profile (
+    product_type    TEXT PRIMARY KEY,
+    leverage        REAL NOT NULL,
+    intraday        INTEGER NOT NULL,
+    carry_forward   INTEGER NOT NULL,
+    squareoff_time  TEXT
+);
+```
+
+---
+
+### Phase 2: Entity & Repository Layer
+
+#### 2.1 [NEW] InstrumentMasterEntity
+**Path:** `instrument/core/entity/InstrumentMasterEntity.java`
+
+JPA entity mapping all Upstox JSON fields:
+- `instrumentKey` (Primary Key)
+- [segment](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/instrument/filter/InstrumentFilterCriteria.java#189-193), [exchange](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/instrument/filter/InstrumentFilterCriteria.java#199-203), [instrumentType](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/instrument/filter/InstrumentFilterCriteria.java#194-198)
+- [tradingSymbol](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/instrument/filter/InstrumentFilterCriteria.java#204-208), [name](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/instrument/filter/InstrumentFilterCriteria.java#209-213), [isin](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/sectoral/SectorConstituent.java#200-204)
+- [underlyingKey](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/request/instrument/ExpiredInstrumentRequest.java#68-72), `underlyingSymbol`, `underlyingType`
+- [expiry](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/api/request/instrument/ExpiredInstrumentRequest.java#88-92), `strikePrice`
+- `lotSize`, `minimumLot`, `freezeQuantity`
+- `tickSize`, `exchangeToken`
+- `weekly`, `securityType`, `shortName`
+- `tradingDate`, `createdAt`
+
+#### 2.2 [NEW] Overlay Entities
+- `MisOverlayEntity` - intraday margin/leverage
+- `MtfOverlayEntity` - MTF enabled/bracket
+- `SuspensionOverlayEntity` - trading date
+
+#### 2.3 [NEW] Repositories
+Spring Data JPA repositories with:
+- CRUD operations
+- Custom queries for search/autocomplete
+- Overlay joins
+
+---
+
+### Phase 3: Loader Service (GZIP + Streaming)
+
+#### 3.1 [NEW] InstrumentFileSource Enum
+```java
+public enum InstrumentFileSource {
+    COMPLETE("https://assets.upstox.com/market-quote/instruments/exchange/complete.json.gz"),
+    NSE("https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz"),
+    BSE("https://assets.upstox.com/market-quote/instruments/exchange/BSE.json.gz"),
+    MCX("https://assets.upstox.com/market-quote/instruments/exchange/MCX.json.gz"),
+    SUSPENDED("https://assets.upstox.com/market-quote/instruments/exchange/suspended-instrument.json.gz"),
+    MTF("https://assets.upstox.com/market-quote/instruments/exchange/MTF.json.gz"),
+    NSE_MIS("https://assets.upstox.com/market-quote/instruments/exchange/NSE_MIS.json.gz"),
+    BSE_MIS("https://assets.upstox.com/market-quote/instruments/exchange/BSE_MIS.json.gz");
+}
+```
+
+#### 3.2 [NEW] InstrumentLoaderService
+Features:
+- Jackson streaming JSON parser (no full file load)
+- GZIP decompression
+- Batch insert (500 rows)
+- Idempotent per trading day
+- WAL mode for SQLite
+
+#### 3.3 [NEW] DailyRefreshScheduler
+- 06:00 IST cron job
+- Truncate previous day data
+- Load: BOD → Suspended → MIS → MTF
+- Mark system READY flag
+
+---
+
+### Phase 4: Validation Layer (Regex Patterns)
+
+#### 4.1 [NEW] InstrumentKeyPattern
+```java
+public final class InstrumentKeyPattern {
+    public static final String SEGMENT_REGEX = 
+        "NSE_EQ|NSE_FO|NCD_FO|BSE_EQ|BSE_FO|BCD_FO|MCX_FO|NSE_COM|NSE_INDEX|BSE_INDEX|MCX_INDEX";
+    
+    public static final String SINGLE_KEY_REGEX = 
+        "^(" + SEGMENT_REGEX + ")\\|[\\w ]+$";
+    
+    public static final String MULTI_KEY_REGEX = 
+        "^(" + SEGMENT_REGEX + ")\\|[\\w ]+(,(" + SEGMENT_REGEX + ")\\|[\\w ]+)*$";
+    
+    public static final String EXPIRED_KEY_REGEX = 
+        "^(" + SEGMENT_REGEX + ")\\|[\\w\\d\\-]+\\|(0[1-9]|[12]\\d|3[01])-(0[1-9]|1[0-2])-(\\d{4})$";
+}
+```
+
+#### 4.2 [UPGRADE] InstrumentKeyValidator
+Add:
+- `isValidMultiple()` for comma-separated keys
+- `parseSegment()` and `parseIdentifier()`
+- `splitKeys()` for boundary layer
+- DTO validation annotation support
+
+---
+
+### Phase 5: Search & Autocomplete API
+
+#### 5.1 [NEW] InstrumentSearchService
+Query with overlay joins:
+```sql
+SELECT i.*, 
+       m.mtf_enabled, 
+       mi.instrument_key IS NOT NULL AS mis_allowed,
+       s.instrument_key IS NOT NULL AS suspended
+FROM instrument_master i
+LEFT JOIN instrument_mtf m ON i.instrument_key = m.instrument_key
+LEFT JOIN instrument_mis mi ON i.instrument_key = mi.instrument_key
+LEFT JOIN instrument_suspension s ON i.instrument_key = s.instrument_key
+WHERE i.trading_symbol LIKE ? COLLATE NOCASE
+AND i.segment = ?
+AND i.instrument_type = ?
+```
+
+#### 5.2 [NEW] InstrumentAutocompleteService
+- Prefix matching
+- Ranking: Exact > Prefix, EQ > FUT > OPT, NSE > BSE
+- Limit 15 results
+- Redis cache (TTL 10 min)
+
+#### 5.3 [NEW] REST Controllers
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/instruments/search` | Full search with overlays |
+| `GET /api/instruments/autocomplete` | Fast autocomplete |
+| `GET /api/instruments/resolve` | Symbol → instrument_key |
+
+---
+
+### Phase 6: Risk Engine Integration
+
+#### 6.1 [NEW] ProductType Enum
+```java
+public enum ProductType {
+    CNC(1.0, false, true),   // Delivery
+    MIS(5.0, true, false),   // Intraday
+    MTF(3.0, false, true);   // Margin carry
+}
+```
+
+#### 6.2 [NEW] RiskValidationService
+Order validation flow:
+1. Fetch instrument_key
+2. Check suspended? → Reject
+3. Check product type:
+   - MIS → must exist in instrument_mis
+   - MTF → mtf_enabled = true
+   - CNC → always allowed
+4. Calculate margin
+5. Allow / Reject
+
+---
+
+### Phase 7: Integration & Migration
+
+#### 7.1 [UPGRADE] InstrumentEnrollmentService
+- Integrate with new repository layer
+- Deprecate direct URL loading (use DB)
+- Add `DatabaseBackedInstrumentKeyProvider`
+
+#### 7.2 [UPGRADE] InstrumentResponse
+- Add new fields: `mtfEnabled`, `misAllowed`, `suspended`
+- Add `shortName`, `securityType`
+
+---
+
+## Verification Plan
+
+### Automated Tests
+1. Unit tests for InstrumentKeyPattern (all regex)
+2. Repository tests (SQLite in-memory)
+3. Loader test (sample JSON file)
+4. Search/autocomplete integration tests
+
+### Manual Verification
+1. Load NSE.json.gz → verify row count
+2. Verify overlay joins work correctly
+3. Test autocomplete performance (<50ms)
+4. Verify WebSocket subscription with resolved keys
+
+---
+
+## Implementation Priority
+
+| Priority | Component | Effort |
+|----------|-----------|--------|
+| 1 | Database schema (Flyway) | 1 day |
+| 2 | Entity + Repository layer | 1 day |
+| 3 | Loader service | 1 day |
+| 4 | Validation patterns | 0.5 day |
+| 5 | Search/Autocomplete API | 1 day |
+| 6 | Risk engine integration | 1 day |
+| 7 | Migration & testing | 1 day |
+
+**Total Estimated: 6-7 days**
+
+---
+
+## Non-Negotiable Engineering Rules
+
+1. ✅ Persist only `instrument_key`
+2. ✅ Never trust `exchange_token`
+3. ✅ Never trade expired instruments
+4. ✅ Never mix overlays into master table
+5. ✅ Never allow MIS overnight
+6. ✅ Never compute margin without overlays
+7. ✅ Treat instruments as immutable within trading day
+
+---
+
+*Created: 2025-12-30*

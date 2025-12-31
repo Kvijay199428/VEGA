@@ -1,0 +1,62 @@
+# Token Persistence System - Final Walkthrough
+
+## Status: ✅ COMPLETE
+
+All features from **a1.md → e1.md** implemented.
+
+## Components (30+ files)
+
+### Database Layer
+| File | Purpose |
+|------|---------|
+| [SqliteDataSourceFactory](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/SqliteDataSourceFactory.java) | `database/vega_trade.db` |
+| [UpstoxTokenRepositoryImpl](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/db/UpstoxTokenRepositoryImpl.java) | REPLACE + auto table |
+
+### Enterprise Services
+| File | Purpose |
+|------|---------|
+| [TokenExecutionState](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/TokenExecutionState.java) | Resume state |
+| [ExecutionStateRepository](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/ExecutionStateRepository.java) | State persistence |
+| [CooldownManager](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/CooldownManager.java) | **11-min halt** |
+| [ResumeOrchestrator](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/ResumeOrchestrator.java) | Resume-from-failure |
+| [AsyncTokenOrchestrator](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/AsyncTokenOrchestrator.java) | Parallel verify |
+| [HotTokenRegistry](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/HotTokenRegistry.java) | Zero-delay cache |
+
+### REST Endpoints
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/auth/upstox/tokens/status` | Token status |
+| `POST /api/auth/upstox/tokens/generate` | Generate tokens |
+| `GET /api/auth/upstox/login-success/{api}` | Login success page |
+
+## Key Features
+
+| Feature | Status |
+|---------|--------|
+| 6 API configs (PRIMARY → OPTIONCHAIN2) | ✅ |
+| SQLite persistence | ✅ |
+| 11-minute broker cooldown | ✅ |
+| Resume from exact failure | ✅ |
+| Single Selenium instance | ✅ |
+| PIN fallback locators | ✅ |
+| Per-feature logging | ✅ |
+| Zero-delay HOT tokens | ✅ |
+
+## Per-Feature Logs
+```
+logs/auth/
+├── token_generation.log
+├── cooldown_events.log
+└── resume_flow.log
+```
+
+## Run Commands
+```bash
+# Resume-capable test
+mvn exec:java -Dexec.mainClass=com.vegatrader.upstox.auth.service.ResumeTokenTest
+
+# Standard test
+mvn exec:java -Dexec.mainClass=com.vegatrader.upstox.auth.service.TokenPersistenceTest
+```
+
+## Compilation: ✅ SUCCESS (0 warnings)
