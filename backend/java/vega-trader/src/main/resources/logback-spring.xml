@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- Console appender with colored output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File appender for general logs -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/vega-trader.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/vega-trader.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- JSON appender for structured logging (production) -->
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/vega-trader-json.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/vega-trader-json.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>traceId</includeMdcKeyName>
+            <includeMdcKeyName>spanId</includeMdcKeyName>
+        </encoder>
+    </appender>
+
+    <!-- Market Data specific log file -->
+    <appender name="MARKET_DATA" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/market-data.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/market-data.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Portfolio specific log file -->
+    <appender name="PORTFOLIO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/portfolio-stream.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/portfolio-stream.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger configurations -->
+
+    <!-- Market Data Streamer -->
+    <logger name="com.vegatrader.upstox.api.websocket.MarketDataStreamerV3" level="INFO" additivity="false">
+        <appender-ref ref="MARKET_DATA"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- Portfolio Data Streamer -->
+    <logger name="com.vegatrader.upstox.api.websocket.PortfolioDataStreamerV2" level="INFO" additivity="false">
+        <appender-ref ref="PORTFOLIO"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- WebSocket logging -->
+    <logger name="com.vegatrader.upstox.api.websocket" level="DEBUG"/>
+
+    <!-- === AUTH TOKEN MANAGEMENT LOGS (per-feature) === -->
+    
+    <!-- Token Generation Log -->
+    <appender name="TOKEN_GEN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/auth/token_generation.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/auth/token_generation.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Cooldown Events Log -->
+    <appender name="COOLDOWN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/auth/cooldown_events.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/auth/cooldown_events.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Resume Flow Log -->
+    <appender name="RESUME" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/auth/resume_flow.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/auth/resume_flow.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Cooldown Events Logger -->
+    <logger name="cooldown.events" level="INFO" additivity="false">
+        <appender-ref ref="COOLDOWN"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    
+    <!-- Resume Flow Logger -->
+    <logger name="resume.flow" level="INFO" additivity="false">
+        <appender-ref ref="RESUME"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    
+    <!-- Auth Service Loggers -->
+    <logger name="com.vegatrader.upstox.auth" level="INFO"/>
+
+    <!-- Reduce noise from 3rd party libraries -->
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="okhttp3" level="INFO"/>
+    <logger name="org.apache.http" level="WARN"/>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- Profile-specific configurations -->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="JSON_FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+</configuration>
