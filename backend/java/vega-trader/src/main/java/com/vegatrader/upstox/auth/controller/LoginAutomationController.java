@@ -139,24 +139,19 @@ public class LoginAutomationController {
      * Batch login for all configured APIs.
      * Authenticates all discovered Upstox apps and generates tokens for each.
      *
-     * POST http://localhost:28020/api/v1/auth/selenium/batch-login
-     *
-     * Request body (optional):
-     * { "headless": false }
+     * POST http://localhost:28020/api/v1/auth/selenium/batch-login?headless=true
      */
     @PostMapping("/batch-login")
-    public ResponseEntity<?> batchLogin(@RequestBody(required = false) Map<String, Object> request) {
-        logger.info("╔═══════════════════════════════════════════════════════╗");
-        logger.info("║  BATCH LOGIN INITIATED  ║");
-        logger.info("╚═══════════════════════════════════════════════════════╝");
-
-        boolean headless = false;
-        if (request != null && request.containsKey("headless")) {
-            headless = Boolean.TRUE.equals(request.get("headless"));
-        }
+    public ResponseEntity<?> batchLogin(@RequestParam(defaultValue = "false") boolean headless) {
+        logger.info("AUDIT: Batch login initiated | Headless: {}", headless);
+        long startTime = System.currentTimeMillis();
 
         try {
             BatchAuthResult result = batchAuthService.startBatchLogin(headless);
+            long duration = System.currentTimeMillis() - startTime;
+
+            logger.info("AUDIT: Batch login completed | Duration: {}ms | Success: {}/{} | Errors: {}",
+                    duration, result.getSuccessfulTokens(), result.getTotalApis(), result.getErrors().size());
 
             Map<String, Object> response = new HashMap<>();
             response.put("status", result.isFullyAuthenticated() ? "success" : "partial");
@@ -168,7 +163,7 @@ public class LoginAutomationController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            logger.error("Batch login failed", e);
+            logger.error("AUDIT: Batch login failed", e);
 
             Map<String, Object> error = new HashMap<>();
             error.put("status", "error");

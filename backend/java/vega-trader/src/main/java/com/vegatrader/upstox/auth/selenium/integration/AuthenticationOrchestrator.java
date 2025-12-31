@@ -45,45 +45,48 @@ public class AuthenticationOrchestrator {
     public TokenResponse authenticate(String apiName, String clientId, String clientSecret,
             String redirectUri, LoginCredentials credentials,
             boolean isPrimary) {
-        logger.info("╔═══════════════════════════════════════════════════════╗");
-        logger.info("║  COMPLETE AUTHENTICATION FLOW - {}  ║", apiName);
-        logger.info("╚═══════════════════════════════════════════════════════╝");
+        long flowStartTime = System.currentTimeMillis();
+        logger.info("AUDIT: STARTING AUTH FLOW | API: {}", apiName);
 
         try {
             // Step 1: Build authorization URL
-            logger.info("[1/4] Building authorization URL");
             String authUrl = AuthUrlBuilder.buildAuthorizationUrl(clientId, redirectUri);
             logger.debug("Auth URL: {}", authUrl);
 
             // Step 2: Perform login automation
-            logger.info("[2/4] Performing login automation");
+            logger.info("AUDIT: [Step 1/3] Selenium Login");
+            long seleniumStart = System.currentTimeMillis();
+
             OAuthLoginAutomation automation = new OAuthLoginAutomation(seleniumConfig);
             String authCode = automation.performLogin(authUrl, credentials, redirectUri);
-            logger.info("✓ Authorization code obtained");
+
+            long seleniumDuration = System.currentTimeMillis() - seleniumStart;
+            logger.info("AUDIT: Selenium Login Completed | Duration: {}ms", seleniumDuration);
 
             // Step 3: Exchange code for token
-            logger.info("[3/4] Exchanging authorization code for access token");
+            logger.info("AUDIT: [Step 2/3] Token Exchange");
+            long exchangeStart = System.currentTimeMillis();
+
             TokenResponse tokenResponse = tokenExchangeClient.exchangeCodeForToken(
                     authCode, clientId, clientSecret, redirectUri);
-            logger.info("✓ Access token obtained");
+
+            long exchangeDuration = System.currentTimeMillis() - exchangeStart;
+            logger.info("AUDIT: Token Exchange Completed | Duration: {}ms", exchangeDuration);
 
             // Step 4: Store token in database
-            logger.info("[4/4] Storing token in database");
+            logger.info("AUDIT: [Step 3/3] Token Storage");
             tokenStorageService.storeToken(tokenResponse, apiName, clientId,
                     clientSecret, redirectUri, isPrimary);
-            logger.info("✓ Token stored successfully");
 
-            logger.info("╔═══════════════════════════════════════════════════════╗");
-            logger.info("║  AUTHENTICATION COMPLETE - {}  ║", apiName);
-            logger.info("╚═══════════════════════════════════════════════════════╝");
+            long totalDuration = System.currentTimeMillis() - flowStartTime;
+            logger.info("AUDIT: AUTH FLOW SUCCESS | API: {} | Total Duration: {}ms", apiName, totalDuration);
 
             return tokenResponse;
 
         } catch (Exception e) {
-            logger.error("╔═══════════════════════════════════════════════════════╗");
-            logger.error("║  AUTHENTICATION FAILED - {}  ║", apiName);
-            logger.error("╚═══════════════════════════════════════════════════════╝");
-            logger.error("Error details:", e);
+            long totalDuration = System.currentTimeMillis() - flowStartTime;
+            logger.error("AUDIT: AUTH FLOW FAILED | API: {} | Duration: {}ms | Error: {}",
+                    apiName, totalDuration, e.getMessage());
             throw new RuntimeException("Authentication failed for " + apiName, e);
         }
     }

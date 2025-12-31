@@ -120,7 +120,14 @@ public class BatchAuthenticationService {
             return new BatchAuthResult(CONFIGURED_API_NAMES.size(), CONFIGURED_API_NAMES.size(), List.of());
         }
 
-        logger.info("Batch authentication started for {} missing APIs (headless={})", appsToProcess.size(), headless);
+        List<String> missingApiNames = new ArrayList<>();
+        for (ApiCredentialsDiscovery.UpstoxAppCredentials app : appsToProcess) {
+            missingApiNames.add(app.getPurpose());
+        }
+
+        logger.info("Batch authentication started for {} missing APIs: {} (headless={})",
+                appsToProcess.size(), missingApiNames, headless);
+
         authenticationInProgress = true;
         List<String> errors = new ArrayList<>();
 
@@ -184,7 +191,8 @@ public class BatchAuthenticationService {
                     AuthenticationOrchestrator orchestrator = new AuthenticationOrchestrator(
                             seleniumConfig, tokenStorageService);
 
-                    // Authenticate
+                    // Authenticate with timing
+                    long tokenStartTime = System.currentTimeMillis();
                     TokenResponse token = orchestrator.authenticate(
                             app.getPurpose(),
                             app.getClientId(),
@@ -193,14 +201,15 @@ public class BatchAuthenticationService {
                             credentials,
                             app.getIndex() == 0 // isPrimary
                     );
+                    long tokenDuration = System.currentTimeMillis() - tokenStartTime;
 
                     if (token != null && token.getAccessToken() != null) {
                         generatedTokenCount.incrementAndGet();
-                        logger.info("✓ Token generated for {} ({}/{})",
-                                app.getPurpose(), generatedTokenCount.get(), appsToProcess.size());
+                        logger.info("✓ Token generated for {} in {}ms ({}/{})",
+                                app.getPurpose(), tokenDuration, generatedTokenCount.get(), appsToProcess.size());
                     } else {
                         errors.add(app.getPurpose() + ": Token response was null");
-                        logger.error("✗ Failed to get token for {}", app.getPurpose());
+                        logger.error("✗ Failed to get token for {} after {}ms", app.getPurpose(), tokenDuration);
                     }
 
                 } catch (Exception e) {
@@ -337,20 +346,6 @@ public class BatchAuthenticationService {
         }
         logger.debug("Valid tokens count: {}", validNames.size());
         return validNames;
-    }
-
-    /**
-     * Get list of missing API names (configured but not yet authenticated).
-     * Uses CONFIGURED_API_NAMES as source of truth, not environment discovery.
-     */
-    private List<String> getMissingApiNames(List<String> validTokens) {
-        List<String> missingApis = new ArrayList<>();
-        for (String apiName : CONFIGURED_API_NAMES) {
-            if (!validTokens.contains(apiName)) {
-                missingApis.add(apiName);
-            }
-        }
-        return missingApis;
     }
 
     /**
