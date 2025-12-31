@@ -99,24 +99,68 @@ public class BatchAuthenticationService {
     }
 
     /**
-     * Authenticate all discovered APIs sequentially.
-     * Uses single Selenium session with user credentials reused.
+     * Start batch authentication for all missing APIs.
+     * Guarded: Skips if PRIMARY token is already valid.
      */
-    public BatchAuthResult authenticateAllApis(boolean headless) {
-        List<UpstoxAppCredentials> apps = apiDiscovery.getAllApps();
+    public BatchAuthResult startBatchLogin(boolean headless) {
+        // 1. Identify missing APIs (Skip already valid ones)
+        List<String> validTokens = getValidTokenNames();
+        List<ApiCredentialsDiscovery.UpstoxAppCredentials> allApps = apiDiscovery.getAllApps();
+        List<ApiCredentialsDiscovery.UpstoxAppCredentials> appsToProcess = new ArrayList<>();
 
-        if (apps.isEmpty()) {
-            logger.error("No APIs discovered - cannot authenticate");
-            return new BatchAuthResult(0, 0, List.of("No APIs configured"));
+        for (ApiCredentialsDiscovery.UpstoxAppCredentials app : allApps) {
+            if (!validTokens.contains(app.getPurpose())) {
+                appsToProcess.add(app);
+            }
         }
 
-        logger.info("╔═══════════════════════════════════════════════════════╗");
-        logger.info("║  BATCH AUTHENTICATION - {} APIs  ║", apps.size());
-        logger.info("╚═══════════════════════════════════════════════════════╝");
+        if (appsToProcess.isEmpty()) {
+            logger.info("All APIs already authenticated. Skipping login.");
+            authenticationInProgress = false;
+            return new BatchAuthResult(CONFIGURED_API_NAMES.size(), CONFIGURED_API_NAMES.size(), List.of());
+        }
 
+        logger.info("Batch authentication started for {} missing APIs (headless={})", appsToProcess.size(), headless);
+        authenticationInProgress = true;
+        List<String> errors = new ArrayList<>();
+
+        return processAuthLoop(appsToProcess, headless, errors);
+    }
+
+    /**
+     * Generate only missing tokens (Background Mode).
+     * Skips PRIMARY and processes only missing APIs.
+     */
+    public void generateRemainingTokens(boolean headless) {
+        logger.info("Background token generation started (Missing APIs only)");
+        authenticationInProgress = true;
+
+        List<String> validTokens = getValidTokenNames();
+        List<ApiCredentialsDiscovery.UpstoxAppCredentials> apps = apiDiscovery.getAllApps();
+
+        List<ApiCredentialsDiscovery.UpstoxAppCredentials> missingApps = new ArrayList<>();
+        for (ApiCredentialsDiscovery.UpstoxAppCredentials app : apps) {
+            if (!validTokens.contains(app.getPurpose())) {
+                missingApps.add(app);
+            }
+        }
+
+        if (missingApps.isEmpty()) {
+            logger.info("No missing tokens to generate.");
+            authenticationInProgress = false;
+            return;
+        }
+
+        // Run async or blocking? The controller will wrap this in async usually,
+        // or we can just run the loop here if the caller expects it.
+        // For simplicity reusing the logic.
+        processAuthLoop(missingApps, headless, new ArrayList<>());
+    }
+
+    private BatchAuthResult processAuthLoop(List<ApiCredentialsDiscovery.UpstoxAppCredentials> appsToProcess,
+            boolean headless, List<String> errors) {
         authenticationInProgress = true;
         generatedTokenCount.set(0);
-        List<String> errors = new ArrayList<>();
 
         // Create shared credentials
         LoginCredentials credentials = new LoginCredentials(
@@ -128,11 +172,11 @@ public class BatchAuthenticationService {
         SeleniumConfig seleniumConfig = new SeleniumConfig("chrome", headless);
 
         try {
-            for (UpstoxAppCredentials app : apps) {
+            for (ApiCredentialsDiscovery.UpstoxAppCredentials app : appsToProcess) {
                 currentApiName = app.getPurpose();
                 logger.info("────────────────────────────────────────────────────");
                 logger.info("[{}/{}] Authenticating: {}",
-                        generatedTokenCount.get() + 1, apps.size(), app.getPurpose());
+                        generatedTokenCount.get() + 1, appsToProcess.size(), app.getPurpose());
                 logger.info("────────────────────────────────────────────────────");
 
                 try {
@@ -153,7 +197,7 @@ public class BatchAuthenticationService {
                     if (token != null && token.getAccessToken() != null) {
                         generatedTokenCount.incrementAndGet();
                         logger.info("✓ Token generated for {} ({}/{})",
-                                app.getPurpose(), generatedTokenCount.get(), apps.size());
+                                app.getPurpose(), generatedTokenCount.get(), appsToProcess.size());
                     } else {
                         errors.add(app.getPurpose() + ": Token response was null");
                         logger.error("✗ Failed to get token for {}", app.getPurpose());
@@ -172,13 +216,13 @@ public class BatchAuthenticationService {
         int successCount = generatedTokenCount.get();
 
         logger.info("═══════════════════════════════════════════════════════");
-        logger.info("BATCH AUTHENTICATION COMPLETE: {}/{} tokens generated", successCount, apps.size());
+        logger.info("BATCH AUTHENTICATION COMPLETE: {}/{} tokens generated", successCount, appsToProcess.size());
         if (!errors.isEmpty()) {
             logger.warn("Errors encountered: {}", errors);
         }
         logger.info("═══════════════════════════════════════════════════════");
 
-        return new BatchAuthResult(apps.size(), successCount, errors);
+        return new BatchAuthResult(appsToProcess.size(), successCount, errors);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -247,7 +291,7 @@ public class BatchAuthenticationService {
         return new AuthStatus(
                 configuredApis,
                 generated,
-                primaryReady, // authenticated = primaryReady for backward compatibility
+                fullyReady, // authenticated = fullyReady (ALL tokens) per production spec
                 authenticationInProgress,
                 currentApiName,
                 cacheStatus.isDbLocked(),
@@ -265,20 +309,33 @@ public class BatchAuthenticationService {
     }
 
     /**
+     * Check if PRIMARY token is valid.
+     */
+    public boolean isPrimaryReady() {
+        return getValidTokenNames().contains("PRIMARY");
+    }
+
+    /**
      * Get list of valid token names (API names with active, non-expired tokens).
      */
     private List<String> getValidTokenNames() {
         List<String> validNames = new ArrayList<>();
         try {
+            logger.debug("Fetching valid tokens from repository...");
             List<UpstoxTokenEntity> activeTokens = tokenRepository.findAllActive();
+            logger.debug("Found {} active tokens in DB", activeTokens.size());
+
             for (UpstoxTokenEntity token : activeTokens) {
                 if (!isTokenExpired(token)) {
                     validNames.add(token.getApiName());
+                } else {
+                    logger.warn("Token expired/invalid: {} validityAt={}", token.getApiName(), token.getValidityAt());
                 }
             }
         } catch (Exception e) {
             logger.warn("Error fetching valid tokens: {}", e.getMessage());
         }
+        logger.debug("Valid tokens count: {}", validNames.size());
         return validNames;
     }
 

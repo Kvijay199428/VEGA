@@ -156,7 +156,7 @@ public class LoginAutomationController {
         }
 
         try {
-            BatchAuthResult result = batchAuthService.authenticateAllApis(headless);
+            BatchAuthResult result = batchAuthService.startBatchLogin(headless);
 
             Map<String, Object> response = new HashMap<>();
             response.put("status", result.isFullyAuthenticated() ? "success" : "partial");
@@ -180,6 +180,32 @@ public class LoginAutomationController {
 
     private boolean isAuto(String value) {
         return value == null || value.isEmpty() || "AUTO".equalsIgnoreCase(value) || "default".equalsIgnoreCase(value);
+    }
+
+    /**
+     * Proceed with Primary token and generate remaining in background.
+     * 
+     * POST http://localhost:28020/api/v1/auth/selenium/proceed-primary
+     */
+    @PostMapping("/proceed-primary")
+    public ResponseEntity<?> proceedWithPrimary() {
+        logger.info("Proceed with primary request received");
+
+        if (!batchAuthService.isPrimaryReady()) {
+            return ResponseEntity.badRequest().body("Primary token is not active");
+        }
+
+        // Trigger background generation for remaining tokens (Headless)
+        new Thread(() -> {
+            try {
+                logger.info("Starting background token generation for remaining APIs...");
+                batchAuthService.generateRemainingTokens(true);
+            } catch (Exception e) {
+                logger.error("Error in background token generation", e);
+            }
+        }).start();
+
+        return ResponseEntity.ok(Map.of("message", "Proceeding with Primary. Background generation started."));
     }
 
     /**

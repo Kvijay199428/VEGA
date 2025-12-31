@@ -22,8 +22,9 @@ interface AuthStatus {
     cooldownMessage: string | null
     // New fields for proper auth gating
     primaryReady: boolean        // PRIMARY token is valid
+    fullyReady: boolean          // ALL tokens valid
     canProceed: boolean          // Can access dashboard
-    canGenerateRemaining: boolean // Missing tokens exist
+    canGenerateRemaining: boolean // Has missing tokens
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -138,6 +139,31 @@ export function LoginPage() {
         }
     }
 
+    // Explicit Proceed with Primary (Navigates immediately)
+    const handleProceedPrimary = useCallback(async () => {
+        try {
+            stopPolling();
+            await httpClient.post('/api/v1/auth/selenium/proceed-primary');
+            navigate('/dashboard', { replace: true });
+        } catch (err) {
+            console.error('Failed to proceed with primary:', err);
+            // Resume polling if failed?
+        }
+    }, [stopPolling, navigate]);
+
+    // Generate Remaining Tokens (Background, stays on page)
+    const handleGenerateRemaining = useCallback(async () => {
+        try {
+            setLoading(true);
+            await httpClient.post('/api/v1/auth/selenium/batch-login?headless=true');
+            // Polling will update progress
+        } catch (err) {
+            console.error('Failed to generate remaining:', err);
+            setError('Generation failed. Check logs.');
+            setLoading(false);
+        }
+    }, []);
+
     // Handle explicit user action to proceed to dashboard
     const handleProceedToDashboard = () => {
         stopPolling()
@@ -207,7 +233,7 @@ export function LoginPage() {
                     )}
 
                     {/* Valid Tokens Display */}
-                    {status?.validTokens && status.validTokens.length > 0 && !status.authenticated && (
+                    {status?.validTokens && status.validTokens.length > 0 && !status.fullyReady && (
                         <div className="mb-6 bg-terminal-success/10 border border-terminal-success p-4">
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="text-terminal-success">✓</span>
@@ -258,51 +284,45 @@ export function LoginPage() {
                     )}
 
                     <div className="space-y-3">
-                        {/* Button A: PROCEED TO DASHBOARD (PRIMARY valid, can access dashboard) */}
-                        {status?.canProceed && (
+                        {/* Button: PROCEED TO DASHBOARD (Fully Ready) */}
+                        {status?.fullyReady ? (
                             <button
                                 onClick={handleProceedToDashboard}
-                                className="w-full bg-terminal-success/10 border border-terminal-success text-terminal-success py-4 font-bold uppercase tracking-widest hover:bg-terminal-success hover:text-white transition-all duration-300"
+                                className="w-full bg-terminal-success/20 border border-terminal-success text-terminal-success py-4 font-bold uppercase tracking-widest hover:bg-terminal-success hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
                             >
-                                PROCEED TO DASHBOARD ({progress}/{total} TOKENS)
+                                PROCEED TO DASHBOARD
                             </button>
-                        )}
-
-                        {/* Button B: GENERATE REMAINING TOKENS (missing tokens exist, not rate limited) */}
-                        {status?.canGenerateRemaining && !status.rateLimited && (
-                            <button
-                                onClick={handleBatchLogin}
-                                disabled={loading || status?.inProgress}
-                                className="w-full bg-terminal-accent/10 border border-terminal-accent text-terminal-accent py-3 font-bold uppercase tracking-wider hover:bg-terminal-accent hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                            >
-                                {loading || status?.inProgress
-                                    ? `Authenticating ${progress}/${total}...`
-                                    : `GENERATE REMAINING ${status.missingApis?.length || 0} TOKEN${(status.missingApis?.length || 0) > 1 ? 'S' : ''}`}
-                            </button>
-                        )}
-
-                        {/* Initial Login (no PRIMARY token yet) */}
-                        {!status?.primaryReady && progress === 0 && (
+                        ) : status?.primaryReady ? (
+                            /* Primary Ready - Split Actions */
+                            <div className="space-y-3">
+                                <button
+                                    onClick={handleProceedPrimary}
+                                    className="w-full bg-terminal-success/10 border border-terminal-success text-terminal-success py-4 font-bold uppercase tracking-widest hover:bg-terminal-success hover:text-white transition-all duration-300"
+                                >
+                                    PROCEED WITH PRIMARY
+                                </button>
+                                {status.canGenerateRemaining && !status.rateLimited && (
+                                    <button
+                                        onClick={handleGenerateRemaining}
+                                        disabled={loading || status?.inProgress}
+                                        className="w-full bg-terminal-accent/10 border border-terminal-accent text-terminal-accent py-3 font-bold uppercase tracking-wider hover:bg-terminal-accent hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                                    >
+                                        {loading || status?.inProgress
+                                            ? `GENERATING...`
+                                            : `GENERATE REMAINING ${status.missingApis?.length || 0} TOKENS`}
+                                    </button>
+                                )}
+                            </div>
+                        ) : (
+                            /* Initial Login */
                             <button
                                 onClick={handleBatchLogin}
                                 disabled={loading || status?.inProgress || status?.rateLimited}
                                 className="w-full bg-terminal-accent/10 border border-terminal-accent text-terminal-accent py-4 font-bold uppercase tracking-widest hover:bg-terminal-accent hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading || status?.inProgress
-                                    ? `Authenticating ${progress}/${total}...`
-                                    : status?.rateLimited
-                                        ? `RATE LIMITED - ${cooldownRemaining || 'Wait...'}`
-                                        : `INITIATE SECURE LOGIN (${total} APIs)`}
-                            </button>
-                        )}
-
-                        {/* Fully Authenticated (all tokens generated) */}
-                        {status?.authenticated && !status?.canGenerateRemaining && (
-                            <button
-                                onClick={() => navigate('/dashboard')}
-                                className="w-full bg-terminal-success/10 border border-terminal-success text-terminal-success py-4 font-bold uppercase tracking-widest hover:bg-terminal-success hover:text-white transition-all duration-300"
-                            >
-                                ✓ ALL TOKENS READY - PROCEED TO DASHBOARD →
+                                    ? `AUTHENTICATING...`
+                                    : `INITIATE SECURE LOGIN (${total} APIs)`}
                             </button>
                         )}
                     </div>
