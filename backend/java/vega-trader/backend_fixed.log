@@ -1,0 +1,276 @@
+11:17:21,851 |-INFO in ch.qos.logback.classic.LoggerContext[default] - This is logback-classic version 1.5.12
+11:17:21,858 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Here is a list of configurators discovered as a service, by rank: 
+11:17:21,858 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 -   org.springframework.boot.logging.logback.RootLogLevelConfigurator
+11:17:21,858 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - They will be invoked in order until ExecutionStatus.DO_NOT_INVOKE_NEXT_IF_ANY is returned.
+11:17:21,858 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Constructed configurator of type class org.springframework.boot.logging.logback.RootLogLevelConfigurator
+11:17:21,883 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - org.springframework.boot.logging.logback.RootLogLevelConfigurator.configure() call lasted 1 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+11:17:21,883 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Trying to configure with ch.qos.logback.classic.joran.SerializedModelConfigurator
+11:17:21,884 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Constructed configurator of type class ch.qos.logback.classic.joran.SerializedModelConfigurator
+11:17:21,889 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.scmo]
+11:17:21,890 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.scmo]
+11:17:21,890 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - ch.qos.logback.classic.joran.SerializedModelConfigurator.configure() call lasted 6 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+11:17:21,890 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+11:17:21,892 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+11:17:21,893 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+11:17:21,894 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.xml]
+11:17:21,894 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 2 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+11:17:21,894 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Trying to configure with ch.qos.logback.classic.BasicConfigurator
+11:17:21,899 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - Constructed configurator of type class ch.qos.logback.classic.BasicConfigurator
+11:17:21,899 |-INFO in ch.qos.logback.classic.BasicConfigurator@232a7d73 - Setting up default configuration.
+11:17:21,942 |-INFO in ch.qos.logback.classic.util.ContextInitializer@4372b9b6 - ch.qos.logback.classic.BasicConfigurator.configure() call lasted 43 milliseconds. ExecutionStatus=NEUTRAL
+11:17:23,235 |-INFO in ConfigurationWatchList(mainURL=jar:nested:/D:/projects/VEGA%20TRADER/backend/java/vega-trader/target/vega-trader-1.0.0.jar/!BOOT-INF/classes/!/logback-spring.xml, fileWatchList={}, urlWatchList=[}) - URL [jar:nested:/D:/projects/VEGA%20TRADER/backend/java/vega-trader/target/vega-trader-1.0.0.jar/!BOOT-INF/classes/!/logback-spring.xml] is not of type file
+11:17:23,437 |-WARN in ch.qos.logback.classic.model.processor.ConfigurationModelHandlerFull - Missing watchable .xml or .properties files.
+11:17:23,437 |-WARN in ch.qos.logback.classic.model.processor.ConfigurationModelHandlerFull - Watching .xml files requires that the main configuration file is reachable as a URL
+11:17:23,439 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [CONSOLE]
+11:17:23,439 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+11:17:23,447 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+11:17:23,492 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [FILE]
+11:17:23,492 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+11:17:23,511 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1955990522 - setting totalSizeCap to 1 GB
+11:17:23,515 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1955990522 - No compression will be used
+11:17:23,516 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1955990522 - Will use the pattern logs/vega-trader.%d{yyyy-MM-dd}.log for the active file
+11:17:23,555 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'logs/vega-trader.%d{yyyy-MM-dd}.log'.
+11:17:23,555 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+11:17:23,564 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2025-12-31T05:39:21.434Z
+11:17:23,568 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+11:17:23,582 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - Active log file name: logs/vega-trader.log
+11:17:23,583 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - File property is set to [logs/vega-trader.log]
+11:17:23,585 |-WARN in ch.qos.logback.core.model.processor.AppenderModelHandler - Appender named [JSON_FILE] not referenced. Skipping further processing.
+11:17:23,586 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [MARKET_DATA]
+11:17:23,586 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+11:17:23,590 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@69673470 - setting totalSizeCap to 500 MB
+11:17:23,591 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@69673470 - No compression will be used
+11:17:23,591 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@69673470 - Will use the pattern logs/market-data.%d{yyyy-MM-dd}.log for the active file
+11:17:23,591 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'logs/market-data.%d{yyyy-MM-dd}.log'.
+11:17:23,591 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+11:17:23,596 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2025-12-30T18:15:27.335Z
+11:17:23,596 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+11:17:23,597 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[MARKET_DATA] - Active log file name: logs/market-data.log
+11:17:23,597 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[MARKET_DATA] - File property is set to [logs/market-data.log]
+11:17:23,598 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [PORTFOLIO]
+11:17:23,598 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+11:17:23,598 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1082411691 - setting totalSizeCap to 500 MB
+11:17:23,598 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1082411691 - No compression will be used
+11:17:23,598 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1082411691 - Will use the pattern logs/portfolio-stream.%d{yyyy-MM-dd}.log for the active file
+11:17:23,599 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'logs/portfolio-stream.%d{yyyy-MM-dd}.log'.
+11:17:23,599 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+11:17:23,599 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2025-12-30T18:15:27.338Z
+11:17:23,599 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+11:17:23,600 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[PORTFOLIO] - Active log file name: logs/portfolio-stream.log
+11:17:23,600 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[PORTFOLIO] - File property is set to [logs/portfolio-stream.log]
+11:17:23,600 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.vegatrader.upstox.api.websocket.MarketDataStreamerV3] to INFO
+11:17:23,601 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[com.vegatrader.upstox.api.websocket.MarketDataStreamerV3] onto the JUL framework
+11:17:23,605 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting additivity of logger [com.vegatrader.upstox.api.websocket.MarketDataStreamerV3] to false
+11:17:23,605 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [MARKET_DATA] to Logger[com.vegatrader.upstox.api.websocket.MarketDataStreamerV3]
+11:17:23,605 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[com.vegatrader.upstox.api.websocket.MarketDataStreamerV3]
+11:17:23,605 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.vegatrader.upstox.api.websocket.PortfolioDataStreamerV2] to INFO
+11:17:23,605 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[com.vegatrader.upstox.api.websocket.PortfolioDataStreamerV2] onto the JUL framework
+11:17:23,605 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting additivity of logger [com.vegatrader.upstox.api.websocket.PortfolioDataStreamerV2] to false
+11:17:23,605 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [PORTFOLIO] to Logger[com.vegatrader.upstox.api.websocket.PortfolioDataStreamerV2]
+11:17:23,605 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[com.vegatrader.upstox.api.websocket.PortfolioDataStreamerV2]
+11:17:23,605 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.vegatrader.upstox.api.websocket] to DEBUG
+11:17:23,605 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating DEBUG level on Logger[com.vegatrader.upstox.api.websocket] onto the JUL framework
+11:17:23,605 |-WARN in ch.qos.logback.core.model.processor.AppenderModelHandler - Appender named [TOKEN_GEN] not referenced. Skipping further processing.
+11:17:23,605 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [COOLDOWN]
+11:17:23,605 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+11:17:23,605 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1533123860 - No compression will be used
+11:17:23,605 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1533123860 - Will use the pattern logs/auth/cooldown_events.%d{yyyy-MM-dd}.log for the active file
+11:17:23,606 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'logs/auth/cooldown_events.%d{yyyy-MM-dd}.log'.
+11:17:23,606 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+11:17:23,606 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2025-12-30T18:15:27.343Z
+11:17:23,606 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+11:17:23,607 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[COOLDOWN] - Active log file name: logs/auth/cooldown_events.log
+11:17:23,607 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[COOLDOWN] - File property is set to [logs/auth/cooldown_events.log]
+11:17:23,607 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [RESUME]
+11:17:23,607 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+11:17:23,608 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1718906711 - No compression will be used
+11:17:23,609 |-INFO in c.q.l.core.rolling.TimeBasedRollingPolicy@1718906711 - Will use the pattern logs/auth/resume_flow.%d{yyyy-MM-dd}.log for the active file
+11:17:23,609 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - The date pattern is 'yyyy-MM-dd' from file name pattern 'logs/auth/resume_flow.%d{yyyy-MM-dd}.log'.
+11:17:23,609 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Roll-over at midnight.
+11:17:23,611 |-INFO in c.q.l.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy - Setting initial period to 2025-12-30T18:15:27.345Z
+11:17:23,611 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+11:17:23,613 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[RESUME] - Active log file name: logs/auth/resume_flow.log
+11:17:23,613 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[RESUME] - File property is set to [logs/auth/resume_flow.log]
+11:17:23,613 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [cooldown.events] to INFO
+11:17:23,613 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[cooldown.events] onto the JUL framework
+11:17:23,613 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting additivity of logger [cooldown.events] to false
+11:17:23,613 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [COOLDOWN] to Logger[cooldown.events]
+11:17:23,613 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[cooldown.events]
+11:17:23,613 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [resume.flow] to INFO
+11:17:23,613 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[resume.flow] onto the JUL framework
+11:17:23,613 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting additivity of logger [resume.flow] to false
+11:17:23,613 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [RESUME] to Logger[resume.flow]
+11:17:23,613 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[resume.flow]
+11:17:23,613 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.vegatrader.upstox.auth] to INFO
+11:17:23,613 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[com.vegatrader.upstox.auth] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [org.springframework] to INFO
+11:17:23,614 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[org.springframework] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [org.hibernate] to WARN
+11:17:23,614 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating WARN level on Logger[org.hibernate] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.zaxxer.hikari] to INFO
+11:17:23,614 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[com.zaxxer.hikari] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [io.netty] to WARN
+11:17:23,614 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating WARN level on Logger[io.netty] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [okhttp3] to INFO
+11:17:23,614 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[okhttp3] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [org.apache.http] to WARN
+11:17:23,614 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating WARN level on Logger[org.apache.http] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+11:17:23,614 |-INFO in ch.qos.logback.classic.jul.LevelChangePropagator@1f6c9cd8 - Propagating INFO level on Logger[ROOT] onto the JUL framework
+11:17:23,614 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [CONSOLE] to Logger[ROOT]
+11:17:23,614 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [FILE] to Logger[ROOT]
+11:17:23,616 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@447a020 - End of configuration.
+11:17:23,616 |-INFO in org.springframework.boot.logging.logback.SpringBootJoranConfigurator@7f36662c - Registering current configuration as safe fallback point
+
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2025-12-31 11:17:23.932 [34mINFO [0;39m [main] [36mc.vegatrader.VegaTraderApplication[0;39m - Starting VegaTraderApplication v1.0.0 using Java 25.0.1 with PID 7104 (D:\projects\VEGA TRADER\backend\java\vega-trader\target\vega-trader-1.0.0.jar started by Vijay Kumar Sharma in D:\projects\VEGA TRADER\backend\java\vega-trader)
+2025-12-31 11:17:23.935 [39mDEBUG[0;39m [main] [36mc.vegatrader.VegaTraderApplication[0;39m - Running with Spring Boot v3.4.1, Spring v6.2.1
+2025-12-31 11:17:23.935 [34mINFO [0;39m [main] [36mc.vegatrader.VegaTraderApplication[0;39m - No active profile set, falling back to 1 default profile: "default"
+2025-12-31 11:17:29.086 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31 11:17:29.097 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-31 11:17:30.399 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m - Finished Spring Data repository scanning in 1281 ms. Found 36 JPA repository interfaces.
+2025-12-31 11:17:30.446 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-31 11:17:30.449 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-31 11:17:30.503 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.admin.repository.AdminActionAuditRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.503 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.admin.repository.BrokerRegistryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.503 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.admin.repository.DisabledStrikeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.504 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.broker.BrokerRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.505 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.broker.BrokerSymbolMappingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.505 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.bse.repository.BseGroupRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.506 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.expiry.service.ExpiryRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.507 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.instrument.repository.InstrumentMasterRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.507 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.instrument.repository.InstrumentMisRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.507 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.instrument.repository.InstrumentMtfRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.508 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.instrument.repository.InstrumentSuspensionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.508 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.instrument.repository.ProductRiskProfileRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.508 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.optionchain.repository.OptionChainAuditRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.508 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.order.repository.AuditEventRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.508 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.order.repository.OrderAuditRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.509 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.order.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.509 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.order.repository.TradeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.509 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.client.ClientRiskLimitRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.509 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.client.ClientRiskStateRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.509 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.repository.ExchangeSeriesRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.509 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.repository.FoContractLifecycleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.510 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.repository.IntradayMarginRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.510 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.repository.IpoCalendarRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.510 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.repository.PriceBandRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.510 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.repository.QuantityCapRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.511 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.rms.repository.RegulatoryWatchlistRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.511 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.sectoral.repository.IndexConstituentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.511 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.sectoral.repository.IndexMasterRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.511 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.sectoral.repository.SectorMasterRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.512 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.sectoral.repository.SectorRiskLimitRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.512 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.settings.repository.SettingsAuditLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.512 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.settings.repository.SettingsMetadataRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.512 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.settings.repository.UserSettingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.513 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.strike.service.StrikeSchemeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.513 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.api.strike.service.StrikeStatusRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.513 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationExtensionSupport[0;39m - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.vegatrader.upstox.auth.repository.TokenAuditRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-12-31 11:17:30.513 [34mINFO [0;39m [main] [36mo.s.d.r.c.RepositoryConfigurationDelegate[0;39m - Finished Spring Data repository scanning in 21 ms. Found 0 Redis repository interfaces.
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (jar:nested:/D:/projects/VEGA%20TRADER/backend/java/vega-trader/target/vega-trader-1.0.0.jar/!BOOT-INF/lib/tomcat-embed-core-10.1.34.jar!/)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2025-12-31 11:17:33.964 [34mINFO [0;39m [main] [36mo.s.b.w.e.tomcat.TomcatWebServer[0;39m - Tomcat initialized with port 28020 (http)
+2025-12-31 11:17:33.977 [34mINFO [0;39m [main] [36mo.a.coyote.http11.Http11NioProtocol[0;39m - Initializing ProtocolHandler ["http-nio-28020"]
+2025-12-31 11:17:33.979 [34mINFO [0;39m [main] [36mo.a.catalina.core.StandardService[0;39m - Starting service [Tomcat]
+2025-12-31 11:17:33.979 [34mINFO [0;39m [main] [36mo.a.catalina.core.StandardEngine[0;39m - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-12-31 11:17:34.056 [34mINFO [0;39m [main] [36mo.a.c.c.C.[Tomcat].[localhost].[/][0;39m - Initializing Spring embedded WebApplicationContext
+2025-12-31 11:17:34.056 [34mINFO [0;39m [main] [36mo.s.b.w.s.c.ServletWebServerApplicationContext[0;39m - Root WebApplicationContext: initialization completed in 9983 ms
+2025-12-31 11:17:36.648 [34mINFO [0;39m [main] [36mo.s.o.j.p.SpringPersistenceUnitInfo[0;39m - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-31 11:17:36.692 [34mINFO [0;39m [main] [36mcom.zaxxer.hikari.HikariDataSource[0;39m - HikariPool-1 - Starting...
+2025-12-31 11:17:37.033 [34mINFO [0;39m [main] [36mcom.zaxxer.hikari.pool.HikariPool[0;39m - HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@5feaafb3
+2025-12-31 11:17:37.035 [34mINFO [0;39m [main] [36mcom.zaxxer.hikari.HikariDataSource[0;39m - HikariPool-1 - Start completed.
+2025-12-31 11:17:39.152 [34mINFO [0;39m [main] [36mo.s.o.j.LocalContainerEntityManagerFactoryBean[0;39m - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31 11:17:39.206 [34mINFO [0;39m [main] [36mc.v.u.a.w.r.EnterpriseRateLimiterService[0;39m - EnterpriseRateLimiterService initialized with Micrometer metrics
+2025-12-31 11:17:39.235 [34mINFO [0;39m [main] [36mc.v.u.a.w.m.SubscriptionManager[0;39m - SubscriptionManager metrics initialized
+2025-12-31 11:17:39.248 [34mINFO [0;39m [main] [36mc.v.u.a.w.r.ApiRateLimiterService[0;39m - ApiRateLimiterService initialized - Standard: 50.0 req/s, MultiOrder: 4.0 req/s
+2025-12-31 11:17:39.251 [39mDEBUG[0;39m [main] [36mc.v.u.a.w.r.ApiRateLimiterService[0;39m - API rate limiter metrics initialized
+2025-12-31 11:17:39.875 [34mINFO [0;39m [main] [36mo.s.d.j.r.query.QueryEnhancerFactory[0;39m - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-31 11:17:42.413 [34mINFO [0;39m [main] [36mc.v.u.a.b.engine.MultiBrokerEngine[0;39m - Registered broker adapter: UPSTOX
+2025-12-31 11:17:42.416 [34mINFO [0;39m [main] [36mc.v.upstox.api.broker.BrokerService[0;39m - Registered 1 broker adapters
+2025-12-31 11:17:42.611 [34mINFO [0;39m [main] [36mc.v.u.a.repository.TokenRepository[0;39m - ✓ Database table 'upstox_tokens' verified/created.
+2025-12-31 11:17:43.443 [34mINFO [0;39m [main] [36mc.v.u.a.i.p.DatabaseBackedInstrumentKeyProvider[0;39m - DatabaseBackedInstrumentKeyProvider initialized
+2025-12-31 11:17:43.524 [34mINFO [0;39m [main] [36mc.v.u.a.i.s.InstrumentEnrollmentService[0;39m - Instrument Enrollment Service initialized
+2025-12-31 11:17:43.607 [34mINFO [0;39m [main] [36mc.v.u.api.order.broker.BrokerRouter[0;39m - Broker router initialized with 1 adapters
+2025-12-31 11:17:44.215 [34mINFO [0;39m [main] [36mc.v.u.a.r.e.EligibilityCache[0;39m - EligibilityCache initialized: maxSize=100000, ttl=60s
+2025-12-31 11:17:44.599 [34mINFO [0;39m [main] [36mc.v.u.a.w.dispatcher.FeedDispatcher[0;39m - FeedDispatcher initialized with Micrometer metrics
+2025-12-31 11:17:44.625 [34mINFO [0;39m [main] [36mc.v.u.a.w.p.DBSnapshotHandler[0;39m - market_snapshots table initialized
+2025-12-31 11:17:44.629 [34mINFO [0;39m [main] [36mc.v.u.a.w.p.FileArchiveHandler[0;39m - File archive initialized at: D:\projects\VEGA TRADER\backend\java\vega-trader\.\archive\MarketDataStreamerV3\data
+2025-12-31 11:17:44.642 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ═══════════════════════════════════════════════════════
+2025-12-31 11:17:44.642 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - Discovering Upstox API Credentials from Environment
+2025-12-31 11:17:44.642 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ═══════════════════════════════════════════════════════
+2025-12-31 11:17:44.642 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ✓ Discovered API 0: PRIMARY (4871f658...)
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ✓ Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ✓ Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ✓ Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ✓ Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ✓ Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ═══════════════════════════════════════════════════════
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ✓ Total APIs discovered: 6
+2025-12-31 11:17:44.644 [34mINFO [0;39m [main] [36mc.v.u.a.s.ApiCredentialsDiscovery[0;39m - ═══════════════════════════════════════════════════════
+2025-12-31 11:17:44.647 [34mINFO [0;39m [main] [36mc.v.u.a.repository.TokenRepository[0;39m - ✓ Database table 'upstox_tokens' verified/created.
+2025-12-31 11:17:44.660 [31mWARN [0;39m [main] [36mo.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext[0;39m - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'loginAutomationController': Injection of autowired dependencies failed
+2025-12-31 11:17:44.660 [34mINFO [0;39m [main] [36mc.v.u.a.w.p.FileArchiveHandler[0;39m - FileArchiveHandler shutdown complete
+2025-12-31 11:17:44.664 [34mINFO [0;39m [main] [36mo.s.o.j.LocalContainerEntityManagerFactoryBean[0;39m - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-31 11:17:44.668 [34mINFO [0;39m [main] [36mcom.zaxxer.hikari.HikariDataSource[0;39m - HikariPool-1 - Shutdown initiated...
+2025-12-31 11:17:44.670 [34mINFO [0;39m [main] [36mcom.zaxxer.hikari.HikariDataSource[0;39m - HikariPool-1 - Shutdown completed.
+2025-12-31 11:17:44.673 [34mINFO [0;39m [main] [36mo.a.catalina.core.StandardService[0;39m - Stopping service [Tomcat]
+2025-12-31 11:17:44.694 [34mINFO [0;39m [main] [36mo.s.b.a.l.ConditionEvaluationReportLogger[0;39m - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-12-31 11:17:44.731 [1;31mERROR[0;39m [main] [36mo.s.boot.SpringApplication[0;39m - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'loginAutomationController': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:515)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:336)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:289)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:334)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1122)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1093)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1030)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at com.vegatrader.VegaTraderApplication.main(VegaTraderApplication.java:33)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:102)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64)
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40)
+Caused by: org.springframework.util.PlaceholderResolutionException: Could not resolve placeholder 'UPSTOX_CLIENT_ID' in value "${UPSTOX_CLIENT_ID}" <-- "${upstox.auth.auto.client-id:}"
+	at org.springframework.util.PlaceholderResolutionException.withValue(PlaceholderResolutionException.java:81)
+	at org.springframework.util.PlaceholderParser$ParsedValue.resolve(PlaceholderParser.java:416)
+	at org.springframework.util.PlaceholderParser.replacePlaceholders(PlaceholderParser.java:128)
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:118)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:114)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:255)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:226)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:201)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:963)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1541)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1519)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509)
+	... 24 common frames omitted

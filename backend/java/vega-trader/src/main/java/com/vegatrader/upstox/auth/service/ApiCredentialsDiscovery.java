@@ -1,5 +1,7 @@
 package com.vegatrader.upstox.auth.service;
 
+import com.vegatrader.upstox.auth.config.AuthConstants;
+import com.vegatrader.upstox.auth.selenium.config.LoginCredentials;
 import com.vegatrader.upstox.auth.selenium.v2.EnvConfigLoaderV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,8 @@ import java.util.List;
 /**
  * Discovers all Upstox API credentials from .env file.
  * Supports dynamic discovery of UPSTOX_CLIENT_ID_N and UPSTOX_CLIENT_SECRET_N.
+ * Enforces 1-based indexing for .env keys (ID_1..ID_6) mapped to 0-based API
+ * list.
  *
  * @since 2.0.0
  */
@@ -20,7 +24,8 @@ import java.util.List;
 public class ApiCredentialsDiscovery {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiCredentialsDiscovery.class);
-    private static final int MAX_API_COUNT = 6; // PRIMARY + 3 WEBSOCKET + 2 OPTION_CHAIN
+    // Use canonical constant from AuthConstants
+    private static final int MAX_API_COUNT = AuthConstants.TOTAL_UPSTOX_APIS;
 
     private final List<UpstoxAppCredentials> discoveredApps = new ArrayList<>();
     private final EnvConfigLoaderV2 envConfigLoader;
@@ -49,15 +54,11 @@ public class ApiCredentialsDiscovery {
         }
 
         private static String resolvePurpose(int index) {
-            return switch (index) {
-                case 0 -> "PRIMARY";
-                case 1 -> "WEBSOCKET_1";
-                case 2 -> "WEBSOCKET_2";
-                case 3 -> "WEBSOCKET_3";
-                case 4 -> "OPTION_CHAIN_1";
-                case 5 -> "OPTION_CHAIN_2";
-                default -> "API_" + index;
-            };
+            // Use canonical API order if possible, with index check
+            if (index >= 0 && index < AuthConstants.API_ORDER.size()) {
+                return AuthConstants.API_ORDER.get(index);
+            }
+            return "API_" + index; // Fallback should ideally never happen given strictly bounded loop
         }
 
         public int getIndex() {
@@ -78,7 +79,8 @@ public class ApiCredentialsDiscovery {
 
         @Override
         public String toString() {
-            return String.format("UpstoxApp[%d:%s:%s...]", index, purpose, clientId.substring(0, 8));
+            return String.format("UpstoxApp[%d:%s:%s...]", index, purpose,
+                    (clientId != null && clientId.length() > 8) ? clientId.substring(0, 8) : "null");
         }
     }
 
@@ -93,28 +95,35 @@ public class ApiCredentialsDiscovery {
         }
 
         for (int i = 0; i < MAX_API_COUNT; i++) {
-            // Try EnvConfigLoaderV2 first (reads from .env file), fallback to System.getenv
+            // Try EnvConfigLoaderV2 first (reads from .env file)
+            // Note: envConfigLoader.getClientId(i) intentionally maps 'i' to 'i+1'
+            // internally used for property keys.
             String clientId = envConfigLoader.getClientId(i);
             String clientSecret = envConfigLoader.getClientSecret(i);
 
-            // Fallback to environment variables if not in .env
+            // Fallback to strict environment variables if not in .env
+            // FIX: Use 1-based indexing for fallback too (apiIndex + 1)
+            int envIndex = i + 1;
             if (clientId == null || clientId.isEmpty()) {
-                clientId = System.getenv("UPSTOX_CLIENT_ID_" + i);
+                clientId = System.getenv("UPSTOX_CLIENT_ID_" + envIndex);
             }
             if (clientSecret == null || clientSecret.isEmpty()) {
-                clientSecret = System.getenv("UPSTOX_CLIENT_SECRET_" + i);
+                clientSecret = System.getenv("UPSTOX_CLIENT_SECRET_" + envIndex);
             }
 
             if (clientId != null && !clientId.isEmpty() && clientSecret != null && !clientSecret.isEmpty()) {
                 UpstoxAppCredentials app = new UpstoxAppCredentials(i, clientId, clientSecret);
                 discoveredApps.add(app);
-                logger.info("✓ Discovered API {}: {} ({})", i, app.getPurpose(), clientId.substring(0, 8) + "...");
+                logger.info("✓ Discovered API {}: {} ({})", i, app.getPurpose(),
+                        (clientId.length() > 8) ? clientId.substring(0, 8) + "..." : clientId);
+            } else {
+                logger.warn("⚠ Missing credentials for API Index {} (Expects UPSTOX_CLIENT_ID_{})", i, envIndex);
             }
         }
 
         if (discoveredApps.isEmpty()) {
             logger.warn("⚠ No Upstox API credentials found in .env or environment!");
-            logger.warn("  Expected .env format: UPSTOX_CLIENT_ID_0=xxx, UPSTOX_CLIENT_SECRET_0=xxx");
+            logger.warn("  Expected .env format: UPSTOX_CLIENT_ID_1=xxx, UPSTOX_CLIENT_SECRET_1=xxx");
         } else {
             logger.info("═══════════════════════════════════════════════════════");
             logger.info("✓ Total APIs discovered: {}", discoveredApps.size());
@@ -151,5 +160,15 @@ public class ApiCredentialsDiscovery {
      */
     public UpstoxAppCredentials getPrimaryApp() {
         return getApp(0);
+    }
+
+    /**
+     * Get common login credentials (User/Pass/TOTP) from .env
+     */
+    public LoginCredentials getCommonCredentials() {
+        return new LoginCredentials(
+                envConfigLoader.getMobileNumber(),
+                envConfigLoader.getPin(),
+                envConfigLoader.getTotpSecret());
     }
 }

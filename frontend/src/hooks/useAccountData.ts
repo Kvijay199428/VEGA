@@ -53,8 +53,8 @@ const MOCK_LOGS: AuditLog[] = [
 
 export function useAccountData() {
     const [positions, setPositions] = useState<Position[]>(MOCK_POSITIONS)
-    const [holdings, setHoldings] = useState<Holding[]>(MOCK_HOLDINGS)
-    const [auditLogs, setAuditLogs] = useState<AuditLog[]>(MOCK_LOGS)
+    const [holdings, _setHoldings] = useState<Holding[]>(MOCK_HOLDINGS)
+    const [auditLogs, _setAuditLogs] = useState<AuditLog[]>(MOCK_LOGS)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {

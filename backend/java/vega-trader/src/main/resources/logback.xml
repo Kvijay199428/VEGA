@@ -1,43 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <!-- Console Appender -->
+    <!-- ====== PROPERTIES ====== -->
+    <property name="LOG_DIR" value="logs"/>
+    <property name="LOG_PATTERN"
+        value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} | sid=%X{sessionId} uid=%X{userId} tid=%X{traceId} | %msg%n"/>
+
+    <!-- ====== CONSOLE ====== -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- File Appender (Rolling Daily) -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/vega-trader.log</file>
+    <!-- ====== AUTH FLOW ====== -->
+    <appender name="AUTH_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/auth.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>logs/vega-trader-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
+            <fileNamePattern>${LOG_DIR}/auth.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ====== SELENIUM ====== -->
+    <appender name="SELENIUM_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/selenium.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/selenium.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ====== DATABASE ====== -->
+    <appender name="DB_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/database.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/database.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ====== SECURITY / SOC ====== -->
+    <appender name="SECURITY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/security.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/security.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- Application Logger -->
-    <logger name="com.vegatrader" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+    <!-- ====== LOGGERS ====== -->
+    <logger name="com.vegatrader.upstox.auth" level="TRACE" additivity="false">
+        <appender-ref ref="AUTH_FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <!-- Spring Framework Logger -->
-    <logger name="org.springframework" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+    <logger name="com.vegatrader.upstox.selenium" level="TRACE" additivity="false">
+        <appender-ref ref="SELENIUM_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    
+    <!-- Assuming generic vegatrader logging goes to CONSOLE + AUTH by default or needs ROOT -->
+    
+    <logger name="org.hibernate.SQL" level="WARN"/>
+
+    <logger name="org.sqlite" level="WARN">
+        <appender-ref ref="DB_FILE"/>
+    </logger>
+    
+    <!-- If JDBC driver logging is enabled -->
+    <logger name="org.xerial.sqlite" level="WARN">
+         <appender-ref ref="DB_FILE"/>
     </logger>
 
-    <!-- Root Logger -->
+    <logger name="com.vegatrader.security" level="INFO" additivity="false">
+        <appender-ref ref="SECURITY_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    
+    <!-- Catch-all for our app to Console + File if not matched above -->
+    <logger name="com.vegatrader" level="INFO">
+        <appender-ref ref="CONSOLE"/>
+         <!-- Could add generic file here -->
+    </logger>
+
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </configuration>

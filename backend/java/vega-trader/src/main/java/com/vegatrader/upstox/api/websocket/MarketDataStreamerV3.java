@@ -95,6 +95,12 @@ public class MarketDataStreamerV3 {
     private Set<String> initialInstrumentKeys;
     private Mode initialMode;
 
+    private com.vegatrader.journal.JournalWriter journalWriter;
+
+    public void setJournalWriter(com.vegatrader.journal.JournalWriter journalWriter) {
+        this.journalWriter = journalWriter;
+    }
+
     /**
      * Creates streamer with token provider, instrument key provider, and settings.
      * 
@@ -740,6 +746,10 @@ public class MarketDataStreamerV3 {
 
     private void handleBinaryMessage(ByteString bytes) {
         try {
+            if (journalWriter != null) {
+                journalWriter.append(bytes.toByteArray());
+            }
+
             MarketDataFeedV3.FeedResponse response = MarketDataFeedV3.FeedResponse.parseFrom(bytes.toByteArray());
 
             // V3 Feed Synchronization: track market_info -> snapshot -> live_feed

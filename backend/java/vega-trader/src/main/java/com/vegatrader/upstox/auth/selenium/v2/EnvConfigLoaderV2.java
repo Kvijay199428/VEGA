@@ -132,14 +132,15 @@ public class EnvConfigLoaderV2 {
      * @return client ID
      */
     public String getClientId(int apiIndex) {
-        return getProperty(String.format(KEY_CLIENT_ID_PATTERN, apiIndex));
+        // Shift index by +1 to match .env file (0 -> UPSTOX_CLIENT_ID_1)
+        return getProperty(String.format(KEY_CLIENT_ID_PATTERN, apiIndex + 1));
     }
 
     /**
      * Get client secret for specific API index (0-5).
      */
     public String getClientSecret(int apiIndex) {
-        return getProperty(String.format(KEY_CLIENT_SECRET_PATTERN, apiIndex));
+        return getProperty(String.format(KEY_CLIENT_SECRET_PATTERN, apiIndex + 1));
     }
 
     /**

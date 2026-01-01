@@ -34,11 +34,4 @@ public class AuthConfiguration {
         return new TokenValidationService();
     }
 
-    /**
-     * Token refresh scheduler bean.
-     */
-    @Bean
-    public TokenRefreshScheduler tokenRefreshScheduler(TokenProvider tokenProvider) {
-        return new TokenRefreshScheduler(tokenProvider);
-    }
 }

@@ -43,7 +43,7 @@ const MOCK_SECTOR_EXPOSURE: SectorExposure[] = [
 
 export function useRiskData() {
     const [metrics, setMetrics] = useState<RiskMetrics>(MOCK_RISK_METRICS)
-    const [sectorExposure, setSectorExposure] = useState<SectorExposure[]>(MOCK_SECTOR_EXPOSURE)
+    const [sectorExposure, _setSectorExposure] = useState<SectorExposure[]>(MOCK_SECTOR_EXPOSURE)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {

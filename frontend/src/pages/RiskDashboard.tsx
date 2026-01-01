@@ -1,10 +1,14 @@
 import { useRiskData } from '../hooks/useRiskData'
+import { usePageTitle } from '../context/PageContext'
 
 /**
  * Risk Dashboard - F6 Capital protection and exposure control.
  */
 export default function RiskDashboard() {
     const { metrics, sectorExposure, loading } = useRiskData()
+
+    // Set page title in TopBar
+    usePageTitle('Risk Dashboard', 'F6', 'RMS <GO>')
 
     if (loading) {
         return (

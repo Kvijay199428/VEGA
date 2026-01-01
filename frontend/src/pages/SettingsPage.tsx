@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { httpClient } from '../api/httpClient'
+import { usePageTitle } from '../context/PageContext'
 
 interface HealthStatus {
     status: 'UP' | 'DOWN'
@@ -12,6 +13,9 @@ interface HealthStatus {
 export default function SettingsPage() {
     const [theme, setTheme] = useState<'dark' | 'light'>('dark')
     const [health, setHealth] = useState<HealthStatus | null>(null)
+
+    // Set page title in TopBar
+    usePageTitle('Settings', 'F8', 'SET <GO>')
 
     // Fetch health status
     useEffect(() => {

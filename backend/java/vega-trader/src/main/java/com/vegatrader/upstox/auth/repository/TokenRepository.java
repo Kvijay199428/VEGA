@@ -147,6 +147,34 @@ public class TokenRepository {
     }
 
     /**
+     * Find all active and valid tokens.
+     * Used for startup hydration - loads only tokens that haven't expired.
+     * 
+     * @return List of active tokens with validity_at > current time
+     */
+    public List<UpstoxTokenEntity> findActiveAndValid() {
+        String sql = "SELECT * FROM upstox_tokens WHERE is_active = 1 " +
+                "AND validity_at > datetime('now', 'localtime') " +
+                "ORDER BY api_name";
+
+        List<UpstoxTokenEntity> tokens = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                tokens.add(mapResultSetToEntity(rs));
+            }
+        } catch (SQLException e) {
+            logger.error("Error finding active and valid tokens", e);
+        }
+
+        return tokens;
+    }
+
+    /**
      * Exception for database lock errors.
      */
     public static class DbLockException extends RuntimeException {
@@ -284,6 +312,21 @@ public class TokenRepository {
             logger.info("Deactivated tokens for apiName: {}", apiName);
         } catch (SQLException e) {
             logger.error("Error deactivating token", e);
+        }
+    }
+
+    /**
+     * Delete token entity.
+     */
+    public void delete(UpstoxTokenEntity token) {
+        String sql = "DELETE FROM upstox_tokens WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, token.getId());
+            stmt.executeUpdate();
+            logger.info("Deleted invalid/expired token: {} (id={})", token.getApiName(), token.getId());
+        } catch (SQLException e) {
+            logger.error("Error deleting token", e);
         }
     }
 

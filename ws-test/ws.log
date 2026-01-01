@@ -1,0 +1,186 @@
+2025-12-28T22:20:05.424105800 - Starting MarketFeederClient...
+2025-12-28T22:20:05.434056500 - Access Token read successfully.
+2025-12-28T22:20:06.277707 - Received 200 OK response, parsing JSON...
+2025-12-28T22:20:06.312741 - Resolved WebSocket URL: wss://wsfeeder-api.upstox.com/market-data-feeder/v3/upstox-developer-api/feeds?requestId=e8881e93-994f-487e-9911-36fce6b6e450&code=eDTYL-1fc487a4-7bd5-4610-b86b-a25518c59b18
+2025-12-28T22:20:06.677937600 - Opened connection to wss://wsfeeder-api.upstox.com/market-data-feeder/v3/upstox-developer-api/feeds?requestId=e8881e93-994f-487e-9911-36fce6b6e450&code=eDTYL-1fc487a4-7bd5-4610-b86b-a25518c59b18
+2025-12-28T22:20:06.692718100 - Sending Subscription Request: {"guid":"f531287a-dbfc-43cd-83fc-dda5520ab93f","method":"sub","data":{"mode":"full_d30","instrumentKeys":["NSE_INDEX|Nifty Bank","NSE_INDEX|Nifty 50"]}}
+2025-12-28T22:20:06.896476200 - Received Binary Message (FeedResponse):
+2025-12-28T22:20:06.899294500 - Type: market_info
+2025-12-28T22:20:06.911494400 - Market Info: segmentStatus {
+  key: "BCD_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "BSE_EQ"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "BSE_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "BSE_INDEX"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "MCX_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "MCX_INDEX"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NCD_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_COM"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_EQ"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "NSE_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_INDEX"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "US_EQ"
+  value: NORMAL_CLOSE
+}
+
+2025-12-28T22:20:06.922225300 - Received Binary Message (FeedResponse):
+2025-12-28T22:20:06.922225300 - Type: initial_feed
+2025-12-28T22:20:06.922225300 - Feeds Count: 2
+2025-12-28T22:20:06.923234300 - Key: NSE_INDEX|Nifty Bank
+2025-12-28T22:20:06.923740800 - Key: NSE_INDEX|Nifty 50
+2025-12-28T23:07:42.119060100 - Starting MarketFeederClient...
+2025-12-28T23:07:42.135967 - Access Token read successfully.
+2025-12-28T23:07:43.261484200 - Received 200 OK response, parsing JSON...
+2025-12-28T23:07:43.315551 - Resolved WebSocket URL: wss://wsfeeder-api.upstox.com/market-data-feeder/v3/upstox-developer-api/feeds?requestId=aea7122d-f0a9-4e63-9b18-c9b884f4c33d&code=DXoaX-d7646ff3-77c9-4f7c-a297-9b107f0386c5
+2025-12-28T23:07:43.779260800 - Opened connection to wss://wsfeeder-api.upstox.com/market-data-feeder/v3/upstox-developer-api/feeds?requestId=aea7122d-f0a9-4e63-9b18-c9b884f4c33d&code=DXoaX-d7646ff3-77c9-4f7c-a297-9b107f0386c5
+2025-12-28T23:07:43.792805800 - Sending Subscription Request: {"guid":"061baf8f-ef31-4315-a966-e2f10d28cd70","method":"sub","data":{"mode":"full_d30","instrumentKeys":["NSE_INDEX|Nifty Bank","NSE_INDEX|Nifty 50"]}}
+2025-12-28T23:07:43.917306 - Received Binary Message (FeedResponse):
+2025-12-28T23:07:43.925668200 - Type: market_info
+2025-12-28T23:07:43.935793400 - Market Info: segmentStatus {
+  key: "BCD_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "BSE_EQ"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "BSE_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "BSE_INDEX"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "MCX_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "MCX_INDEX"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NCD_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_COM"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_EQ"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "NSE_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_INDEX"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "US_EQ"
+  value: NORMAL_CLOSE
+}
+
+2025-12-28T23:07:43.945030 - Received Binary Message (FeedResponse):
+2025-12-28T23:07:43.945384100 - Type: initial_feed
+2025-12-28T23:07:43.945384100 - Feeds Count: 2
+2025-12-28T23:07:43.948408400 - Key: NSE_INDEX|Nifty Bank
+2025-12-28T23:07:43.948408400 - Key: NSE_INDEX|Nifty 50
+2025-12-28T23:08:39.085893400 - Starting MarketFeederClient...
+2025-12-28T23:08:39.094731 - Access Token read successfully.
+2025-12-28T23:08:39.868132600 - Received 200 OK response, parsing JSON...
+2025-12-28T23:08:39.907791600 - Resolved WebSocket URL: wss://wsfeeder-api.upstox.com/market-data-feeder/v3/upstox-developer-api/feeds?requestId=6dd3eb75-9824-420e-82f6-485f1c55be4b&code=FMUFw-bf2f249a-c7e1-4348-a6df-d29acc6580b0
+2025-12-28T23:08:40.191595600 - Opened connection to wss://wsfeeder-api.upstox.com/market-data-feeder/v3/upstox-developer-api/feeds?requestId=6dd3eb75-9824-420e-82f6-485f1c55be4b&code=FMUFw-bf2f249a-c7e1-4348-a6df-d29acc6580b0
+2025-12-28T23:08:40.199282200 - Sending Subscription Request: {"guid":"4bf2d960-e346-4599-b3fa-b970c2c26307","method":"sub","data":{"mode":"full_d30","instrumentKeys":["NSE_INDEX|Nifty Bank","NSE_INDEX|Nifty 50"]}}
+2025-12-28T23:08:40.285036100 - Received Binary Message (FeedResponse):
+2025-12-28T23:08:40.285543600 - Type: market_info
+2025-12-28T23:08:40.294662100 - Market Info: segmentStatus {
+  key: "BCD_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "BSE_EQ"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "BSE_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "BSE_INDEX"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "MCX_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "MCX_INDEX"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NCD_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_COM"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_EQ"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "NSE_FO"
+  value: NORMAL_CLOSE
+}
+segmentStatus {
+  key: "NSE_INDEX"
+  value: CLOSING_END
+}
+segmentStatus {
+  key: "US_EQ"
+  value: NORMAL_CLOSE
+}
+
+2025-12-28T23:08:40.298842600 - Received Binary Message (FeedResponse):
+2025-12-28T23:08:40.298842600 - Type: initial_feed
+2025-12-28T23:08:40.299348400 - Feeds Count: 2
+2025-12-28T23:08:40.299861800 - Key: NSE_INDEX|Nifty Bank
+2025-12-28T23:08:40.299861800 - Key: NSE_INDEX|Nifty 50

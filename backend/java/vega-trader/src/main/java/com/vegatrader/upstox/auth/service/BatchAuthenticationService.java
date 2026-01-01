@@ -6,7 +6,10 @@ import com.vegatrader.upstox.auth.selenium.config.SeleniumConfig;
 import com.vegatrader.upstox.auth.selenium.integration.AuthenticationOrchestrator;
 import com.vegatrader.upstox.auth.response.TokenResponse;
 import com.vegatrader.upstox.auth.service.ApiCredentialsDiscovery.UpstoxAppCredentials;
+import com.vegatrader.upstox.auth.config.AuthConstants;
 import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
+import com.vegatrader.upstox.auth.event.AuthProgressEvent;
+import com.vegatrader.upstox.auth.event.AuthProgressPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +19,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.time.Instant;
+import java.util.stream.Collectors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -35,18 +41,11 @@ public class BatchAuthenticationService {
     private final TokenRepository tokenRepository;
     private final TokenCacheService tokenCacheService;
     private final CooldownService cooldownService;
+    private final AuthProgressPublisher progressPublisher;
+    private final com.vegatrader.upstox.auth.state.AuthSessionState authSessionState;
 
     @Value("${upstox.redirect-uri:http://localhost:28020/api/v1/auth/upstox/callback}")
     private String redirectUri;
-
-    @Value("${upstox.auth.auto.username:}")
-    private String autoUsername;
-
-    @Value("${upstox.auth.auto.password:}")
-    private String autoPassword;
-
-    @Value("${upstox.auth.auto.totp-secret:}")
-    private String autoTotpSecret;
 
     // Progress tracking
     private final AtomicInteger generatedTokenCount = new AtomicInteger(0);
@@ -57,12 +56,16 @@ public class BatchAuthenticationService {
             TokenStorageService tokenStorageService,
             TokenRepository tokenRepository,
             TokenCacheService tokenCacheService,
-            CooldownService cooldownService) {
+            CooldownService cooldownService,
+            AuthProgressPublisher progressPublisher,
+            com.vegatrader.upstox.auth.state.AuthSessionState authSessionState) {
         this.apiDiscovery = apiDiscovery;
         this.tokenStorageService = tokenStorageService;
         this.tokenRepository = tokenRepository;
         this.tokenCacheService = tokenCacheService;
         this.cooldownService = cooldownService;
+        this.progressPublisher = progressPublisher;
+        this.authSessionState = authSessionState;
     }
 
     /**
@@ -135,6 +138,75 @@ public class BatchAuthenticationService {
     }
 
     /**
+     * Async batch login: Generate PRIMARY token first, remaining in background.
+     * 
+     * @param headless Whether to use headless browser
+     * @return Result with PRIMARY token generation status
+     */
+    public BatchAuthResult startBatchLoginAsync(boolean headless) {
+        logger.info("═══════════════════════════════════════════════════════");
+        logger.info("ASYNC BATCH LOGIN: PRIMARY first, remaining in background");
+        logger.info("═══════════════════════════════════════════════════════");
+
+        // Get all missing APIs
+        List<String> validTokens = getValidTokenNames();
+        List<ApiCredentialsDiscovery.UpstoxAppCredentials> allApps = apiDiscovery.getAllApps();
+
+        // Separate PRIMARY from remaining
+        ApiCredentialsDiscovery.UpstoxAppCredentials primaryApp = null;
+        List<ApiCredentialsDiscovery.UpstoxAppCredentials> remainingApps = new ArrayList<>();
+
+        for (ApiCredentialsDiscovery.UpstoxAppCredentials app : allApps) {
+            if (!validTokens.contains(app.getPurpose())) {
+                if (app.getPurpose().equals("PRIMARY")) {
+                    primaryApp = app;
+                } else {
+                    remainingApps.add(app);
+                }
+            }
+        }
+
+        // Generate PRIMARY token synchronously
+        BatchAuthResult primaryResult;
+        if (primaryApp != null) {
+            logger.info("Step 1: Generating PRIMARY token (synchronous)...");
+            List<ApiCredentialsDiscovery.UpstoxAppCredentials> primaryList = new ArrayList<>();
+            primaryList.add(primaryApp);
+            primaryResult = processAuthLoop(primaryList, headless, new ArrayList<>());
+            logger.info("✓ PRIMARY token generation complete");
+        } else {
+            logger.info("⚠ PRIMARY token already exists, skipping sync generation");
+            primaryResult = new BatchAuthResult(0, 0, List.of());
+        }
+
+        // Launch background generation for remaining tokens
+        if (!remainingApps.isEmpty()) {
+            logger.info("Step 2: Launching background generation for {} remaining APIs", remainingApps.size());
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                logger.info("═══ BACKGROUND GENERATION STARTED ═══");
+                try {
+                    List<String> errors = new ArrayList<>();
+                    processAuthLoop(remainingApps, headless, errors);
+                    logger.info("═══ BACKGROUND GENERATION COMPLETE ═══");
+                    if (!errors.isEmpty()) {
+                        logger.warn("Background generation errors: {}", errors);
+                    }
+                } catch (Exception e) {
+                    logger.error("Background generation failed: {}", e.getMessage(), e);
+                }
+            });
+        } else {
+            logger.info("No remaining tokens to generate in background");
+        }
+
+        logger.info("═══════════════════════════════════════════════════════");
+        logger.info("ASYNC BATCH LOGIN: PRIMARY complete, background launched");
+        logger.info("═══════════════════════════════════════════════════════");
+
+        return primaryResult;
+    }
+
+    /**
      * Generate only missing tokens (Background Mode).
      * Skips PRIMARY and processes only missing APIs.
      */
@@ -170,10 +242,8 @@ public class BatchAuthenticationService {
         generatedTokenCount.set(0);
 
         // Create shared credentials
-        LoginCredentials credentials = new LoginCredentials(
-                autoUsername,
-                autoPassword,
-                autoTotpSecret);
+        // Create shared credentials from discovery
+        LoginCredentials credentials = apiDiscovery.getCommonCredentials();
 
         // Create Selenium config
         SeleniumConfig seleniumConfig = new SeleniumConfig("chrome", headless);
@@ -185,6 +255,15 @@ public class BatchAuthenticationService {
                 logger.info("[{}/{}] Authenticating: {}",
                         generatedTokenCount.get() + 1, appsToProcess.size(), app.getPurpose());
                 logger.info("────────────────────────────────────────────────────");
+
+                // Emit STARTED
+                progressPublisher.emit(new AuthProgressEvent(
+                        currentApiName,
+                        "STARTED",
+                        getValidTokenNames().size(),
+                        AuthConstants.TOTAL_UPSTOX_APIS,
+                        Instant.now(),
+                        null));
 
                 try {
                     // Create orchestrator for this API
@@ -205,16 +284,47 @@ public class BatchAuthenticationService {
 
                     if (token != null && token.getAccessToken() != null) {
                         generatedTokenCount.incrementAndGet();
+
+                        // Update AuthSessionState immediately
+                        authSessionState.registerValidToken(app.getPurpose());
+
                         logger.info("✓ Token generated for {} in {}ms ({}/{})",
                                 app.getPurpose(), tokenDuration, generatedTokenCount.get(), appsToProcess.size());
+
+                        // Emit SUCCESS
+                        progressPublisher.emit(new AuthProgressEvent(
+                                app.getPurpose(),
+                                "SUCCESS",
+                                getValidTokenNames().size(),
+                                AuthConstants.TOTAL_UPSTOX_APIS,
+                                Instant.now(),
+                                null));
                     } else {
                         errors.add(app.getPurpose() + ": Token response was null");
                         logger.error("✗ Failed to get token for {} after {}ms", app.getPurpose(), tokenDuration);
+
+                        // Emit FAILED
+                        progressPublisher.emit(new AuthProgressEvent(
+                                app.getPurpose(),
+                                "FAILED",
+                                getValidTokenNames().size(),
+                                AuthConstants.TOTAL_UPSTOX_APIS,
+                                Instant.now(),
+                                "Token response was null"));
                     }
 
                 } catch (Exception e) {
                     errors.add(app.getPurpose() + ": " + e.getMessage());
                     logger.error("✗ Authentication failed for {}: {}", app.getPurpose(), e.getMessage());
+
+                    // Emit FAILED
+                    progressPublisher.emit(new AuthProgressEvent(
+                            app.getPurpose(),
+                            "FAILED",
+                            getValidTokenNames().size(),
+                            AuthConstants.TOTAL_UPSTOX_APIS,
+                            Instant.now(),
+                            e.getMessage()));
                 }
             }
         } finally {
@@ -239,14 +349,7 @@ public class BatchAuthenticationService {
     // ═══════════════════════════════════════════════════════════════════════════
     // These are the 6 APIs that MUST be configured for full functionality.
     // This is the SINGLE source of truth - not environment variables, not database.
-    private static final List<String> CONFIGURED_API_NAMES = List.of(
-            "PRIMARY", // Main trading API (MANDATORY)
-            "WEBSOCKET_1", // Market data stream 1
-            "WEBSOCKET_2", // Market data stream 2
-            "WEBSOCKET_3", // Market data stream 3
-            "OPTION_CHAIN_1", // Option chain data 1
-            "OPTION_CHAIN_2" // Option chain data 2
-    );
+    private static final List<String> CONFIGURED_API_NAMES = AuthConstants.API_ORDER;
 
     /**
      * Get list of all configured API names.
@@ -314,7 +417,21 @@ public class BatchAuthenticationService {
                 primaryReady,
                 fullyReady,
                 canProceed,
-                canGenerateRemaining);
+                canGenerateRemaining,
+                authenticationInProgress && currentApiName != null && !currentApiName.isEmpty()
+                        ? "Generating: " + currentApiName
+                        : null,
+                buildApiProgress(validTokens, currentApiName));
+    }
+
+    private List<ApiProgress> buildApiProgress(List<String> validTokens, String currentApiName) {
+        List<ApiProgress> progress = new ArrayList<>();
+        for (String apiName : CONFIGURED_API_NAMES) {
+            boolean complete = validTokens.contains(apiName);
+            boolean inProgress = authenticationInProgress && apiName.equals(currentApiName);
+            progress.add(new ApiProgress(apiName, complete, inProgress));
+        }
+        return progress;
     }
 
     /**
@@ -334,12 +451,36 @@ public class BatchAuthenticationService {
             List<UpstoxTokenEntity> activeTokens = tokenRepository.findAllActive();
             logger.debug("Found {} active tokens in DB", activeTokens.size());
 
+            // Build map of current configured Client IDs for validation
+            Map<String, String> configuredClientIds = apiDiscovery.getAllApps().stream()
+                    .collect(Collectors.toMap(
+                            ApiCredentialsDiscovery.UpstoxAppCredentials::getPurpose,
+                            ApiCredentialsDiscovery.UpstoxAppCredentials::getClientId));
+
             for (UpstoxTokenEntity token : activeTokens) {
-                if (!isTokenExpired(token)) {
-                    validNames.add(token.getApiName());
-                } else {
+                if (isTokenExpired(token)) {
                     logger.warn("Token expired/invalid: {} validityAt={}", token.getApiName(), token.getValidityAt());
+                    continue;
                 }
+
+                // Verify that the token in DB matches the currently configured Client ID
+                String expectedClientId = configuredClientIds.get(token.getApiName());
+                if (expectedClientId == null) {
+                    // API might have been removed from config
+                    logger.warn("Token found for unknown API: {}. Deleting from DB.", token.getApiName());
+                    tokenRepository.delete(token);
+                    continue;
+                }
+
+                if (!expectedClientId.equals(token.getClientId())) {
+                    logger.warn(
+                            "Config mismatch for {}: DB has ClientID={}, but Config expects {}. Deleting invalid token.",
+                            token.getApiName(), token.getClientId(), expectedClientId);
+                    tokenRepository.delete(token);
+                    continue;
+                }
+
+                validNames.add(token.getApiName());
             }
         } catch (Exception e) {
             logger.warn("Error fetching valid tokens: {}", e.getMessage());
@@ -402,6 +543,30 @@ public class BatchAuthenticationService {
      * - MANDATORY: PRIMARY token (required for dashboard access)
      * - OPTIONAL: WEBSOCKET_x, OPTION_CHAIN_x (can be generated in background)
      */
+    public static class ApiProgress {
+        private final String apiName;
+        private final boolean complete;
+        private final boolean inProgress;
+
+        public ApiProgress(String apiName, boolean complete, boolean inProgress) {
+            this.apiName = apiName;
+            this.complete = complete;
+            this.inProgress = inProgress;
+        }
+
+        public String getApiName() {
+            return apiName;
+        }
+
+        public boolean isComplete() {
+            return complete;
+        }
+
+        public boolean isInProgress() {
+            return inProgress;
+        }
+    }
+
     public static class AuthStatus {
         private final int configuredApis; // Total configured APIs
         private final int generatedTokens;
@@ -421,13 +586,17 @@ public class BatchAuthenticationService {
         private final boolean fullyReady; // ALL tokens valid
         private final boolean canProceed; // Can access dashboard
         private final boolean canGenerateRemaining; // Has missing tokens
+        // Real-time progress fields
+        private final String currentOperation; // "Generating: WEBSOCKET_1" or null
+        private final List<ApiProgress> apiProgress; // Per-API status
 
         public AuthStatus(int configuredApis, int generatedTokens, boolean authenticated,
                 boolean inProgress, String currentApi,
                 boolean dbLocked, int pendingInCache, boolean recoveryInProgress,
                 List<String> validTokens, List<String> missingApis,
                 boolean rateLimited, Long cooldownEndsAt, String cooldownMessage,
-                boolean primaryReady, boolean fullyReady, boolean canProceed, boolean canGenerateRemaining) {
+                boolean primaryReady, boolean fullyReady, boolean canProceed, boolean canGenerateRemaining,
+                String currentOperation, List<ApiProgress> apiProgress) {
             this.configuredApis = configuredApis;
             this.generatedTokens = generatedTokens;
             this.authenticated = authenticated;
@@ -445,6 +614,8 @@ public class BatchAuthenticationService {
             this.fullyReady = fullyReady;
             this.canProceed = canProceed;
             this.canGenerateRemaining = canGenerateRemaining;
+            this.currentOperation = currentOperation;
+            this.apiProgress = apiProgress;
         }
 
         /** @deprecated Use getConfiguredApis() instead */
@@ -519,6 +690,14 @@ public class BatchAuthenticationService {
 
         public boolean isCanGenerateRemaining() {
             return canGenerateRemaining;
+        }
+
+        public String getCurrentOperation() {
+            return currentOperation;
+        }
+
+        public List<ApiProgress> getApiProgress() {
+            return apiProgress;
         }
     }
 }

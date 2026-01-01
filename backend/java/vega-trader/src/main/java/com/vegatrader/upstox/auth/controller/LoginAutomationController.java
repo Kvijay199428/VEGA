@@ -9,11 +9,16 @@ import com.vegatrader.upstox.auth.response.TokenResponse;
 import com.vegatrader.upstox.auth.service.TokenStorageService;
 import com.vegatrader.upstox.auth.service.BatchAuthenticationService;
 import com.vegatrader.upstox.auth.service.BatchAuthenticationService.BatchAuthResult;
+import com.vegatrader.upstox.auth.event.AuthProgressEvent;
+import com.vegatrader.upstox.auth.event.AuthProgressPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +42,9 @@ public class LoginAutomationController {
 
     @Autowired
     private BatchAuthenticationService batchAuthService;
+
+    @Autowired
+    private AuthProgressPublisher progressPublisher;
 
     /**
      * Initiate single API login.
@@ -171,6 +179,59 @@ public class LoginAutomationController {
 
             return ResponseEntity.status(500).body(error);
         }
+    }
+
+    /**
+     * Async batch login: Generate PRIMARY first, remaining in background.
+     * Returns immediately after PRIMARY token is generated (~15s).
+     * 
+     * POST
+     * http://localhost:28020/api/v1/auth/selenium/batch-login-async?headless=true
+     */
+    @PostMapping("/batch-login-async")
+    public ResponseEntity<?> batchLoginAsync(@RequestParam(defaultValue = "false") boolean headless) {
+        logger.info("AUDIT: Async batch login initiated | Headless: {}", headless);
+        long startTime = System.currentTimeMillis();
+
+        try {
+            BatchAuthResult result = batchAuthService.startBatchLoginAsync(headless);
+            long duration = System.currentTimeMillis() - startTime;
+
+            logger.info("AUDIT: Async batch login PRIMARY complete | Duration: {}ms", duration);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "primary_generated");
+            response.put("message", "PRIMARY token generated, remaining tokens in background");
+            response.put("primaryGenerated", result.getSuccessfulTokens() > 0);
+            response.put("backgroundInProgress", true);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("AUDIT: Async batch login failed", e);
+
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", "error");
+            error.put("message", "Async batch login failed: " + e.getMessage());
+
+            return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    /**
+     * Subscribe to real-time auth progress events (SSE).
+     * 
+     * GET http://localhost:28020/api/v1/auth/selenium/progress
+     */
+    @GetMapping(value = "/progress", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<AuthProgressEvent>> streamProgress() {
+        return progressPublisher.getStream()
+                .map(event -> ServerSentEvent.<AuthProgressEvent>builder()
+                        .event("auth-progress")
+                        .data(event)
+                        .build())
+                .doOnSubscribe(subscription -> logger.info("[SSE] Client subscribed to auth progress"))
+                .doOnCancel(() -> logger.info("[SSE] Client disconnected from auth progress"));
     }
 
     private boolean isAuto(String value) {

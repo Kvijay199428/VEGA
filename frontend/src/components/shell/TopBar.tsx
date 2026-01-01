@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { httpClient } from '../../api/httpClient'
+import { usePageContext } from '../../context/PageContext'
 
 interface AuthStatus {
     requiredTokens: number
@@ -17,6 +18,7 @@ export default function TopBar() {
     const [time, setTime] = useState(new Date())
     const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null)
     const [marketOpen, setMarketOpen] = useState(false)
+    const { pageInfo } = usePageContext()
 
     // Update clock every second
     useEffect(() => {
@@ -60,22 +62,40 @@ export default function TopBar() {
         })
     }
 
+    const formatDate = (d: Date) => {
+        return d.toLocaleDateString('en-IN', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })
+    }
+
     return (
         <header className="h-10 bg-[#161b22] border-b border-[#30363d] flex items-center justify-between px-4 text-xs">
-            {/* Left: Logo and Market Status */}
+            {/* Left: Logo, Page Title, and Market Status */}
             <div className="flex items-center gap-4">
                 <span className="text-[#00c176] font-bold tracking-wider">VEGA</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 border-l border-[#30363d] pl-4">
                     <span className={`w-2 h-2 rounded-full ${marketOpen ? 'bg-[#00c176]' : 'bg-[#6e7681]'}`}></span>
                     <span className="text-[#8b949e]">
                         NSE {marketOpen ? 'LIVE' : 'CLOSED'}
                     </span>
                 </div>
+                {/* Page Title */}
+                <div className="flex items-center gap-2 border-l border-[#30363d] pl-4">
+                    <span className="text-[#c9d1d9] font-bold">{pageInfo.title}</span>
+                    <span className="text-[10px] text-[#6e7681] border border-[#30363d] px-1 rounded">{pageInfo.shortcut}</span>
+                    {pageInfo.subtitle && (
+                        <span className="text-[#6e7681]">{pageInfo.subtitle}</span>
+                    )}
+                </div>
             </div>
 
-            {/* Center: Time */}
-            <div className="text-[#c9d1d9] font-mono">
-                {formatTime(time)} IST
+            {/* Center: Date and Time */}
+            <div className="text-[#c9d1d9] font-mono flex items-center gap-4">
+                <span className="text-[#6e7681] text-[10px]">{formatDate(time)}</span>
+                <span>{formatTime(time)} IST</span>
             </div>
 
             {/* Right: Connection, Auth Status, Account */}

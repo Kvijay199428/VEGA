@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useOrderData } from '../hooks/useOrderData'
 import { useAlertData } from '../hooks/useAlertData'
+import { usePageTitle } from '../context/PageContext'
 
 /**
  * Orders - F5 Execution monitoring & Alert management.
@@ -9,6 +10,9 @@ export default function Orders() {
     const { orders, loading: ordersLoading, placeOrder, cancelOrder } = useOrderData()
     const { alerts, clearAlerts } = useAlertData()
     const [activeTab, setActiveTab] = useState<'orders' | 'trades'>('orders')
+
+    // Set page title in TopBar
+    usePageTitle('Orders', 'F5', 'EMSX <GO>')
 
     // Order Entry State
     const [symbol, setSymbol] = useState('RELIANCE')
@@ -193,9 +197,9 @@ export default function Orders() {
                                             </td>
                                             <td className="px-4 py-2">
                                                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${order.status === 'COMPLETE' ? 'bg-[#00c176]/20 text-[#00c176]' :
-                                                        order.status === 'REJECTED' ? 'bg-[#ff4d4d]/20 text-[#ff4d4d]' :
-                                                            order.status === 'CANCELLED' ? 'bg-[#6e7681]/20 text-[#8b949e]' :
-                                                                'bg-[#f0c808]/20 text-[#f0c808]'
+                                                    order.status === 'REJECTED' ? 'bg-[#ff4d4d]/20 text-[#ff4d4d]' :
+                                                        order.status === 'CANCELLED' ? 'bg-[#6e7681]/20 text-[#8b949e]' :
+                                                            'bg-[#f0c808]/20 text-[#f0c808]'
                                                     }`}>
                                                     {order.status}
                                                 </span>

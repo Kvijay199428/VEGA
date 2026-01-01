@@ -43,7 +43,7 @@ const MOCK_CONSTITUENTS_BANK: ConstituentData[] = [
 
 export function useSectorData() {
     const [sectors, setSectors] = useState<SectorData[]>(MOCK_SECTORS)
-    const [constituents, setConstituents] = useState<Record<string, ConstituentData[]>>({
+    const [constituents, _setConstituents] = useState<Record<string, ConstituentData[]>>({
         'BANK': MOCK_CONSTITUENTS_BANK,
         // Mock others with same data for now
         'IT': MOCK_CONSTITUENTS_BANK.map(s => ({ ...s, changePercent: -s.changePercent, change: -s.change })),

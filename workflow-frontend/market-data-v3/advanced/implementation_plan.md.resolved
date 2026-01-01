@@ -1,0 +1,221 @@
+# Market Data V3 - Complete Implementation Plan
+
+## Goal
+Build a Bloomberg-grade market data platform with:
+- Exchange-agnostic feed abstraction
+- Execution gateway + Risk engine
+- Strategy sandbox (Java + WASM)
+- Binary journaling (no DB for ticks)
+- WebSocket fan-out to frontend
+- FIX protocol support (future)
+- Smart order routing (future)
+
+---
+
+## User Review Required
+
+> [!CAUTION]
+> **This is a LARGE implementation** (~50+ files, ~3000+ lines of code across 12 tiers).
+> 
+> **Recommended Approach:** Implement in 3 waves:
+> - **Wave 1 (Core):** Tiers 1-4 - Feed + Cache + WebSocket
+> - **Wave 2 (Trading):** Tiers 5-7 - Execution + Risk + Alerts
+> - **Wave 3 (Advanced):** Tiers 8-12 - Strategies + AI + FIX
+
+> [!IMPORTANT]
+> **Questions before proceeding:**
+> 1. Do you have `MarketDataStreamerV3` already working, or should I create stubs?
+> 2. Should Wave 1 use in-memory cache or Redis?
+> 3. Start with Wave 1 only, or proceed with all waves?
+
+---
+
+## Wave 1: Core Market Data Pipeline
+
+### Tier 1: Foundation DTOs & Models
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `LiveMarketSnapshot.java` | `com.vegatrader.market.dto` | Tick data DTO |
+| `OrderBookSnapshot.java` | `com.vegatrader.market.dto` | Depth snapshot |
+| `DepthLevel.java` | `com.vegatrader.market.dto` | Bid/Ask level |
+| `L30OrderBook.java` | `com.vegatrader.market.depth.model` | Full 30-level book |
+| `BookLevel.java` | `com.vegatrader.market.depth.model` | Price/Qty level |
+| `Greeks.java` | `com.vegatrader.market.depth.model` | Option greeks |
+| `FeedMode.java` | `com.vegatrader.market.feed` | LTPC/FULL/FULL_D30 enum |
+
+---
+
+### Tier 2: Feed Abstraction Layer
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `MarketFeed.java` | `com.vegatrader.market.feed` | Exchange-agnostic interface |
+| `MarketFeedListener.java` | `com.vegatrader.market.feed` | Tick/Depth callbacks |
+| `UpstoxMarketFeed.java` | `com.vegatrader.upstox.adapter` | Upstox implementation |
+| `FullD30Mapper.java` | `com.vegatrader.upstox.mapper` | Proto → Internal mapping |
+| `OrderBookCompressor.java` | `com.vegatrader.market.depth` | 30→10→5 level compression |
+
+---
+
+### Tier 3: Cache & Subscription
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `MarketCacheService.java` | `com.vegatrader.market.cache` | In-memory tick/depth cache |
+| `SubscriptionRegistry.java` | `com.vegatrader.market.subscription` | Client→Instrument tracking |
+| `SubscriptionRequest.java` | `com.vegatrader.market.dto` | Subscribe request DTO |
+| `MarketSubscriptionController.java` | `com.vegatrader.market.controller` | REST API |
+
+---
+
+### Tier 4: WebSocket Broadcasting
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `MarketWebSocketConfig.java` | `com.vegatrader.market.websocket` | WS endpoint config |
+| `MarketWebSocketHandler.java` | `com.vegatrader.market.websocket` | Session management |
+| `MarketBroadcaster.java` | `com.vegatrader.market.websocket` | Fan-out to clients |
+
+---
+
+## Wave 2: Trading Infrastructure
+
+### Tier 5: Execution Gateway
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `ExecutionGateway.java` | `com.vegatrader.execution` | Broker-agnostic interface |
+| `OrderRequest.java` | `com.vegatrader.execution.dto` | Order request DTO |
+| `OrderResponse.java` | `com.vegatrader.execution.dto` | Order response DTO |
+| `OrderStatus.java` | `com.vegatrader.execution.dto` | Status enum |
+| `UpstoxExecutionGateway.java` | `com.vegatrader.upstox.execution` | Upstox implementation |
+
+---
+
+### Tier 6: Risk Engine
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `RiskSnapshot.java` | `com.vegatrader.risk` | Margin/Exposure DTO |
+| `RiskEngine.java` | `com.vegatrader.risk` | Pre-trade validation |
+| `RiskException.java` | `com.vegatrader.risk` | Risk breach exception |
+
+---
+
+### Tier 7: Alert Engine
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `AlertRule.java` | `com.vegatrader.alert.entity` | Alert config entity |
+| `AlertEngine.java` | `com.vegatrader.alert` | Real-time evaluator |
+| `AlertEvent.java` | `com.vegatrader.alert.dto` | Alert event DTO |
+| `AlertController.java` | `com.vegatrader.alert.controller` | REST API |
+
+---
+
+## Wave 3: Advanced Features
+
+### Tier 8: Strategy Sandbox (Java)
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `TradingStrategy.java` | `com.vegatrader.strategy` | Strategy interface |
+| `StrategyContext.java` | `com.vegatrader.strategy` | Execution context |
+| `StrategyRunner.java` | `com.vegatrader.strategy.runtime` | Tick dispatcher |
+| `StrategyRegistry.java` | `com.vegatrader.strategy.runtime` | Strategy catalog |
+| `Signal.java` | `com.vegatrader.strategy.dto` | Trading signal DTO |
+| `StrategyOrderBridge.java` | `com.vegatrader.strategy.execution` | Signal → Order |
+
+---
+
+### Tier 9: AI Inference Layer
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `FeatureVector.java` | `com.vegatrader.ai` | ML feature input |
+| `FeatureExtractor.java` | `com.vegatrader.ai` | Book → Features |
+| `InferenceEngine.java` | `com.vegatrader.ai` | Model inference |
+
+---
+
+### Tier 10: Binary Journaling (Bloomberg-Style)
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `MarketEventHeader.java` | `com.vegatrader.journal` | Binary event header |
+| `JournalWriter.java` | `com.vegatrader.journal` | Append-only writer |
+| `JournalReader.java` | `com.vegatrader.journal` | Memory-mapped reader |
+| `ReplayEngine.java` | `com.vegatrader.journal` | Tick replay |
+
+---
+
+### Tier 11: Command Router
+
+| File | Package | Purpose |
+|------|---------|---------|
+| `Command.java` | `com.vegatrader.command` | Parsed command DTO |
+| [CommandRouter.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/terminal/CommandRouter.java) | `com.vegatrader.command` | Bloomberg-style parser |
+| `CommandController.java` | `com.vegatrader.command` | REST API |
+
+---
+
+### Tier 12: Frontend Integration
+
+| File | Path | Purpose |
+|------|------|---------|
+| `useMarketFeed.ts` | `frontend/src/hooks/` | WebSocket hook |
+| `DepthLadder.tsx` | `frontend/src/components/` | 5/10/30 level ladder |
+| `DepthLadder30.tsx` | `frontend/src/components/` | Full 30-level heat map |
+| `GreeksPanel.tsx` | `frontend/src/components/` | Delta/Gamma/Theta display |
+
+---
+
+## Phase Sequence (Recommended)
+
+```mermaid
+graph TD
+    A[Tier 1: DTOs] --> B[Tier 2: Feed Abstraction]
+    B --> C[Tier 3: Cache + Subscriptions]
+    C --> D[Tier 4: WebSocket]
+    D --> E[Tier 5: Execution Gateway]
+    E --> F[Tier 6: Risk Engine]
+    F --> G[Tier 7: Alerts]
+    G --> H[Tier 8: Strategy Sandbox]
+    H --> I[Tier 9: AI Inference]
+    I --> J[Tier 10: Binary Journal]
+    J --> K[Tier 11: Command Router]
+    K --> L[Tier 12: Frontend]
+```
+
+---
+
+## Future Phases (Not in This Plan)
+
+| Feature | Complexity |
+|---------|------------|
+| FIX Protocol Gateway | High |
+| Multi-Broker Smart Routing | High |
+| WASM Strategy Engine | Very High |
+| Co-location Mode | Very High |
+| Latency Profiler | Medium |
+| Strategy Marketplace | High |
+
+---
+
+## Verification Checkpoints
+
+### After Wave 1
+- [ ] Backend compiles with `mvn compile`
+- [ ] WebSocket endpoint accessible at `/ws/market`
+- [ ] Mock subscription triggers broadcast
+
+### After Wave 2
+- [ ] Order placement API works
+- [ ] Risk validation rejects invalid orders
+- [ ] Alerts fire on threshold breach
+
+### After Wave 3
+- [ ] Strategy receives live ticks
+- [ ] Binary journal writes to disk
+- [ ] Frontend receives real-time data

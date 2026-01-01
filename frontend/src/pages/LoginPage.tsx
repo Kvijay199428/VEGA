@@ -25,10 +25,25 @@ interface AuthStatus {
     fullyReady: boolean          // ALL tokens valid
     canProceed: boolean          // Can access dashboard
     canGenerateRemaining: boolean // Has missing tokens
+    // Real-time progress fields
+    currentOperation: string | null  // "Generating: WEBSOCKET_1" or null
+    apiProgress: ApiProgress[]       // Per-API status
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let _pollGuard = false // Module-level guard (used by startedRef)
+interface ApiProgress {
+    apiName: string
+    complete: boolean
+    inProgress: boolean
+}
+
+interface AuthProgressEvent {
+    api: string
+    status: 'STARTED' | 'SUCCESS' | 'FAILED'
+    completed: number
+    total: number
+    timestamp: string
+    message?: string
+}
 
 export function LoginPage() {
     const navigate = useNavigate()
@@ -43,6 +58,59 @@ export function LoginPage() {
     // Poll frequencies
     const POLL_FAST = 2000   // When not ready
     const POLL_SLOW = 10000  // When stable (primaryReady && !inProgress)
+
+    // SSE Subscription
+    useEffect(() => {
+        console.log('[SSE] Connecting to auth progress stream...')
+        const eventSource = new EventSource('/api/v1/auth/selenium/progress')
+
+        eventSource.addEventListener('auth-progress', (e) => {
+            try {
+                const event: AuthProgressEvent = JSON.parse(e.data)
+                console.log(`[SSE] Event: ${event.api} -> ${event.status}`, event)
+
+                setStatus(prev => {
+                    if (!prev) return prev // Can't update if no initial status
+
+                    // Update API list
+                    const newApiProgress = prev.apiProgress.map(p => {
+                        if (p.apiName === event.api) {
+                            return {
+                                ...p,
+                                inProgress: event.status === 'STARTED',
+                                complete: event.status === 'SUCCESS' || (p.complete && event.status !== 'FAILED')
+                            }
+                        }
+                        return p
+                    })
+
+                    return {
+                        ...prev,
+                        generatedTokens: event.completed,
+                        // If SUCCESS, we don't clear currentOperation immediately to avoid flicker, 
+                        // or we wait for next STARTED.
+                        currentOperation: event.status === 'STARTED' ? `Generating: ${event.api}` :
+                            event.status === 'SUCCESS' ? `Completed: ${event.api}` :
+                                `Failed: ${event.api}`,
+                        apiProgress: newApiProgress,
+                        inProgress: true
+                    }
+                })
+            } catch (_err) {
+                console.error('[SSE] Parse error', _err)
+            }
+        })
+
+        eventSource.onerror = (_err) => {
+            // Silently handle reconnect errors
+        }
+
+        return () => {
+            console.log('[SSE] Closing connection')
+            eventSource.close()
+        }
+    }, [])
+
 
     // Stop polling safely
     const stopPolling = useCallback(() => {
@@ -117,6 +185,17 @@ export function LoginPage() {
             stopPolling()
         }
     }, [pollStatus, stopPolling])
+
+    // Auto-redirect to dashboard when PRIMARY token is ready
+    const hasRedirectedRef = useRef(false)
+    useEffect(() => {
+        if (status?.primaryReady && !hasRedirectedRef.current) {
+            console.log('[LoginPage] PRIMARY token ready - auto-redirecting to dashboard')
+            hasRedirectedRef.current = true
+            stopPolling()
+            navigate('/dashboard', { replace: true })
+        }
+    }, [status?.primaryReady, navigate, stopPolling])
 
     const handleBatchLogin = async () => {
         try {
@@ -256,6 +335,21 @@ export function LoginPage() {
                         </div>
                     )}
 
+                    {/* Cooldown Banner */}
+                    {status?.rateLimited && cooldownRemaining && (
+                        <div className="mb-4 bg-red-500/10 border border-red-500 rounded p-3">
+                            <div className="flex items-center gap-2">
+                                <span className="text-red-400 text-sm">⚠ Rate Limited</span>
+                                <span className="text-red-300 text-xs">
+                                    Cooldown: {cooldownRemaining} remaining
+                                </span>
+                            </div>
+                            {status.cooldownMessage && (
+                                <p className="text-red-300/70 text-xs mt-1">{status.cooldownMessage}</p>
+                            )}
+                        </div>
+                    )}
+
                     {/* Progress Display */}
                     <div className="mb-6 p-4 bg-terminal-bg border border-terminal-border">
                         <div className="flex justify-between items-center mb-2">
@@ -270,9 +364,41 @@ export function LoginPage() {
                                 style={{ width: `${progressPercent}%` }}
                             />
                         </div>
-                        {status?.inProgress && status.currentApi && (
-                            <div className="mt-2 text-terminal-accent text-xs animate-pulse">
-                                ▶ Authenticating: {status.currentApi}
+
+                        {/* Live Current Operation */}
+                        {status?.currentOperation && (
+                            <div className="mt-3 text-terminal-accent text-sm animate-pulse flex items-center gap-2">
+                                <span className="w-2 h-2 bg-terminal-accent rounded-full animate-ping" />
+                                {status.currentOperation}
+                            </div>
+                        )}
+
+                        {/* Per-API Progress Checklist */}
+                        {status?.apiProgress && status.apiProgress.length > 0 && (
+                            <div className="mt-4 space-y-2">
+                                <div className="text-terminal-muted text-xs uppercase mb-2">Token Status</div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {status.apiProgress.map((api) => (
+                                        <div
+                                            key={api.apiName}
+                                            className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs ${api.complete
+                                                ? 'bg-terminal-success/10 text-terminal-success'
+                                                : api.inProgress
+                                                    ? 'bg-terminal-accent/10 text-terminal-accent animate-pulse'
+                                                    : 'bg-terminal-border/30 text-terminal-muted'
+                                                }`}
+                                        >
+                                            {api.complete ? (
+                                                <span className="text-terminal-success">✓</span>
+                                            ) : api.inProgress ? (
+                                                <span className="w-3 h-3 border-2 border-terminal-accent border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                                <span className="text-terminal-muted">○</span>
+                                            )}
+                                            <span className="truncate">{api.apiName}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>

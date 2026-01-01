@@ -37,7 +37,7 @@ const MOCK_ORDERS: OrderData[] = [
 
 export function useOrderData() {
     const [orders, setOrders] = useState<OrderData[]>(MOCK_ORDERS)
-    const [trades, setTrades] = useState<TradeData[]>([])
+    const [trades, _setTrades] = useState<TradeData[]>([])
     const [loading, setLoading] = useState(true)
 
     // Simulate initial load

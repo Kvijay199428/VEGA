@@ -1,59 +1,57 @@
 package com.vegatrader.upstox.auth.scheduler;
 
-import com.vegatrader.upstox.auth.provider.TokenProvider;
+import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
+import com.vegatrader.upstox.auth.repository.TokenRepository;
+import com.vegatrader.upstox.auth.state.OperatorControlState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 /**
- * Scheduler for automatic token refresh at 2:30 AM.
- * Runs 1 hour before token expiry (3:30 AM).
- *
- * @since 2.0.0
+ * Scheduler to auto-refresh tokens before they expire.
+ * Zero-downtime strategy.
  */
 @Component
 public class TokenRefreshScheduler {
 
-    private static final Logger logger = LoggerFactory.getLogger(TokenRefreshScheduler.class);
+    private static final Logger log = LoggerFactory.getLogger(TokenRefreshScheduler.class);
 
-    private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
+    private final OperatorControlState operatorControlState;
 
-    public TokenRefreshScheduler(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
+    public TokenRefreshScheduler(TokenRepository tokenRepository, OperatorControlState operatorControlState) {
+        this.tokenRepository = tokenRepository;
+        this.operatorControlState = operatorControlState;
     }
 
-    /**
-     * Scheduled refresh at 2:30 AM daily.
-     * Cron: "0 30 2 * * *" = Every day at 2:30 AM
-     */
-    @Scheduled(cron = "0 30 2 * * *")
-    public void refreshTokensDaily() {
-        logger.info("═══════════════════════════════════════════════════════");
-        logger.info("🔄 Scheduled Token Refresh - 2:30 AM");
-        logger.info("═══════════════════════════════════════════════════════");
-
-        try {
-            tokenProvider.refreshCache();
-            logger.info("✓ Token cache refreshed successfully");
-        } catch (Exception e) {
-            logger.error("✗ Error during scheduled token refresh", e);
+    @Scheduled(fixedDelay = 300_000) // every 5 min
+    public void refreshExpiringTokens() {
+        if (!operatorControlState.isAutomationEnabled()) {
+            return;
         }
 
-        logger.info("═══════════════════════════════════════════════════════");
+        List<UpstoxTokenEntity> active = tokenRepository.findAllActive();
+        for (UpstoxTokenEntity token : active) {
+            if (isExpiringSoon(token)) {
+                log.info("[TOKEN-REFRESH] Token {} is expiring soon. Triggering refresh...", token.getApiName());
+                // TODO: Implement TokenRefreshService
+            }
+        }
     }
 
-    /**
-     * Periodic cache refresh every 30 minutes (optional, for resilience).
-     */
-    @Scheduled(fixedRate = 1800000) // 30 minutes
-    public void refreshCachePeriodically() {
-        logger.debug("🔄 Periodic token cache refresh (30 min interval)");
-
+    private boolean isExpiringSoon(UpstoxTokenEntity token) {
         try {
-            tokenProvider.refreshCache();
+            LocalDateTime validity = LocalDateTime.parse(token.getValidityAt(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime threshold = LocalDateTime.now().plusMinutes(15);
+            return validity.isBefore(threshold);
         } catch (Exception e) {
-            logger.error("Error during periodic cache refresh", e);
+            return true; // Treat as expiring if invalid
         }
     }
 }

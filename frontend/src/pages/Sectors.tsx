@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSectorData } from '../hooks/useSectorData'
+import { usePageTitle } from '../context/PageContext'
 
 /**
  * Sectors - F4 Macro-to-micro analysis.
@@ -7,6 +8,9 @@ import { useSectorData } from '../hooks/useSectorData'
 export default function Sectors() {
     const { sectors, constituents, loading } = useSectorData()
     const [selectedSector, setSelectedSector] = useState<string | null>('BANK')
+
+    // Set page title in TopBar
+    usePageTitle('Sectors', 'F4', 'GRPS <GO>')
 
     if (loading) {
         return (

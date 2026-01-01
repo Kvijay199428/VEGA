@@ -88,9 +88,31 @@ public final class AuthConstants {
     public static final String TOKEN_CATEGORY_OPTIONCHAIN_PREFIX = "OPTIONCHAIN";
 
     /**
+     * Total number of Primary tokens.
+     */
+    public static final int PRIMARY_TOKEN_COUNT = 1;
+
+    /**
      * Total number of WebSocket tokens.
      */
     public static final int WEBSOCKET_TOKEN_COUNT = 3;
+
+    /**
+     * Total number of Upstox APIs.
+     */
+    public static final int TOTAL_UPSTOX_APIS = 6;
+
+    /**
+     * Canonical API Order (Immutable).
+     * Defines exactly which APIs exist and their sequence.
+     */
+    public static final java.util.List<String> API_ORDER = java.util.List.of(
+            "PRIMARY",
+            "WEBSOCKET_1",
+            "WEBSOCKET_2",
+            "WEBSOCKET_3",
+            "OPTION_CHAIN_1",
+            "OPTION_CHAIN_2");
 
     /**
      * Total number of Option Chain tokens.

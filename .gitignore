@@ -30,7 +30,6 @@ env.bak/
 venv.bak/
 
 # Environment Variables
-.env
 .env.local
 .env.development.local
 .env.test.local
@@ -61,3 +60,38 @@ Desktop.ini
 token/
 archive/
 .gemini/
+
+
+# Java / Maven
+target/
+*.jar
+*.war
+*.ear
+
+# Logs
+# *.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+# Java build
+target/
+*.jar
+*.db
+
+# Maven
+dependency-reduced-pom.xml
+
+# Frontend
+node_modules/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db

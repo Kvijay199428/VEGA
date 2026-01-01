@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useOptionsData } from '../hooks/useOptionsData'
+import { usePageTitle } from '../context/PageContext'
 
 /**
  * Options Chain - F3 Professional options analysis.
@@ -9,6 +10,9 @@ export default function OptionsChain() {
     const [expiry, setExpiry] = useState('26-DEC-2024')
     const { options, spotPrice, loading } = useOptionsData(underlying, expiry)
     const [selectedStrikeIndex, setSelectedStrikeIndex] = useState<number | null>(null)
+
+    // Set page title in TopBar
+    usePageTitle('Options Chain', 'F3', 'OMON <GO>')
 
     // Keyboard Navigation
     useEffect(() => {

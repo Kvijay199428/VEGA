@@ -1,0 +1,73 @@
+# Implementation Plan - Phase 9: Complete Auth Token Generation Wiring
+
+## Goal
+Wire the complete authentication flow so that tokens can be generated from the UI without hassle. This includes:
+1. Triggering Selenium-based token generation from Account/Login pages
+2. Real-time progress updates via SSE
+3. Proper state synchronization between Frontend and Backend
+
+## Current State Analysis
+- **Backend:** `/api/v1/auth/selenium/batch-login` endpoint exists and triggers `BatchAuthenticationService.startBatchLogin()`
+- **Frontend:** `LoginPage.handleBatchLogin()` exists but may not be triggered correctly
+- **Issue:** `/api/auth/status` returns 0/6 tokens because Selenium automation hasn't been triggered
+
+---
+
+## Proposed Changes
+
+### 1. Account Page - Add "Generate Tokens" Button
+#### [MODIFY] [AccountPage.tsx](file:///d:/projects/VEGA%20TRADER/frontend/src/pages/AccountPage.tsx)
+- Add a prominent "GENERATE ACCESS TOKENS" button when `generatedTokens < requiredTokens`
+- Button triggers `/api/v1/auth/selenium/batch-login-async` (async version for better UX)
+- Disable button while generation is in progress
+- Show SSE-based progress updates
+
+### 2. Backend - Ensure AuthSessionState Updates
+#### [VERIFY] [BatchAuthenticationService.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/BatchAuthenticationService.java)
+- Verify that [AuthSessionState](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/state/AuthSessionState.java#19-117) is updated after each successful token generation
+- Ensure tokens are persisted to DB and counted correctly
+
+### 3. Backend - Expose Generation Status
+#### [MODIFY] [BasicAuthController.java](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/BasicAuthController.java)
+- Add `inProgress` and `currentApi` fields to `/api/auth/status` response
+
+### 4. Frontend - SSE Integration for Account Page
+#### [MODIFY] [AccountPage.tsx](file:///d:/projects/VEGA%20TRADER/frontend/src/pages/AccountPage.tsx)
+- Add SSE subscription to `/api/v1/auth/selenium/progress` for real-time token generation updates
+- Update UI immediately when SSE events arrive
+
+---
+
+## UI Flow
+```mermaid
+sequenceDiagram
+    participant User
+    participant AccountPage
+    participant Backend
+    participant Selenium
+    participant Upstox
+
+    User->>AccountPage: Click "GENERATE TOKENS"
+    AccountPage->>Backend: POST /api/v1/auth/selenium/batch-login-async
+    Backend->>Selenium: Start headless browser
+    Backend-->>AccountPage: Immediate response (started)
+    
+    loop For each API (6 total)
+        Selenium->>Upstox: OAuth login
+        Upstox-->>Selenium: Auth code
+        Backend->>Upstox: Exchange code for token
+        Upstox-->>Backend: Access token
+        Backend->>Backend: Store in DB
+        Backend-->>AccountPage: SSE event (token generated)
+    end
+    
+    AccountPage->>User: Show "OPEN TRADING DESK" enabled
+```
+
+---
+
+## Verification Plan
+1. Navigate to `/account` → See "GENERATE TOKENS" button
+2. Click button → Observe progress bar updating
+3. Wait for PRIMARY → "OPEN TRADING DESK" becomes enabled
+4. Click → Navigate to Dashboard
