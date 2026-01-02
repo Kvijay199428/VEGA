@@ -23,11 +23,13 @@ public class TokenStateV2 {
     private int consecutiveFailures;
     private Instant quarantinedAt;
     private String quarantineReason;
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
 
-    public TokenStateV2(String apiName) {
+    public TokenStateV2(String apiName, com.vegatrader.util.time.TimeProvider timeProvider) {
         this.apiName = apiName;
         this.quarantined = false;
         this.consecutiveFailures = 0;
+        this.timeProvider = timeProvider;
     }
 
     /**
@@ -37,7 +39,7 @@ public class TokenStateV2 {
         if (lastFailureAt == null) {
             return false;
         }
-        return Instant.now().isBefore(lastFailureAt.plus(DEFAULT_COOLDOWN));
+        return timeProvider.now().isBefore(lastFailureAt.plus(DEFAULT_COOLDOWN));
     }
 
     /**
@@ -48,7 +50,7 @@ public class TokenStateV2 {
             return 0;
         }
         Instant cooldownEnd = lastFailureAt.plus(DEFAULT_COOLDOWN);
-        long remaining = Duration.between(Instant.now(), cooldownEnd).getSeconds();
+        long remaining = Duration.between(timeProvider.now(), cooldownEnd).getSeconds();
         return Math.max(0, remaining);
     }
 
@@ -58,7 +60,7 @@ public class TokenStateV2 {
      * @param reason failure reason
      */
     public void markFailure(TokenFailureReason reason) {
-        this.lastFailureAt = Instant.now();
+        this.lastFailureAt = timeProvider.now();
         this.lastFailureReason = reason;
         this.consecutiveFailures++;
 
@@ -80,7 +82,7 @@ public class TokenStateV2 {
      */
     public void quarantine(String reason) {
         this.quarantined = true;
-        this.quarantinedAt = Instant.now();
+        this.quarantinedAt = timeProvider.now();
         this.quarantineReason = reason;
     }
 

@@ -41,17 +41,19 @@ public class OAuthLoginAutomationV2 {
     private final TokenAuditService auditService;
     private final Map<String, TokenStateV2> tokenStates;
     private AuthConfigV2 authConfig;
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
 
-    public OAuthLoginAutomationV2() {
+    public OAuthLoginAutomationV2(com.vegatrader.util.time.TimeProvider timeProvider) {
         this.tokenExchangeClient = new TokenExchangeClientV2();
         this.profileVerifier = new ProfileVerifierV2();
-        this.auditService = new TokenAuditService();
+        this.auditService = new TokenAuditService(timeProvider);
         this.tokenStates = new ConcurrentHashMap<>();
         this.authConfig = new AuthConfigV2();
+        this.timeProvider = timeProvider;
     }
 
-    public OAuthLoginAutomationV2(AuthConfigV2 authConfig) {
-        this();
+    public OAuthLoginAutomationV2(AuthConfigV2 authConfig, com.vegatrader.util.time.TimeProvider timeProvider) {
+        this(timeProvider);
         this.authConfig = authConfig;
     }
 
@@ -236,7 +238,7 @@ public class OAuthLoginAutomationV2 {
      * Get or create token state for API.
      */
     private TokenStateV2 getOrCreateTokenState(String apiName) {
-        return tokenStates.computeIfAbsent(apiName, TokenStateV2::new);
+        return tokenStates.computeIfAbsent(apiName, k -> new TokenStateV2(k, timeProvider));
     }
 
     /**

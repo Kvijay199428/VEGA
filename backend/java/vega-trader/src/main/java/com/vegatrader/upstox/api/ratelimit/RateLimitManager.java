@@ -3,6 +3,7 @@ package com.vegatrader.upstox.api.ratelimit;
 import com.vegatrader.upstox.api.endpoints.UpstoxEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,53 +16,33 @@ import java.util.concurrent.ConcurrentHashMap;
  * for different API categories.
  * </p>
  * <p>
- * <b>Usage Example:</b>
- * 
- * <pre>{@code
- * RateLimitManager manager = RateLimitManager.getInstance();
- * 
- * // Automatically selects the right limiter for the endpoint
- * RateLimitStatus status = manager.checkLimit(OrderEndpoints.PLACE_ORDER);
- * if (status == RateLimitStatus.OK) {
- *     // Make API call
- *     makeApiCall();
- *     manager.recordRequest(OrderEndpoints.PLACE_ORDER);
- * }
- * }</pre>
+ * Uses Spring DI for rate limiter injection (deterministic for replay).
  * </p>
  *
  * @since 2.0.0
  */
+@Service
 public class RateLimitManager {
 
     private static final Logger logger = LoggerFactory.getLogger(RateLimitManager.class);
-    private static final RateLimitManager INSTANCE = new RateLimitManager();
 
     private final Map<String, RateLimiter> limiters = new ConcurrentHashMap<>();
     private final RateLimiter standardLimiter;
     private final RateLimiter multiOrderLimiter;
 
     /**
-     * Private constructor for singleton pattern.
+     * Constructor for Spring DI.
      */
-    private RateLimitManager() {
-        this.standardLimiter = new StandardAPIRateLimiter();
-        this.multiOrderLimiter = new MultiOrderAPIRateLimiter();
+    public RateLimitManager(StandardAPIRateLimiter standardLimiter,
+            MultiOrderAPIRateLimiter multiOrderLimiter) {
+        this.standardLimiter = standardLimiter;
+        this.multiOrderLimiter = multiOrderLimiter;
 
         // Register limiters
         limiters.put("STANDARD", standardLimiter);
         limiters.put("MULTI_ORDER", multiOrderLimiter);
 
         logger.info("RateLimitManager initialized with {} limiter categories", limiters.size());
-    }
-
-    /**
-     * Gets the singleton instance.
-     *
-     * @return the RateLimitManager instance
-     */
-    public static RateLimitManager getInstance() {
-        return INSTANCE;
     }
 
     /**

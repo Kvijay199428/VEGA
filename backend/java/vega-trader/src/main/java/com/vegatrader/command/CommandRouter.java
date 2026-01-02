@@ -1,11 +1,11 @@
 package com.vegatrader.command;
 
+import com.vegatrader.domain.enums.OrderType;
+import com.vegatrader.domain.enums.ProductType;
+import com.vegatrader.domain.enums.TransactionType;
 import com.vegatrader.execution.ExecutionGateway;
 import com.vegatrader.execution.dto.OrderRequest;
 import com.vegatrader.execution.dto.OrderResponse;
-import com.vegatrader.execution.dto.OrderRequest.TransactionType;
-import com.vegatrader.execution.dto.OrderRequest.OrderType;
-import com.vegatrader.execution.dto.OrderRequest.ProductType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,7 @@ public class CommandRouter {
                     .instrumentKey(instrumentKey)
                     .transactionType(TransactionType.valueOf(side))
                     .orderType(price != null ? OrderType.LIMIT : OrderType.MARKET)
-                    .productType(ProductType.INTRADAY) // Default
+                    .productType(ProductType.INTRA) // Default
                     .quantity(qty)
                     .price(price != null ? price : 0.0)
                     .tag("CMD_LINE")

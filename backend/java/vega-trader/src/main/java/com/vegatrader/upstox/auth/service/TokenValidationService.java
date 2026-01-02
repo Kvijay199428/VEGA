@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import com.vegatrader.util.time.LocaleConstants;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -13,11 +14,18 @@ import java.time.format.DateTimeFormatter;
  *
  * @since 2.0.0
  */
+@org.springframework.stereotype.Service
 public class TokenValidationService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenValidationService.class);
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
+
+    public TokenValidationService(com.vegatrader.util.time.TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
 
     /**
      * Validate if token is still valid (not expired).
@@ -55,7 +63,8 @@ public class TokenValidationService {
             return true;
         }
 
-        return TokenExpiryCalculator.isExpired(token.getValidityAt());
+        return TokenExpiryCalculator.isExpired(token.getValidityAt(),
+                timeProvider.now().atZone(LocaleConstants.IST).toLocalDateTime());
     }
 
     /**
@@ -71,7 +80,8 @@ public class TokenValidationService {
 
         try {
             LocalDateTime expiry = LocalDateTime.parse(token.getValidityAt(), FORMATTER);
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = timeProvider.now().atZone(LocaleConstants.IST)
+                    .toLocalDateTime();
             LocalDateTime oneHourBeforeExpiry = expiry.minusHours(1);
 
             return now.isAfter(oneHourBeforeExpiry);
@@ -94,7 +104,8 @@ public class TokenValidationService {
 
         try {
             LocalDateTime expiry = LocalDateTime.parse(token.getValidityAt(), FORMATTER);
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = timeProvider.now().atZone(LocaleConstants.IST)
+                    .toLocalDateTime();
 
             long seconds = java.time.Duration.between(now, expiry).getSeconds();
             return Math.max(0, seconds);

@@ -20,32 +20,36 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @since 2.3.0
  */
+@org.springframework.stereotype.Component
 public final class HotTokenRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(HotTokenRegistry.class);
 
-    private static final ConcurrentHashMap<ApiName, HotToken> HOT_TOKENS = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<ApiName, HotToken> HOT_TOKENS = new ConcurrentHashMap<>();
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
 
-    private HotTokenRegistry() {
+    public HotTokenRegistry(com.vegatrader.util.time.TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+        logger.info("HotTokenRegistry initialized with TimeProvider");
     }
 
     /**
      * Store token in hot registry.
      */
-    public static void put(ApiName apiName, String accessToken, Instant validUntil) {
-        HOT_TOKENS.put(apiName, new HotToken(accessToken, validUntil, Instant.now()));
+    public void put(ApiName apiName, String accessToken, Instant validUntil) {
+        HOT_TOKENS.put(apiName, new HotToken(accessToken, validUntil, timeProvider.now()));
         logger.info("✓ HOT token registered: {} (valid until: {})", apiName, validUntil);
     }
 
     /**
      * Get token from hot registry.
      */
-    public static Optional<String> get(ApiName apiName) {
+    public Optional<String> get(ApiName apiName) {
         HotToken token = HOT_TOKENS.get(apiName);
         if (token == null) {
             return Optional.empty();
         }
-        if (Instant.now().isAfter(token.validUntil())) {
+        if (timeProvider.now().isAfter(token.validUntil())) {
             logger.debug("HOT token expired: {}", apiName);
             HOT_TOKENS.remove(apiName);
             return Optional.empty();
@@ -56,14 +60,14 @@ public final class HotTokenRegistry {
     /**
      * Check if token exists and is valid.
      */
-    public static boolean isValid(ApiName apiName) {
+    public boolean isValid(ApiName apiName) {
         return get(apiName).isPresent();
     }
 
     /**
      * Remove token from hot registry.
      */
-    public static void remove(ApiName apiName) {
+    public void remove(ApiName apiName) {
         HOT_TOKENS.remove(apiName);
         logger.debug("HOT token removed: {}", apiName);
     }
@@ -71,7 +75,7 @@ public final class HotTokenRegistry {
     /**
      * Clear all tokens.
      */
-    public static void clear() {
+    public void clear() {
         HOT_TOKENS.clear();
         logger.info("HOT token registry cleared");
     }
@@ -79,16 +83,16 @@ public final class HotTokenRegistry {
     /**
      * Get all hot token count.
      */
-    public static int count() {
+    public int count() {
         return HOT_TOKENS.size();
     }
 
     /**
      * Get valid token count.
      */
-    public static int validCount() {
+    public int validCount() {
         return (int) HOT_TOKENS.values().stream()
-                .filter(t -> Instant.now().isBefore(t.validUntil()))
+                .filter(t -> timeProvider.now().isBefore(t.validUntil()))
                 .count();
     }
 

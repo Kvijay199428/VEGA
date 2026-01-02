@@ -1,7 +1,7 @@
 package com.vegatrader.upstox.auth.service;
 
 import com.vegatrader.upstox.auth.db.ApiName;
-import com.vegatrader.upstox.auth.db.entity.UpstoxTokenEntity;
+import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
 import com.vegatrader.upstox.auth.selenium.v2.LoginConfigV2;
 import com.vegatrader.upstox.auth.selenium.v2.LoginResultV2;
 
@@ -26,23 +26,24 @@ public class UpstoxTokenMapper {
         LocalDateTime now = LocalDateTime.now(IST);
         LocalDateTime expiryTime = calculateExpiry(now);
 
-        return UpstoxTokenEntity.builder()
-                .accessToken(result.getAccessToken())
-                .apiName(config.getApiName())
-                .clientId(config.getClientId())
-                .clientSecret(config.getClientSecret())
-                .createdAt(System.currentTimeMillis())
-                .expiresIn(result.getExpiresIn() > 0 ? result.getExpiresIn() : 86400L)
-                .isPrimary(config.isPrimary())
-                .redirectUri(config.getRedirectUri())
-                .tokenType("Bearer")
-                .apiIndex(getApiIndex(config.getApiName()))
-                .generatedAt(now.format(DATETIME_FORMAT))
-                .isActive(1)
-                .purpose(getPurpose(config.getApiName()))
-                .updatedAt(System.currentTimeMillis())
-                .validityAt(expiryTime.format(DATETIME_FORMAT))
-                .build();
+        UpstoxTokenEntity entity = new UpstoxTokenEntity();
+        entity.setAccessToken(result.getAccessToken());
+        entity.setApiName(config.getApiName());
+        entity.setClientId(config.getClientId());
+        entity.setClientSecret(config.getClientSecret());
+        entity.setCreatedAt(now);
+        entity.setExpiresIn(result.getExpiresIn() > 0 ? result.getExpiresIn() : 86400L);
+        entity.setIsPrimary(config.isPrimary());
+        entity.setRedirectUri(config.getRedirectUri());
+        entity.setTokenType("Bearer");
+        entity.setApiIndex(getApiIndex(config.getApiName()));
+        entity.setGeneratedAt(now.format(DATETIME_FORMAT));
+        entity.setIsActive(1);
+        entity.setPurpose(getPurpose(config.getApiName()));
+        entity.setUpdatedAt(System.currentTimeMillis());
+        entity.setValidityAt(expiryTime.format(DATETIME_FORMAT));
+
+        return entity;
     }
 
     /**
@@ -54,23 +55,24 @@ public class UpstoxTokenMapper {
         LocalDateTime now = LocalDateTime.now(IST);
         LocalDateTime expiryTime = calculateExpiry(now);
 
-        return UpstoxTokenEntity.builder()
-                .accessToken(accessToken)
-                .apiName(apiName)
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .createdAt(System.currentTimeMillis())
-                .expiresIn(86400L)
-                .isPrimary(ApiName.PRIMARY.name().equals(apiName))
-                .redirectUri(redirectUri)
-                .tokenType("Bearer")
-                .apiIndex(getApiIndex(apiName))
-                .generatedAt(now.format(DATETIME_FORMAT))
-                .isActive(1)
-                .purpose(getPurpose(apiName))
-                .updatedAt(System.currentTimeMillis())
-                .validityAt(expiryTime.format(DATETIME_FORMAT))
-                .build();
+        UpstoxTokenEntity entity = new UpstoxTokenEntity();
+        entity.setAccessToken(accessToken);
+        entity.setApiName(apiName);
+        entity.setClientId(clientId);
+        entity.setClientSecret(clientSecret);
+        entity.setCreatedAt(now);
+        entity.setExpiresIn(86400L);
+        entity.setIsPrimary(ApiName.PRIMARY.name().equals(apiName));
+        entity.setRedirectUri(redirectUri);
+        entity.setTokenType("Bearer");
+        entity.setApiIndex(getApiIndex(apiName));
+        entity.setGeneratedAt(now.format(DATETIME_FORMAT));
+        entity.setIsActive(1);
+        entity.setPurpose(getPurpose(apiName));
+        entity.setUpdatedAt(System.currentTimeMillis());
+        entity.setValidityAt(expiryTime.format(DATETIME_FORMAT));
+
+        return entity;
     }
 
     /**

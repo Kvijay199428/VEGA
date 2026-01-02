@@ -1,5 +1,5 @@
 import { httpClient } from '../api/httpClient'
-import { SubscriptionRequest, SubscriptionResponse, LiveMarketSnapshot, OrderBookSnapshot } from '../types/market'
+import { SubscriptionRequest, SubscriptionResponse } from '../types/market'
 
 const BASE_PATH = '/api/market'
 

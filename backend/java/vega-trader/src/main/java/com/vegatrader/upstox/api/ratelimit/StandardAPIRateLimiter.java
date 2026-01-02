@@ -1,7 +1,9 @@
 package com.vegatrader.upstox.api.ratelimit;
 
+import com.vegatrader.util.time.TimeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,48 +27,46 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * in multi-threaded environments.
  * </p>
  * <p>
- * <b>Usage Example:</b>
- * 
- * <pre>{@code
- * StandardAPIRateLimiter limiter = new StandardAPIRateLimiter();
- * 
- * // Check before making request
- * if (limiter.checkLimit() == RateLimitStatus.OK) {
- *     // Make API call
- *     makeApiCall();
- *     // Record the request
- *     limiter.recordRequest();
- * } else {
- *     // Wait and retry
- *     limiter.waitAndRetry(3);
- * }
- * }</pre>
+ * Uses TimeProvider for deterministic time during Market Replay.
  * </p>
  *
  * @since 2.0.0
  */
+@Component
 public class StandardAPIRateLimiter implements RateLimiter {
 
     private static final Logger logger = LoggerFactory.getLogger(StandardAPIRateLimiter.class);
 
     private final RateLimitConfig config;
+    private TimeProvider timeProvider;
     private final Queue<Instant> requestTimes = new LinkedList<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
+     * Default constructor for frameworks/proxies.
+     */
+    protected StandardAPIRateLimiter() {
+        this.config = RateLimitConfig.standardApi();
+        this.timeProvider = null;
+    }
+
+    /**
      * Creates a new standard API rate limiter with default limits.
      */
-    public StandardAPIRateLimiter() {
+    public StandardAPIRateLimiter(TimeProvider timeProvider) {
         this.config = RateLimitConfig.standardApi();
+        this.timeProvider = timeProvider;
     }
 
     /**
      * Creates a new rate limiter with custom configuration.
      *
-     * @param config the rate limit configuration
+     * @param config       the rate limit configuration
+     * @param timeProvider the time provider
      */
-    public StandardAPIRateLimiter(RateLimitConfig config) {
+    public StandardAPIRateLimiter(RateLimitConfig config, TimeProvider timeProvider) {
         this.config = config;
+        this.timeProvider = timeProvider;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class StandardAPIRateLimiter implements RateLimiter {
         lock.writeLock().lock();
         try {
             cleanupOldRequests();
-            Instant now = Instant.now();
+            Instant now = timeProvider.now();
 
             // Check 30-minute limit (most restrictive for long-term)
             if (requestTimes.size() >= config.getPer30MinLimit()) {
@@ -114,7 +114,7 @@ public class StandardAPIRateLimiter implements RateLimiter {
     public void recordRequest() {
         lock.writeLock().lock();
         try {
-            requestTimes.offer(Instant.now());
+            requestTimes.offer(timeProvider.now());
             logger.debug("Request recorded. Total requests in memory: {}", requestTimes.size());
         } finally {
             lock.writeLock().unlock();
@@ -125,7 +125,7 @@ public class StandardAPIRateLimiter implements RateLimiter {
     public RateLimitUsage getCurrentUsage() {
         lock.readLock().lock();
         try {
-            Instant now = Instant.now();
+            Instant now = timeProvider.now();
             Instant secondAgo = now.minus(Duration.ofSeconds(1));
             Instant minuteAgo = now.minus(Duration.ofMinutes(1));
 
@@ -197,7 +197,7 @@ public class StandardAPIRateLimiter implements RateLimiter {
      * Removes requests outside the 30-minute window.
      */
     private void cleanupOldRequests() {
-        Instant thirtyMinutesAgo = Instant.now().minus(Duration.ofMinutes(30));
+        Instant thirtyMinutesAgo = timeProvider.now().minus(Duration.ofMinutes(30));
         int removed = 0;
 
         while (!requestTimes.isEmpty() && requestTimes.peek().isBefore(thirtyMinutesAgo)) {

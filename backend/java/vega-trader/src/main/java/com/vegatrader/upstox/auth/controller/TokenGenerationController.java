@@ -27,8 +27,8 @@ public class TokenGenerationController {
 
     private final TokenGenerationService generationService;
 
-    public TokenGenerationController() {
-        this.generationService = new TokenGenerationService();
+    public TokenGenerationController(TokenGenerationService generationService) {
+        this.generationService = generationService;
     }
 
     /**

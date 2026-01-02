@@ -1717,3 +1717,1193 @@ Session ID: eeb5dfe6bf510e765b5f487f1335fdea
 2026-01-01 14:20:37.753 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
 2026-01-01 14:20:37.754 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ✓ All tokens present and valid
 2026-01-01 14:20:37.754 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ═══════════════════════════════════════════════════════
+2026-01-01 22:56:21.671 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 22:56:26.077 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 22:56:26.078 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:26.078 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-01 22:56:26.079 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:26.083 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-01 22:56:26.092 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-01 22:56:26.093 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-01 22:56:26.093 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-01 22:56:26.093 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-01 22:56:26.094 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-01 22:56:26.094 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:26.094 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-01 22:56:26.094 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:26.189 [main] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-01 22:56:26.190 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 22:56:26.249 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 22:56:26.253 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 22:56:26.257 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 22:56:26.260 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 22:56:26.765 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 22:56:26.765 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:26.765 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-01 22:56:26.765 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:26.773 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-01 22:56:26.775 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-01 22:56:26.775 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-01 22:56:26.775 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-01 22:56:26.775 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-01 22:56:26.775 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-01 22:56:26.776 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:26.776 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-01 22:56:26.776 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:35.396 [main] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-01 22:56:35.402 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-01 22:56:35.402 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-01 22:56:35.402 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:35.402 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-01 22:56:35
+2026-01-01 22:56:35.402 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:35.405 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-01 22:56:35.406 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 4h 33m
+2026-01-01 22:56:35.407 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 4h 33m
+2026-01-01 22:56:35.407 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 4h 33m
+2026-01-01 22:56:35.407 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 4h 33m
+2026-01-01 22:56:35.408 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 4h 33m
+2026-01-01 22:56:35.408 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 4h 33m
+2026-01-01 22:56:35.408 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:56:35.408 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-01 22:56:35.408 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-01 22:56:35.408 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:57:58.012 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 22:58:02.054 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 22:58:02.055 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:02.055 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-01 22:58:02.055 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:02.056 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-01 22:58:02.057 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-01 22:58:02.057 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-01 22:58:02.057 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-01 22:58:02.058 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-01 22:58:02.058 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-01 22:58:02.058 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:02.058 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-01 22:58:02.058 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:02.094 [main] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-01 22:58:02.098 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 22:58:02.109 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 22:58:02.115 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 22:58:02.121 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 22:58:02.123 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 22:58:02.289 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 22:58:02.290 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:02.293 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-01 22:58:02.296 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:02.306 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-01 22:58:02.307 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-01 22:58:02.307 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-01 22:58:02.307 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-01 22:58:02.307 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-01 22:58:02.307 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-01 22:58:02.308 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:02.308 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-01 22:58:02.308 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:06.646 [main] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-01 22:58:06.652 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-01 22:58:06.653 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-01 22:58:06.653 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:06.654 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-01 22:58:06
+2026-01-01 22:58:06.654 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:06.656 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-01 22:58:06.657 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 4h 31m
+2026-01-01 22:58:06.657 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 4h 31m
+2026-01-01 22:58:06.658 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 4h 31m
+2026-01-01 22:58:06.658 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 4h 31m
+2026-01-01 22:58:06.659 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 4h 31m
+2026-01-01 22:58:06.660 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 4h 31m
+2026-01-01 22:58:06.660 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 22:58:06.660 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-01 22:58:06.660 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-01 22:58:06.660 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:17.395 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 23:03:20.238 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 23:03:20.238 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:20.239 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-01 23:03:20.239 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:20.241 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-01 23:03:20.241 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-01 23:03:20.242 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-01 23:03:20.242 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-01 23:03:20.242 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-01 23:03:20.242 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-01 23:03:20.242 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:20.242 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-01 23:03:20.242 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:20.289 [main] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-01 23:03:20.292 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 23:03:20.304 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 23:03:20.309 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 23:03:20.313 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 23:03:20.316 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 23:03:20.471 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 23:03:20.473 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:20.473 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-01 23:03:20.473 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:20.480 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-01 23:03:20.480 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-01 23:03:20.480 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-01 23:03:20.481 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-01 23:03:20.481 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-01 23:03:20.481 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-01 23:03:20.481 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:20.481 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-01 23:03:20.481 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:25.650 [main] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-01 23:03:25.656 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-01 23:03:25.657 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-01 23:03:25.657 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:25.657 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-01 23:03:25
+2026-01-01 23:03:25.657 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:25.660 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-01 23:03:25.661 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 4h 26m
+2026-01-01 23:03:25.661 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 4h 26m
+2026-01-01 23:03:25.661 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 4h 26m
+2026-01-01 23:03:25.661 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 4h 26m
+2026-01-01 23:03:25.661 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 4h 26m
+2026-01-01 23:03:25.661 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 4h 26m
+2026-01-01 23:03:25.661 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:03:25.662 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-01 23:03:25.662 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-01 23:03:25.662 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:14:49.558 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 23:15:00.503 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 23:15:00.505 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:00.506 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-01 23:15:00.507 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:00.516 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-01 23:15:00.517 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-01 23:15:00.518 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-01 23:15:00.522 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-01 23:15:00.523 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-01 23:15:00.537 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-01 23:15:00.539 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:00.587 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-01 23:15:00.588 [main] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:00.767 [main] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-01 23:15:00.773 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 23:15:00.848 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 23:15:00.898 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 23:15:00.905 [main] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-01 23:15:00.909 [main] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-01 23:15:01.024 [main] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-01 23:15:01.024 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:01.024 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-01 23:15:01.026 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:01.029 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-01 23:15:01.029 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-01 23:15:01.029 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-01 23:15:01.030 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-01 23:15:01.030 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-01 23:15:01.031 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-01 23:15:01.031 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:01.031 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-01 23:15:01.031 [main] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:05.494 [main] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-01 23:15:05.500 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-01 23:15:05.502 [main] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-01 23:15:05.504 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:05.506 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-01 23:15:05
+2026-01-01 23:15:05.506 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:05.508 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-01 23:15:05.513 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 4h 14m
+2026-01-01 23:15:05.518 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 4h 14m
+2026-01-01 23:15:05.520 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 4h 14m
+2026-01-01 23:15:05.531 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 4h 14m
+2026-01-01 23:15:05.538 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 4h 14m
+2026-01-01 23:15:05.539 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 4h 14m
+2026-01-01 23:15:05.541 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-01 23:15:05.545 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-01 23:15:05.547 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-01 23:15:05.554 [main] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:08:24.884 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 00:13:04.629 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 00:37:17.362 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 00:37:21.415 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 00:37:21.415 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:37:21.415 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 00:37:21.415 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:37:21.416 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 00:37:21.416 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 00:37:21.417 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 00:37:21.417 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 00:37:21.417 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 00:37:21.417 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 00:37:21.417 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:37:21.418 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 00:37:21.418 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:40:02.721 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 00:40:07.622 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 00:40:07.622 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:40:07.622 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 00:40:07.622 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:40:07.623 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 00:40:07.624 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 00:40:07.625 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 00:40:07.625 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 00:40:07.625 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 00:40:07.626 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 00:40:07.626 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:40:07.626 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 00:40:07.626 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:44:00.635 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 00:44:05.341 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 00:44:05.342 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:44:05.342 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 00:44:05.342 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:44:05.343 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 00:44:05.343 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 00:44:05.344 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 00:44:05.344 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 00:44:05.344 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 00:44:05.345 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 00:44:05.345 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:44:05.345 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 00:44:05.345 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:44:05.366 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 00:44:05.367 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 00:54:33.880 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 00:54:40.080 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 00:54:40.081 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:40.081 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 00:54:40.081 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:40.082 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 00:54:40.082 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 00:54:40.082 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 00:54:40.082 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 00:54:40.083 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 00:54:40.083 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 00:54:40.083 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:40.083 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 00:54:40.083 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:40.105 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 00:54:40.107 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 00:54:40.123 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 00:54:40.142 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 00:54:40.152 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 00:54:40.252 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 00:54:40.252 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:40.252 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 00:54:40.252 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 00:54:40.255 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:44.951 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 00:54:44.963 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 00:54:44.964 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 00:54:44.964 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:44.965 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 00:54:44
+2026-01-02 00:54:44.965 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:44.966 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 00:54:44.972 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 2h 35m
+2026-01-02 00:54:44.973 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 2h 35m
+2026-01-02 00:54:44.974 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 2h 35m
+2026-01-02 00:54:44.975 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 2h 35m
+2026-01-02 00:54:44.976 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 2h 35m
+2026-01-02 00:54:44.976 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 2h 35m
+2026-01-02 00:54:44.976 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 00:54:44.976 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 00:54:44.977 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 00:54:44.977 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:34.127 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:19:38.929 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:19:38.930 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:38.930 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:19:38.930 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:38.931 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:19:38.931 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:19:38.931 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:19:38.931 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:19:38.931 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:19:38.933 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:19:38.933 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:38.933 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:19:38.933 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:38.958 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:19:38.960 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:19:38.976 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:19:38.989 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:19:38.995 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:19:39.091 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:19:39.091 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:39.091 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:19:39.091 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:39.093 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:19:39.093 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:19:39.093 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:19:39.094 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:19:39.094 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:19:39.094 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:19:39.094 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:39.094 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:19:39.094 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:42.111 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:19:42.113 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:19:42.114 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:19:42.114 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:42.114 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:19:42
+2026-01-02 01:19:42.114 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:42.116 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:19:42.116 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 2h 10m
+2026-01-02 01:19:42.116 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 2h 10m
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 2h 10m
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 2h 10m
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 2h 10m
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 2h 10m
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:19:42.118 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:40.676 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:23:45.007 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:23:45.009 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:45.009 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:23:45.009 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:45.010 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:23:45.011 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:45.028 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:23:45.031 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:23:45.051 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:23:45.068 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:23:45.074 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:23:45.118 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:23:45.122 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:45.122 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:23:45.122 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:23:45.124 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:47.241 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:23:47.245 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:23:47.245 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:23:47.245 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:47.246 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:23:47
+2026-01-02 01:23:47.246 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:47.247 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:23:47.247 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 2h 6m
+2026-01-02 01:23:47.249 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 2h 6m
+2026-01-02 01:23:47.249 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 2h 6m
+2026-01-02 01:23:47.249 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 2h 6m
+2026-01-02 01:23:47.250 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 2h 6m
+2026-01-02 01:23:47.251 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 2h 6m
+2026-01-02 01:23:47.251 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:47.251 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:23:47.251 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:23:47.252 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:52.770 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:23:57.826 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:23:57.828 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:23:57.828 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:57.828 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:23:57.829 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:57.849 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:23:57.850 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:23:57.865 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:23:57.877 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:23:57.882 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:23:57.939 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:23:57.939 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:57.939 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:23:57.939 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:23:57.941 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:05.004 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:26:09.584 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:26:09.585 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:09.585 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:26:09.585 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:09.586 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:26:09.586 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:26:09.586 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:26:09.586 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:26:09.586 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:26:09.586 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:26:09.587 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:09.587 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:26:09.587 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:09.606 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:26:09.607 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:26:09.619 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:26:09.631 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:26:09.635 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:26:09.692 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:26:09.692 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:09.692 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:26:09.692 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:09.694 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:26:09.695 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:11.655 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:26:11.657 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:26:11.657 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:26:11.657 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:11.658 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:26:11
+2026-01-02 01:26:11.658 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:11.659 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:26:11.660 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 2h 3m
+2026-01-02 01:26:11.660 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 2h 3m
+2026-01-02 01:26:11.660 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 2h 3m
+2026-01-02 01:26:11.661 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 2h 3m
+2026-01-02 01:26:11.661 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 2h 3m
+2026-01-02 01:26:11.661 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 2h 3m
+2026-01-02 01:26:11.661 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:26:11.661 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:26:11.661 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:26:11.661 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:34.227 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:30:39.690 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:30:39.691 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:39.691 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:30:39.691 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:30:39.692 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:39.706 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:30:39.708 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:30:39.729 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:30:39.755 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:30:39.763 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:30:39.800 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:30:39.815 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:39.815 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:30:39.815 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:39.817 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:30:39.817 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:30:39.817 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:30:39.818 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:30:39.818 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:30:39.818 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:30:39.818 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:39.818 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:30:39.818 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:30:44.926 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:31:36.558 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:31:40.109 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:31:40.110 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:40.111 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:31:40.111 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:40.112 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:31:40.112 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:31:40.112 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:31:40.112 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:31:40.113 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:31:40.113 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:31:40.113 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:40.113 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:31:40.113 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:40.125 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:31:40.128 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:31:40.144 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:31:40.157 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:31:40.161 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:31:40.195 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:31:40.195 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:40.195 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:31:40.195 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:40.201 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:31:40.202 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:31:40.202 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:31:40.202 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:31:40.202 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:31:40.203 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:31:40.203 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:40.203 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:31:40.203 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:43.425 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:31:43.428 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:31:43.428 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:31:43.429 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:43.429 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:31:43
+2026-01-02 01:31:43.429 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:43.431 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 1h 58m
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 1h 58m
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 1h 58m
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 1h 58m
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 1h 58m
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 1h 58m
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:31:43.433 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:03.540 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:32:10.963 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:32:10.963 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:10.963 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:32:10.963 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:10.964 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:32:10.964 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:32:10.965 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:32:10.965 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:32:10.971 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:32:10.971 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:32:10.971 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:10.971 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:32:10.971 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:11.000 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:32:11.003 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:32:11.105 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:32:11.252 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:32:11.257 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:32:11.400 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:32:11.401 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:11.402 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:32:11.402 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:11.406 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:32:11.407 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:32:11.407 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:32:11.407 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:32:11.407 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:32:11.407 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:32:11.408 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:32:11.408 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:32:11.408 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:10.735 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:38:12.144 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:38:12.144 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:12.144 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:38:12.144 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:38:12.145 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:12.168 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:38:12.169 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:38:12.195 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:38:12.211 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:38:12.217 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:38:12.277 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:38:12.277 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:12.277 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:38:12.277 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:12.280 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:38:12.280 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:38:12.281 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:38:12.281 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:38:12.296 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:38:12.296 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:38:12.296 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:12.296 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:38:12.296 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:14.106 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:38:14.108 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:38:14.108 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:38:14.109 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:14.109 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:38:14
+2026-01-02 01:38:14.109 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:14.109 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 1h 51m
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 1h 51m
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 1h 51m
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 1h 51m
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 1h 51m
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 1h 51m
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:38:14.111 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:38:14.112 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:38:14.386 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: f922f691-5f18-3c2f-b9ac-b32c61ff6b52
+2026-01-02 01:38:14.386 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 9d532144-8698-cbc8-0bed-3b5bb7f2b031
+2026-01-02 01:38:14.393 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: a135c103-dea4-d5de-7462-a91062a9638c
+2026-01-02 01:38:14.408 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 08409c4c-b32d-4ae5-8182-fc8dcf26fe1a
+2026-01-02 01:38:14.424 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: dda95966-e769-809b-39ce-9c968d4070a9
+2026-01-02 01:38:14.445 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 671bcfa9-1502-70cf-6e88-a2e90eb8c1e2
+2026-01-02 01:38:14.453 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 9cbedb90-f849-afb1-55fd-d40cadac1588
+2026-01-02 01:38:14.463 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: d262ffce-0e2c-d119-592f-8d3df2a9e4d3
+2026-01-02 01:38:14.467 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: bca793d8-78ab-43a7-2bfd-55ce15d6d2ab
+2026-01-02 01:38:14.479 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 936378e2-2420-7ad1-1d15-20a4c004dcc5
+2026-01-02 01:38:14.483 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 93b86393-2d91-3cb9-b049-71ac19b2e7d0
+2026-01-02 01:38:15.590 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: a88d191e-81d1-a786-6b1b-5c9cff297311
+2026-01-02 01:38:17.706 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 695ed5ff-c442-00da-ed8b-85b7935f2049
+2026-01-02 01:38:18.975 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 45966c13-7362-33fb-458e-4cc4f938dc7f
+2026-01-02 01:39:13.509 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: dda95966-e769-809b-39ce-9c968d4070a9
+2026-01-02 01:39:13.509 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 9cbedb90-f849-afb1-55fd-d40cadac1588
+2026-01-02 01:39:13.510 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: a88d191e-81d1-a786-6b1b-5c9cff297311
+2026-01-02 01:39:13.510 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 936378e2-2420-7ad1-1d15-20a4c004dcc5
+2026-01-02 01:39:13.510 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: d262ffce-0e2c-d119-592f-8d3df2a9e4d3
+2026-01-02 01:39:13.510 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 695ed5ff-c442-00da-ed8b-85b7935f2049
+2026-01-02 01:39:13.510 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 671bcfa9-1502-70cf-6e88-a2e90eb8c1e2
+2026-01-02 01:39:13.510 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: a135c103-dea4-d5de-7462-a91062a9638c
+2026-01-02 01:39:13.511 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: bca793d8-78ab-43a7-2bfd-55ce15d6d2ab
+2026-01-02 01:39:13.511 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 9d532144-8698-cbc8-0bed-3b5bb7f2b031
+2026-01-02 01:39:13.511 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 08409c4c-b32d-4ae5-8182-fc8dcf26fe1a
+2026-01-02 01:39:13.511 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: f922f691-5f18-3c2f-b9ac-b32c61ff6b52
+2026-01-02 01:39:13.511 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 45966c13-7362-33fb-458e-4cc4f938dc7f
+2026-01-02 01:39:13.511 [Thread-44] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 93b86393-2d91-3cb9-b049-71ac19b2e7d0
+2026-01-02 01:39:57.808 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:40:00.465 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:40:00.466 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:00.466 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:40:00.466 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:00.466 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:40:00.467 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:00.483 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:40:00.484 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:40:00.505 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:40:00.534 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:40:00.542 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:40:00.587 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:40:00.587 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:00.587 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:40:00.587 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:00.589 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:40:00.589 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:40:00.598 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:40:00.598 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:40:00.598 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:40:00.598 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:40:00.598 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:00.599 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:40:00.599 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:02.768 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:40:02.773 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:40:02.773 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:40:02.773 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:02.773 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:40:02
+2026-01-02 01:40:02.774 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:02.777 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:40:02.778 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 1h 49m
+2026-01-02 01:40:02.778 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 1h 49m
+2026-01-02 01:40:02.778 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 1h 49m
+2026-01-02 01:40:02.778 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 1h 49m
+2026-01-02 01:40:02.779 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 1h 49m
+2026-01-02 01:40:02.779 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 1h 49m
+2026-01-02 01:40:02.779 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:02.779 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:40:02.779 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:40:02.779 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:02.844 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: fbea5e6f-4c85-0213-81a8-873f5f5337b7
+2026-01-02 01:40:02.873 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 4f6a6dae-ed64-9383-849a-82bc3d83b850
+2026-01-02 01:40:02.889 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: fa2ea8d6-bb63-c902-1d1e-2f9ede94a01e
+2026-01-02 01:40:02.904 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: e1f06d4d-05ab-9421-5414-19ca20110b98
+2026-01-02 01:40:02.920 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 8ae4d7d6-6887-928e-06b4-dffd770ad065
+2026-01-02 01:40:02.934 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: cb9dbfe7-74a7-2c62-b38d-fa41373647a1
+2026-01-02 01:40:02.951 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c3e933ea-8f20-1bc5-9678-aad912d64c59
+2026-01-02 01:40:02.965 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 0ed40c08-195e-0712-f5bc-63a5de35edb8
+2026-01-02 01:40:02.981 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 344b9e9d-d05e-4c5e-ba0f-00649bc123f6
+2026-01-02 01:40:02.998 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 61188c52-76e4-b2ee-4333-dc9cb4f766ba
+2026-01-02 01:40:05.292 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 5b1eb9a7-b179-ce39-7551-ee5a85bb8a42
+2026-01-02 01:40:05.582 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: af13776a-3172-8a94-1763-1fac1dcc1604
+2026-01-02 01:40:05.675 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 2e2cbb3d-1749-c4bc-5c38-03124463c743
+2026-01-02 01:40:05.696 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 97656f4d-9501-c30b-c1f6-af8ebf40caff
+2026-01-02 01:40:09.593 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:40:13.561 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:40:13.561 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:13.561 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:40:13.561 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:40:13.562 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:13.582 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:40:13.583 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:40:13.595 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:40:13.608 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:40:13.612 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:40:13.676 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:40:13.676 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:13.676 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:40:13.676 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:13.681 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:40:13.681 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:40:13.681 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:40:13.681 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:40:13.681 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:40:13.681 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:40:13.682 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:40:13.682 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:40:13.682 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:28.791 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:43:33.343 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:43:33.344 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:33.344 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:43:33.344 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:33.345 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:43:33.345 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:43:33.346 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:43:33.347 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:43:33.348 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:43:33.348 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:43:33.348 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:33.348 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:43:33.348 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:33.377 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:43:33.378 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:43:33.396 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:43:33.412 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:43:33.421 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:43:33.489 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:43:33.490 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:33.490 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:43:33.490 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:33.494 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:43:33.494 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:43:33.494 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:43:33.494 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:43:33.494 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:43:33.494 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:43:33.495 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:33.495 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:43:33.495 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:36.211 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:43:36.213 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:43:36.213 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:43:36.214 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:36.214 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:43:36
+2026-01-02 01:43:36.214 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:36.216 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:43:36.217 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 1h 46m
+2026-01-02 01:43:36.217 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 1h 46m
+2026-01-02 01:43:36.217 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 1h 46m
+2026-01-02 01:43:36.217 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 1h 46m
+2026-01-02 01:43:36.218 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 1h 46m
+2026-01-02 01:43:36.218 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 1h 46m
+2026-01-02 01:43:36.218 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:36.218 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:43:36.218 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:43:36.218 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:43:36.647 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: d166bcba-a963-fb87-5708-2dcb1fbbc693
+2026-01-02 01:43:36.647 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 21cd3331-e661-648f-8792-7055b446f769
+2026-01-02 01:43:36.656 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b2b74c2f-3bc0-254f-1c0b-c58a2c9aea73
+2026-01-02 01:43:37.307 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 98a07d9f-d80b-2c8a-978d-d4673b8b5b21
+2026-01-02 01:44:05.082 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 2fbcac21-bd2b-da0b-2439-62b54771300c
+2026-01-02 01:44:05.106 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 509b56dd-ea7d-8e31-2e74-bd234862e379
+2026-01-02 01:44:05.113 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 2fbcac21-bd2b-da0b-2439-62b54771300c
+2026-01-02 01:44:07.109 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 95f2e7b2-2939-ada2-e4db-91e8d930e45e
+2026-01-02 01:44:34.360 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 2f8dfba1-4e49-9b34-2c25-4c391b6c9716
+2026-01-02 01:44:34.395 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: f61804d9-bf2b-d49d-d898-37f1d8f96a33
+2026-01-02 01:44:34.397 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 2f8dfba1-4e49-9b34-2c25-4c391b6c9716
+2026-01-02 01:44:36.402 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c11fbe21-3690-e2b9-179f-7a0feaae972f
+2026-01-02 01:44:57.239 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: f7c1b746-c5c1-3b0e-2d0e-8cb0de89b9ae
+2026-01-02 01:44:57.244 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 6606010d-1a1c-7af1-6630-225ad373dea6
+2026-01-02 01:44:57.252 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 6606010d-1a1c-7af1-6630-225ad373dea6
+2026-01-02 01:44:59.234 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 53d3f07a-0411-739b-47b5-372ba8ab45b7
+2026-01-02 01:45:05.371 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: f7c1b746-c5c1-3b0e-2d0e-8cb0de89b9ae
+2026-01-02 01:45:07.378 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: d1e417bf-3582-69b1-0702-d282563f081a
+2026-01-02 01:45:08.309 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 56543c12-4973-65ce-3d95-f76a9937858e
+2026-01-02 01:45:10.296 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 8a85cd29-0658-c690-da71-fcf0d559f2ca
+2026-01-02 01:45:11.072 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 56543c12-4973-65ce-3d95-f76a9937858e
+2026-01-02 01:45:13.099 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 6d600aee-d177-7201-333d-85171be8714d
+2026-01-02 01:45:18.949 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: f61804d9-bf2b-d49d-d898-37f1d8f96a33
+2026-01-02 01:45:18.959 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 297155e7-1c55-ae34-5c7b-fa24d293a5ae
+2026-01-02 01:45:18.982 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 81667368-fcb0-e626-2f83-0458486302bc
+2026-01-02 01:45:18.991 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 297155e7-1c55-ae34-5c7b-fa24d293a5ae
+2026-01-02 01:45:20.973 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c25d29ad-3261-f12a-1068-02d30bc4a318
+2026-01-02 01:45:21.020 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 3b4afcd0-2c07-cbbf-0387-840efbad2768
+2026-01-02 01:45:25.147 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 10ed5732-a37f-ba2b-02fe-c718bb6587cb
+2026-01-02 01:45:25.148 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 10ed5732-a37f-ba2b-02fe-c718bb6587cb
+2026-01-02 01:45:25.170 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 4dd5c488-21e3-d0df-307c-5de5dbda1cb2
+2026-01-02 01:45:27.164 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 3ecdf5b7-c28a-4a06-5461-707338441da3
+2026-01-02 01:45:53.547 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: fd48aea5-3e1d-75e5-84e0-1b11a29ef67b
+2026-01-02 01:45:53.910 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 4baa88be-26e8-7ae8-201a-e30ec0f1b346
+2026-01-02 01:45:53.951 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: fd48aea5-3e1d-75e5-84e0-1b11a29ef67b
+2026-01-02 01:45:55.618 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: a36dbc8e-6d09-b49e-0261-3c1e307f667f
+2026-01-02 01:46:07.425 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 8c94717d-292d-224d-f31e-6f58f23fd08e
+2026-01-02 01:46:07.430 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 8c94717d-292d-224d-f31e-6f58f23fd08e
+2026-01-02 01:46:07.464 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 2fe12f84-9be3-c33c-600c-073b05546e3d
+2026-01-02 01:46:09.446 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 28b7cdad-6cd3-b87f-4caf-166c5248c8a2
+2026-01-02 01:46:49.463 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 95f2e7b2-2939-ada2-e4db-91e8d930e45e
+2026-01-02 01:46:49.463 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 4dd5c488-21e3-d0df-307c-5de5dbda1cb2
+2026-01-02 01:46:49.463 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 21cd3331-e661-648f-8792-7055b446f769
+2026-01-02 01:46:49.463 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: d166bcba-a963-fb87-5708-2dcb1fbbc693
+2026-01-02 01:46:49.463 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 53d3f07a-0411-739b-47b5-372ba8ab45b7
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 8a85cd29-0658-c690-da71-fcf0d559f2ca
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 3ecdf5b7-c28a-4a06-5461-707338441da3
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 98a07d9f-d80b-2c8a-978d-d4673b8b5b21
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: d1e417bf-3582-69b1-0702-d282563f081a
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 28b7cdad-6cd3-b87f-4caf-166c5248c8a2
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 2fe12f84-9be3-c33c-600c-073b05546e3d
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 81667368-fcb0-e626-2f83-0458486302bc
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 3b4afcd0-2c07-cbbf-0387-840efbad2768
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: c25d29ad-3261-f12a-1068-02d30bc4a318
+2026-01-02 01:46:49.464 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 509b56dd-ea7d-8e31-2e74-bd234862e379
+2026-01-02 01:46:49.465 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b2b74c2f-3bc0-254f-1c0b-c58a2c9aea73
+2026-01-02 01:46:49.465 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: c11fbe21-3690-e2b9-179f-7a0feaae972f
+2026-01-02 01:46:49.465 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 6d600aee-d177-7201-333d-85171be8714d
+2026-01-02 01:46:49.465 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 4baa88be-26e8-7ae8-201a-e30ec0f1b346
+2026-01-02 01:46:49.466 [SpringApplicationShutdownHook] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: a36dbc8e-6d09-b49e-0261-3c1e307f667f
+2026-01-02 01:54:39.736 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:54:44.275 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:54:44.275 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:44.276 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 01:54:44.278 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:44.279 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 01:54:44.280 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 01:54:44.280 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 01:54:44.281 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 01:54:44.281 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 01:54:44.285 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 01:54:44.285 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:44.285 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 01:54:44.287 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:44.330 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 01:54:44.331 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 01:54:44.352 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 01:54:44.368 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 01:54:44.377 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 01:54:44.470 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 01:54:44.471 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:44.471 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 01:54:44.471 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 01:54:44.479 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:48.677 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 01:54:48.679 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 6 / 6
+2026-01-02 01:54:48.679 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: []
+2026-01-02 01:54:48.680 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:48.680 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 01:54:48
+2026-01-02 01:54:48.680 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:48.682 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 6 valid tokens in database
+2026-01-02 01:54:48.682 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_1 | Valid for: 1h 35m
+2026-01-02 01:54:48.682 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: OPTION_CHAIN_2 | Valid for: 1h 35m
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: PRIMARY | Valid for: 1h 35m
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_1 | Valid for: 1h 35m
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_2 | Valid for: 1h 35m
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? Token hydrated: WEBSOCKET_3 | Valid for: 1h 35m
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=6 | Missing=0
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? All tokens present and valid
+2026-01-02 01:54:48.683 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 01:54:48.985 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 15274c86-573c-e3e2-d50c-fac86ed08235
+2026-01-02 01:54:48.987 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 13a1188d-b1f5-ff27-5022-3101bda5640a
+2026-01-02 01:54:49.003 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 14cfbac0-b183-5206-2439-6ba237d65840
+2026-01-02 01:54:49.013 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: f9351f21-13b1-f91c-819d-8d354c549b4e
+2026-01-02 01:54:49.042 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: e608c241-311d-f2e0-8619-0724a4f7dab8
+2026-01-02 01:54:49.047 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: ca5a0f9c-694d-bcc1-a44a-b854c6a75d65
+2026-01-02 01:54:49.060 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b7ad69f8-c2f7-c4bd-72af-64bfbbd3479f
+2026-01-02 01:54:49.069 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b13b451f-307d-e149-99ce-3b81f13ff18e
+2026-01-02 01:54:49.078 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c7786ecc-1644-a381-1259-593d624e1e0f
+2026-01-02 01:54:49.091 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 67226ea8-0bb7-2736-93bb-e81ef524c339
+2026-01-02 01:54:49.098 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: ee6f4ea8-e0eb-22ff-46d3-6b1c24566841
+2026-01-02 01:54:49.107 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 7f382abc-e236-3fe1-bcb9-6b67deef9e73
+2026-01-02 01:54:49.114 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 15222892-5c2e-ccbd-20dc-d5ecae146cff
+2026-01-02 01:54:49.124 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: da2d1123-5fe2-5ba6-afd1-b68f1b83721e
+2026-01-02 01:54:49.129 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b835d310-c44c-9573-67a5-272d52af22fb
+2026-01-02 01:54:49.154 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 302f35bb-713d-6ffd-fe86-59440253a077
+2026-01-02 01:54:49.167 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 6b470c8d-dc46-77ec-1517-f74b8797964a
+2026-01-02 01:54:49.176 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 8e2c9ef1-cd6e-fcf3-adc2-d1bd4a3e229f
+2026-01-02 01:54:49.181 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 5218cebf-67a7-2d04-d9e1-44d6666b8b05
+2026-01-02 01:54:49.502 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: d26f77ac-6854-b895-b58d-1f058ff6fe71
+2026-01-02 01:54:49.673 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: a70c3288-af60-7306-9661-81652f6611cf
+2026-01-02 01:54:50.665 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 3183e90b-fea7-674c-829b-2500d1f8d339
+2026-01-02 01:54:51.946 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 37fa71b4-01b9-4e42-e24f-5b93c260e6e6
+2026-01-02 01:54:53.816 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b267da6c-8f33-adfa-76a4-a084f5157669
+2026-01-02 01:55:07.992 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 3183e90b-fea7-674c-829b-2500d1f8d339
+2026-01-02 01:55:07.993 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b267da6c-8f33-adfa-76a4-a084f5157669
+2026-01-02 01:57:24.246 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: e546e562-2e47-3edd-8846-c2142762c638
+2026-01-02 01:57:27.838 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b11b0e86-dc15-ba99-6490-bfff438beadc
+2026-01-02 01:57:29.958 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 265713a1-0cff-58fb-0612-c72006c00dc2
+2026-01-02 01:57:49.248 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 265713a1-0cff-58fb-0612-c72006c00dc2
+2026-01-02 01:57:50.656 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 5d71614d-ee16-126e-1571-a637e6aa3ad9
+2026-01-02 01:58:23.603 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 5d71614d-ee16-126e-1571-a637e6aa3ad9
+2026-01-02 01:58:25.014 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 844c35d8-f34d-b321-10d4-43732fcf4e90
+2026-01-02 01:58:46.640 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b11b0e86-dc15-ba99-6490-bfff438beadc
+2026-01-02 01:58:47.919 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 39351990-900c-d67b-c64c-664b6f14e456
+2026-01-02 01:58:50.090 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 844c35d8-f34d-b321-10d4-43732fcf4e90
+2026-01-02 01:58:51.616 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 1c14c167-4147-9b50-0bf6-758e1424bd8d
+2026-01-02 01:59:19.286 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 1c14c167-4147-9b50-0bf6-758e1424bd8d
+2026-01-02 01:59:20.874 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 9fa47fce-d04e-46bf-a8b8-335d537de7f7
+2026-01-02 01:59:37.665 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 9fa47fce-d04e-46bf-a8b8-335d537de7f7
+2026-01-02 01:59:38.789 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 1fc5d787-d6e0-7db3-93eb-f3594a63904a
+2026-01-02 02:00:00.416 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 39351990-900c-d67b-c64c-664b6f14e456
+2026-01-02 02:00:01.694 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 38344af8-823c-6fd2-5f43-e6416809b868
+2026-01-02 02:00:44.029 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 38344af8-823c-6fd2-5f43-e6416809b868
+2026-01-02 02:00:45.242 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 544fb12e-993f-87ec-f5c4-a8e00ca2c0f4
+2026-01-02 02:01:57.475 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 544fb12e-993f-87ec-f5c4-a8e00ca2c0f4
+2026-01-02 02:01:58.898 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 85a6811c-bdcf-3115-84af-0a286c338dd1
+2026-01-02 02:02:04.452 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 94795f3d-f113-50f2-b591-bfbab856beb9
+2026-01-02 02:02:09.831 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 85a6811c-bdcf-3115-84af-0a286c338dd1
+2026-01-02 02:02:11.810 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 5a72e6fc-5b42-1a21-23fe-11687e45d96b
+2026-01-02 02:02:29.226 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 4d3082a9-4c06-2a2e-0a93-a8a34fd907e0
+2026-01-02 02:02:46.564 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 5a72e6fc-5b42-1a21-23fe-11687e45d96b
+2026-01-02 02:02:48.713 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 5d790bba-7dc2-b64e-3e49-6796a361e645
+2026-01-02 02:03:24.335 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 0024c7b2-9b33-dd09-5d3e-a2d7f973be00
+2026-01-02 02:03:27.275 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 5d790bba-7dc2-b64e-3e49-6796a361e645
+2026-01-02 02:03:29.528 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 8b0ea17a-0637-6056-476e-767f421adcbc
+2026-01-02 02:03:32.970 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 8b0ea17a-0637-6056-476e-767f421adcbc
+2026-01-02 02:03:34.529 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c4b74e74-d4b9-e863-ce0f-70177f039deb
+2026-01-02 02:03:35.425 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b44caa05-1b14-a7a2-aa88-edeca89aaf3b
+2026-01-02 02:03:41.156 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: c4b74e74-d4b9-e863-ce0f-70177f039deb
+2026-01-02 02:03:42.598 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c03f504b-6f54-9871-af2c-299cd027f2e9
+2026-01-02 02:03:58.318 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b44caa05-1b14-a7a2-aa88-edeca89aaf3b
+2026-01-02 02:04:00.253 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: fabc96c4-a93f-d6be-413c-c3f2855fc05b
+2026-01-02 02:04:41.663 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: b48f979d-ea08-816e-07d6-48d87c048047
+2026-01-02 02:05:56.109 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 564d7a87-df05-3e68-decf-cb096e7f239a
+2026-01-02 02:07:13.723 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: c03f504b-6f54-9871-af2c-299cd027f2e9
+2026-01-02 02:10:15.102 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 14cfbac0-b183-5206-2439-6ba237d65840
+2026-01-02 02:10:15.104 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 67226ea8-0bb7-2736-93bb-e81ef524c339
+2026-01-02 02:10:15.104 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: ca5a0f9c-694d-bcc1-a44a-b854c6a75d65
+2026-01-02 02:10:15.104 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 5218cebf-67a7-2d04-d9e1-44d6666b8b05
+2026-01-02 02:10:15.104 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: c7786ecc-1644-a381-1259-593d624e1e0f
+2026-01-02 02:10:15.551 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 302f35bb-713d-6ffd-fe86-59440253a077
+2026-01-02 02:10:15.552 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 15274c86-573c-e3e2-d50c-fac86ed08235
+2026-01-02 02:10:15.552 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: da2d1123-5fe2-5ba6-afd1-b68f1b83721e
+2026-01-02 02:10:15.879 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b13b451f-307d-e149-99ce-3b81f13ff18e
+2026-01-02 02:10:15.879 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b835d310-c44c-9573-67a5-272d52af22fb
+2026-01-02 02:10:15.879 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 6b470c8d-dc46-77ec-1517-f74b8797964a
+2026-01-02 02:10:15.880 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 7f382abc-e236-3fe1-bcb9-6b67deef9e73
+2026-01-02 02:10:15.880 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 13a1188d-b1f5-ff27-5022-3101bda5640a
+2026-01-02 02:10:16.290 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b7ad69f8-c2f7-c4bd-72af-64bfbbd3479f
+2026-01-02 02:10:16.290 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: a70c3288-af60-7306-9661-81652f6611cf
+2026-01-02 02:10:16.290 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 8e2c9ef1-cd6e-fcf3-adc2-d1bd4a3e229f
+2026-01-02 02:10:16.628 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 15222892-5c2e-ccbd-20dc-d5ecae146cff
+2026-01-02 02:10:16.630 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: e608c241-311d-f2e0-8619-0724a4f7dab8
+2026-01-02 02:10:16.630 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: d26f77ac-6854-b895-b58d-1f058ff6fe71
+2026-01-02 02:10:17.025 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: f9351f21-13b1-f91c-819d-8d354c549b4e
+2026-01-02 02:10:17.027 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: ee6f4ea8-e0eb-22ff-46d3-6b1c24566841
+2026-01-02 02:10:17.027 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 37fa71b4-01b9-4e42-e24f-5b93c260e6e6
+2026-01-02 02:10:18.251 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: e546e562-2e47-3edd-8846-c2142762c638
+2026-01-02 02:10:19.881 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 1fc5d787-d6e0-7db3-93eb-f3594a63904a
+2026-01-02 02:10:19.883 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 94795f3d-f113-50f2-b591-bfbab856beb9
+2026-01-02 02:10:20.078 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 4d3082a9-4c06-2a2e-0a93-a8a34fd907e0
+2026-01-02 02:10:20.384 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 0024c7b2-9b33-dd09-5d3e-a2d7f973be00
+2026-01-02 02:10:22.917 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 71d9b583-45e3-3619-10ab-6a9e3c916342
+2026-01-02 02:10:23.060 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 1397ddb2-af1d-392d-c517-e76c5983df72
+2026-01-02 02:10:23.558 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: b48f979d-ea08-816e-07d6-48d87c048047
+2026-01-02 02:10:23.561 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 564d7a87-df05-3e68-decf-cb096e7f239a
+2026-01-02 02:10:23.573 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 71d9b583-45e3-3619-10ab-6a9e3c916342
+2026-01-02 02:10:23.577 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: fabc96c4-a93f-d6be-413c-c3f2855fc05b
+2026-01-02 02:10:29.449 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 1397ddb2-af1d-392d-c517-e76c5983df72
+2026-01-02 02:10:30.812 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 5cdbffbb-87c2-4d65-b9bb-5c29687a65c5
+2026-01-02 02:10:33.363 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 5cdbffbb-87c2-4d65-b9bb-5c29687a65c5
+2026-01-02 02:10:34.835 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 5175e033-52bd-1d31-2e30-110523cf9ad9
+2026-01-02 02:10:35.753 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 5175e033-52bd-1d31-2e30-110523cf9ad9
+2026-01-02 02:10:36.598 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: f05eb314-3735-f7fa-246b-718c7f91569a
+2026-01-02 02:11:08.517 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 83eba8b4-c1be-8ca0-c707-e0af0d9a7eb5
+2026-01-02 02:11:14.783 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: f05eb314-3735-f7fa-246b-718c7f91569a
+2026-01-02 02:11:17.729 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 3907de2c-e365-cf14-2922-3b46a3cd5914
+2026-01-02 02:11:32.643 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 83eba8b4-c1be-8ca0-c707-e0af0d9a7eb5
+2026-01-02 02:11:34.004 [http-nio-28020-exec-9] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: f15b5810-3cd4-d09d-31ba-37d33b77503c
+2026-01-02 02:12:28.957 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: f15b5810-3cd4-d09d-31ba-37d33b77503c
+2026-01-02 02:12:30.217 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 596fdf04-9d17-ab0c-d2d1-1b0b1adc3d8c
+2026-01-02 02:12:32.677 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 596fdf04-9d17-ab0c-d2d1-1b0b1adc3d8c
+2026-01-02 02:12:33.819 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 370e01f3-c7cc-3ff1-7fba-3f00346e04c7
+2026-01-02 02:13:52.136 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 3907de2c-e365-cf14-2922-3b46a3cd5914
+2026-01-02 02:15:23.693 [http-nio-28020-exec-4] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 0699a058-78b2-7870-dd45-5260ce40486b
+2026-01-02 02:15:32.415 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c40556e7-a8e8-cf95-bacd-e2de65a34900
+2026-01-02 02:17:31.946 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: c40556e7-a8e8-cf95-bacd-e2de65a34900
+2026-01-02 02:17:33.451 [http-nio-28020-exec-5] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: a9632ea5-71e6-6f16-63df-c12bba348103
+2026-01-02 02:21:15.250 [http-nio-28020-exec-3] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 370e01f3-c7cc-3ff1-7fba-3f00346e04c7
+2026-01-02 02:25:33.501 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: a9632ea5-71e6-6f16-63df-c12bba348103
+2026-01-02 02:25:34.752 [http-nio-28020-exec-8] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: eef16854-6fff-83c1-af8d-a9dfbf425bd6
+2026-01-02 02:26:44.199 [http-nio-28020-exec-1] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: eef16854-6fff-83c1-af8d-a9dfbf425bd6
+2026-01-02 02:26:46.019 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 2fc88aed-7241-2b97-25d2-64dfc9322e23
+2026-01-02 02:28:32.667 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: 2fc88aed-7241-2b97-25d2-64dfc9322e23
+2026-01-02 02:28:34.318 [http-nio-28020-exec-6] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: ce17836f-d68e-420f-854d-d7c75ce97204
+2026-01-02 02:45:37.305 [http-nio-28020-exec-10] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: ce17836f-d68e-420f-854d-d7c75ce97204
+2026-01-02 02:45:38.772 [http-nio-28020-exec-7] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: 85fb088a-c1ba-7eca-03a9-f8f7400934ae
+2026-01-02 11:05:16.649 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 11:05:29.572 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 11:05:29.572 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:29.572 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 11:05:29.572 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:29.574 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 11:05:29.576 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 11:05:29.577 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 11:05:29.577 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 11:05:29.578 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 11:05:29.578 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 11:05:29.578 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:29.578 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 11:05:29.578 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:29.967 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 11:05:29.976 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 11:05:30.056 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 11:05:30.247 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 11:05:30.257 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 11:05:31.112 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 11:05:31.115 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:31.258 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 11:05:31.259 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:31.263 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 11:05:31.263 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 11:05:31.263 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 11:05:31.263 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 11:05:31.263 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 11:05:31.263 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 11:05:31.263 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:31.264 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 11:05:31.264 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:47.546 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_1 is expiring soon. Triggering refresh...
+2026-01-02 11:05:47.548 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_2 is expiring soon. Triggering refresh...
+2026-01-02 11:05:47.569 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token PRIMARY is expiring soon. Triggering refresh...
+2026-01-02 11:05:47.569 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_1 is expiring soon. Triggering refresh...
+2026-01-02 11:05:47.569 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_2 is expiring soon. Triggering refresh...
+2026-01-02 11:05:47.569 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_3 is expiring soon. Triggering refresh...
+2026-01-02 11:05:47.788 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 11:05:47.931 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 0 / 6
+2026-01-02 11:05:47.932 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: [WEBSOCKET_1, OPTION_CHAIN_1, WEBSOCKET_2, OPTION_CHAIN_2, WEBSOCKET_3, PRIMARY]
+2026-01-02 11:05:47.961 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:47.962 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 11:05:47
+2026-01-02 11:05:47.962 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:47.965 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 0 valid tokens in database
+2026-01-02 11:05:47.966 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:48.051 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=0 | Missing=6
+2026-01-02 11:05:48.053 [restartedMain] WARN  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? 6 token(s) require generation
+2026-01-02 11:05:48.201 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:05:49.925 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection established: c962d1c8-8635-5a1a-9ade-d2f858eb0f9a
+2026-01-02 11:10:45.979 [http-nio-28020-exec-2] DEBUG c.v.u.a.w.AuthStatusWebSocketHandler | sid= uid= tid= | Auth WebSocket Status Connection closed: c962d1c8-8635-5a1a-9ade-d2f858eb0f9a
+2026-01-02 11:10:47.593 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_1 is expiring soon. Triggering refresh...
+2026-01-02 11:10:47.594 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_2 is expiring soon. Triggering refresh...
+2026-01-02 11:10:47.594 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token PRIMARY is expiring soon. Triggering refresh...
+2026-01-02 11:10:47.594 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_1 is expiring soon. Triggering refresh...
+2026-01-02 11:10:47.594 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_2 is expiring soon. Triggering refresh...
+2026-01-02 11:10:47.594 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_3 is expiring soon. Triggering refresh...
+2026-01-02 11:15:47.606 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_1 is expiring soon. Triggering refresh...
+2026-01-02 11:15:47.606 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_2 is expiring soon. Triggering refresh...
+2026-01-02 11:15:47.606 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token PRIMARY is expiring soon. Triggering refresh...
+2026-01-02 11:15:47.607 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_1 is expiring soon. Triggering refresh...
+2026-01-02 11:15:47.607 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_2 is expiring soon. Triggering refresh...
+2026-01-02 11:15:47.607 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_3 is expiring soon. Triggering refresh...
+2026-01-02 11:17:39.138 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 11:17:43.781 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 11:17:43.781 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:43.781 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 11:17:43.781 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:43.782 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 11:17:43.783 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 11:17:43.783 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 11:17:43.783 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 11:17:43.783 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 11:17:43.783 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 11:17:43.783 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:43.784 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 11:17:43.784 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:43.804 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 11:17:43.808 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 11:17:43.830 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 11:17:43.861 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 11:17:43.878 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 11:17:43.961 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 11:17:43.962 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:43.963 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 11:17:43.963 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 11:17:43.966 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:48.015 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_1 is expiring soon. Triggering refresh...
+2026-01-02 11:17:48.016 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token OPTION_CHAIN_2 is expiring soon. Triggering refresh...
+2026-01-02 11:17:48.016 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token PRIMARY is expiring soon. Triggering refresh...
+2026-01-02 11:17:48.016 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_1 is expiring soon. Triggering refresh...
+2026-01-02 11:17:48.020 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_2 is expiring soon. Triggering refresh...
+2026-01-02 11:17:48.024 [scheduling-1] INFO  c.v.u.a.s.TokenRefreshScheduler | sid= uid= tid= | [TOKEN-REFRESH] Token WEBSOCKET_3 is expiring soon. Triggering refresh...
+2026-01-02 11:17:48.028 [restartedMain] INFO  c.v.u.a.b.AuthStartupInitializer | sid= uid= tid= | [AUTH-BOOT] Hydrating tokens from database...
+2026-01-02 11:17:48.032 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Valid APIs: 0 / 6
+2026-01-02 11:17:48.033 [restartedMain] INFO  c.v.u.auth.state.AuthSessionState | sid= uid= tid= | [AUTH-HYDRATE] Missing: [WEBSOCKET_1, OPTION_CHAIN_1, WEBSOCKET_2, OPTION_CHAIN_2, WEBSOCKET_3, PRIMARY]
+2026-01-02 11:17:48.033 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:48.034 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Starting token hydration at 2026-01-02 11:17:48
+2026-01-02 11:17:48.034 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:48.039 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Found 0 valid tokens in database
+2026-01-02 11:17:48.042 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:17:48.044 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] Hydration complete | Valid=0 | Missing=6
+2026-01-02 11:17:48.046 [restartedMain] WARN  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | [AUTH-HYDRATION] ? 6 token(s) require generation
+2026-01-02 11:17:48.046 [restartedMain] INFO  c.v.u.a.l.TokenHydrationService | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:04.833 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 11:18:12.815 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 11:18:12.815 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:12.815 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | Discovering Upstox API Credentials from .env file
+2026-01-02 11:18:12.815 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:12.815 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 0: PRIMARY (4871f658...)
+2026-01-02 11:18:12.817 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 1: WEBSOCKET_1 (9aff3af3...)
+2026-01-02 11:18:12.817 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 2: WEBSOCKET_2 (17bb10d9...)
+2026-01-02 11:18:12.817 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 3: WEBSOCKET_3 (747e91fb...)
+2026-01-02 11:18:12.818 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 4: OPTION_CHAIN_1 (04362a8f...)
+2026-01-02 11:18:12.818 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Discovered API 5: OPTION_CHAIN_2 (096449e9...)
+2026-01-02 11:18:12.818 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:12.818 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ? Total APIs discovered: 6
+2026-01-02 11:18:12.818 [restartedMain] INFO  c.v.u.a.s.ApiCredentialsDiscovery | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:12.852 [restartedMain] INFO  c.v.u.a.db.SqliteDataSourceFactory | sid= uid= tid= | ? SQLite DataSource initialized: D:\projects\VEGA TRADER\backend\java\vega-trader\database\vega_trade.db
+2026-01-02 11:18:12.855 [restartedMain] INFO  c.v.u.a.db.UpstoxTokenRepositoryImpl | sid= uid= tid= | ? upstox_tokens table ensured
+2026-01-02 11:18:12.891 [restartedMain] INFO  c.v.u.a.s.v2.EnvConfigLoaderV2 | sid= uid= tid= | ? Loaded 18 properties from: D:\projects\VEGA TRADER\backend\java\vega-trader\.env
+2026-01-02 11:18:12.909 [restartedMain] INFO  c.v.u.a.s.ExecutionStateRepository | sid= uid= tid= | ? token_execution_state table ensured
+2026-01-02 11:18:12.917 [restartedMain] INFO  c.v.u.auth.service.HotTokenRegistry | sid= uid= tid= | HotTokenRegistry initialized with TimeProvider
+2026-01-02 11:18:13.018 [restartedMain] INFO  c.v.u.a.repository.TokenRepository | sid= uid= tid= | ? Database table 'upstox_tokens' verified/created.
+2026-01-02 11:18:13.018 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:13.018 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Initializing Token Cache from Database
+2026-01-02 11:18:13.018 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:13.026 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_1
+2026-01-02 11:18:13.026 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: OPTION_CHAIN_2
+2026-01-02 11:18:13.027 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: PRIMARY
+2026-01-02 11:18:13.027 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_1
+2026-01-02 11:18:13.027 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_2
+2026-01-02 11:18:13.027 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ? Loaded token: WEBSOCKET_3
+2026-01-02 11:18:13.027 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????
+2026-01-02 11:18:13.029 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | Token Cache Initialized: 6 tokens
+2026-01-02 11:18:13.029 [restartedMain] INFO  c.v.u.auth.provider.TokenProvider | sid= uid= tid= | ???????????????????????????????????????????????????????

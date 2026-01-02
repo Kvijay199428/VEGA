@@ -17,68 +17,51 @@ import Orders from './pages/Orders'
 import RiskDashboard from './pages/RiskDashboard'
 import AccountPage from './pages/AccountPage'
 import SettingsPage from './pages/SettingsPage'
+import VegaDashboard from './pages/VegaDashboard'
 
 import { useKillSwitch } from './hooks/useKillSwitch'
-import { useCommandPalette } from './hooks/useCommandPalette'
+
+import { AuthProvider } from './context/AuthProvider'
 
 /**
  * Main App Component - Bloomberg-style Terminal.
- * 
- * Structure:
- * - Bootstrap wraps everything for session recovery
- * - /login uses GuardedLoginPage (auto-redirects if session valid)
- * - /auth/callback is public (OAuth redirect)
- * - All other routes use TerminalLayout with F1-F8 navigation
  */
 function App() {
     useKillSwitch()
-    useCommandPalette()
+    // useCommandPalette call if defined
+
     return (
         <PageProvider>
-            <Bootstrap>
-                <Routes>
-                    {/* Public routes with session guard */}
-                    <Route path="/login" element={<GuardedLoginPage />} />
-                    <Route path="/auth/callback" element={<AuthCallback />} />
+            <AuthProvider>
+                <Bootstrap>
+                    <Routes>
+                        <Route path="/login" element={<GuardedLoginPage />} />
+                        <Route path="/auth/callback" element={<AuthCallback />} />
 
-                    {/* Protected routes with Terminal Layout */}
-                    <Route
-                        path="/*"
-                        element={
-                            <ProtectedRoute>
-                                <TerminalLayout />
-                            </ProtectedRoute>
-                        }
-                    >
-                        {/* F1: Dashboard (default) */}
-                        <Route index element={<Dashboard />} />
-                        <Route path="dashboard" element={<Dashboard />} />
-
-                        {/* F2: Market Watch */}
-                        <Route path="market-watch" element={<MarketWatch />} />
-
-                        {/* F3: Options Chain */}
-                        <Route path="options" element={<OptionsChain />} />
-
-                        {/* F4: Sectors */}
-                        <Route path="sectors" element={<Sectors />} />
-
-                        {/* F5: Orders */}
-                        <Route path="orders" element={<Orders />} />
-
-                        {/* F6: Risk Dashboard */}
-                        <Route path="risk" element={<RiskDashboard />} />
-
-                        {/* F7: Account */}
-                        <Route path="account" element={<AccountPage />} />
-
-                        {/* F8: Settings */}
-                        <Route path="settings" element={<SettingsPage />} />
-                    </Route>
-                </Routes>
-            </Bootstrap>
+                        <Route
+                            path="/*"
+                            element={
+                                <ProtectedRoute>
+                                    <TerminalLayout />
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route index element={<Dashboard />} />
+                            <Route path="dashboard" element={<Dashboard />} />
+                            <Route path="market-watch" element={<MarketWatch />} />
+                            <Route path="options" element={<OptionsChain />} />
+                            <Route path="sectors" element={<Sectors />} />
+                            <Route path="orders" element={<Orders />} />
+                            <Route path="risk" element={<RiskDashboard />} />
+                            <Route path="account" element={<AccountPage />} />
+                            <Route path="settings" element={<SettingsPage />} />
+                            <Route path="vega-status" element={<VegaDashboard />} />
+                        </Route>
+                    </Routes>
+                </Bootstrap>
+            </AuthProvider>
         </PageProvider>
     )
 }
 
-export default App
+export default App;

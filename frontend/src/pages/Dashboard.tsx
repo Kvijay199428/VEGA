@@ -5,6 +5,8 @@ import { useAlertData } from '../hooks/useAlertData'
 import { useAuthStatus } from '../hooks/useAuthStatus'
 import { usePortfolioKpis } from '../hooks/usePortfolioKpis'
 import { usePageTitle } from '../context/PageContext'
+import { ReplayControls } from '../components/ReplayControls'
+import { replayService } from '../services/replayService'
 
 /**
  * Dashboard - F1 Home screen with indices, KPIs, and alerts.
@@ -14,7 +16,7 @@ export default function Dashboard() {
     const navigate = useNavigate()
     const { indices, loading: indicesLoading } = useDashboardData()
     const { alerts } = useAlertData()
-    const { status: authStatus } = useAuthStatus()
+    const authStatus = useAuthStatus()
     const { kpis } = usePortfolioKpis()
 
     // Set page title in TopBar
@@ -41,6 +43,13 @@ export default function Dashboard() {
 
     return (
         <div className="space-y-6">
+            {/* Replay Controls Panel */}
+            <ReplayControls
+                onLoad={(path) => replayService.loadJournal(path)}
+                onSeek={(ts) => replayService.seek(ts)}
+                onPlay={(ptr, lim) => replayService.play(ptr, lim)}
+            />
+
             {/* Indices Row */}
             <div className="grid grid-cols-4 gap-4">
                 {indices.map((idx) => (
@@ -126,7 +135,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="p-2 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-                    {!authStatus?.authenticated && (
+                    {authStatus?.status !== 'authenticated' && (
                         <div className="p-3 rounded bg-[#f0c808]/10 border-l-2 border-[#f0c808]">
                             <div className="flex justify-between items-start">
                                 <span className="text-[#f0c808] font-bold text-xs uppercase">Auth Critical</span>
@@ -155,7 +164,7 @@ export default function Dashboard() {
                         </div>
                     ))}
 
-                    {alerts.length === 0 && authStatus?.authenticated && (
+                    {alerts.length === 0 && authStatus?.status === 'authenticated' && (
                         <div className="text-center text-[#6e7681] text-xs py-8">
                             No recent alerts
                         </div>

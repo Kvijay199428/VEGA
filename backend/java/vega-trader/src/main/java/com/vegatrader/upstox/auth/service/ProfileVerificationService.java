@@ -2,6 +2,7 @@ package com.vegatrader.upstox.auth.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -15,6 +16,7 @@ import java.time.Duration;
  *
  * @since 2.2.0
  */
+@Service
 public class ProfileVerificationService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileVerificationService.class);

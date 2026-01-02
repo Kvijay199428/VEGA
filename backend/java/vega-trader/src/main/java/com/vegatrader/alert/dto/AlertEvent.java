@@ -1,28 +1,29 @@
 package com.vegatrader.alert.dto;
 
 public class AlertEvent {
-    private String id;
+    private String clientId;
     private String ruleId;
     private String instrumentKey;
     private String message;
-    private double value;
+    private double triggerValue;
     private long timestamp;
 
     public AlertEvent() {
     }
 
-    public AlertEvent(String id, String ruleId, String instrumentKey, String message, double value, long timestamp) {
-        this.id = id;
+    public AlertEvent(String clientId, String ruleId, String instrumentKey, String message, double triggerValue,
+            long timestamp) {
+        this.clientId = clientId;
         this.ruleId = ruleId;
         this.instrumentKey = instrumentKey;
         this.message = message;
-        this.value = value;
+        this.triggerValue = triggerValue;
         this.timestamp = timestamp;
     }
 
     // Getters
-    public String getId() {
-        return id;
+    public String getClientId() {
+        return clientId;
     }
 
     public String getRuleId() {
@@ -37,8 +38,8 @@ public class AlertEvent {
         return message;
     }
 
-    public double getValue() {
-        return value;
+    public double getTriggerValue() {
+        return triggerValue;
     }
 
     public long getTimestamp() {
@@ -46,8 +47,8 @@ public class AlertEvent {
     }
 
     // Setters
-    public void setId(String id) {
-        this.id = id;
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     public void setRuleId(String ruleId) {
@@ -62,8 +63,8 @@ public class AlertEvent {
         this.message = message;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public void setTriggerValue(double triggerValue) {
+        this.triggerValue = triggerValue;
     }
 
     public void setTimestamp(long timestamp) {
@@ -78,8 +79,8 @@ public class AlertEvent {
     public static class AlertEventBuilder {
         private AlertEvent event = new AlertEvent();
 
-        public AlertEventBuilder id(String id) {
-            event.setId(id);
+        public AlertEventBuilder clientId(String clientId) {
+            event.setClientId(clientId);
             return this;
         }
 
@@ -98,8 +99,8 @@ public class AlertEvent {
             return this;
         }
 
-        public AlertEventBuilder value(double value) {
-            event.setValue(value);
+        public AlertEventBuilder triggerValue(double triggerValue) {
+            event.setTriggerValue(triggerValue);
             return this;
         }
 

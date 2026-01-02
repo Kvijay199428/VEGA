@@ -36,6 +36,12 @@ public class TokenAuditService {
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.of("Asia/Kolkata"));
 
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
+
+    public TokenAuditService(com.vegatrader.util.time.TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
+
     /**
      * Log an audit event.
      * 
@@ -44,7 +50,7 @@ public class TokenAuditService {
      * @param reason  event reason/details
      */
     public void logEvent(String apiName, TokenAuditEvent event, String reason) {
-        String timestamp = FORMATTER.format(Instant.now());
+        String timestamp = FORMATTER.format(timeProvider.now());
 
         String logMessage = String.format("[AUDIT] %s | API: %-12s | Event: %-15s | %s",
                 timestamp, apiName, event, reason != null ? reason : "");

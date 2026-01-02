@@ -1,4 +1,4 @@
-import { LiveMarketSnapshot } from "../types/market";
+// Legacy GreeksPanel - will be replaced by components/market/GreeksPanel.tsx
 
 interface GreeksPanelProps {
     // If we had full Greek support in snapshot, we'd use it here.

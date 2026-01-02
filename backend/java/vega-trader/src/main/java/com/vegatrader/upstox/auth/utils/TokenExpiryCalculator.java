@@ -33,8 +33,7 @@ public final class TokenExpiryCalculator {
      *
      * @return expiry timestamp in milliseconds
      */
-    public static long calculateValidityTimestamp() {
-        LocalDateTime now = LocalDateTime.now();
+    public static long calculateValidityTimestamp(LocalDateTime now) {
         LocalDateTime expiry = calculateExpiryDateTime(now);
 
         return java.time.ZoneId.systemDefault()
@@ -51,8 +50,7 @@ public final class TokenExpiryCalculator {
      *
      * @return formatted date-time string "yyyy-MM-dd HH:mm:ss"
      */
-    public static String calculateValidityAtString() {
-        LocalDateTime now = LocalDateTime.now();
+    public static String calculateValidityAtString(LocalDateTime now) {
         LocalDateTime expiry = calculateExpiryDateTime(now);
 
         return expiry.format(FORMATTER);
@@ -82,8 +80,7 @@ public final class TokenExpiryCalculator {
      *
      * @return seconds until 3:30 AM
      */
-    public static long calculateSecondsUntilExpiry() {
-        LocalDateTime now = LocalDateTime.now();
+    public static long calculateSecondsUntilExpiry(LocalDateTime now) {
         LocalDateTime expiry = calculateExpiryDateTime(now);
 
         return java.time.Duration.between(now, expiry).getSeconds();
@@ -95,14 +92,14 @@ public final class TokenExpiryCalculator {
      * @param validityAt validity string from database
      * @return true if expired
      */
-    public static boolean isExpired(String validityAt) {
+    public static boolean isExpired(String validityAt, LocalDateTime now) {
         if (validityAt == null || validityAt.isEmpty()) {
             return true;
         }
 
         try {
             LocalDateTime expiry = LocalDateTime.parse(validityAt, FORMATTER);
-            return LocalDateTime.now().isAfter(expiry);
+            return now.isAfter(expiry);
         } catch (Exception e) {
             return true; // Assume expired if parse fails
         }
@@ -122,8 +119,7 @@ public final class TokenExpiryCalculator {
      *
      * @return next refresh date-time
      */
-    public static LocalDateTime calculateNextRefreshTime() {
-        LocalDateTime now = LocalDateTime.now();
+    public static LocalDateTime calculateNextRefreshTime(LocalDateTime now) {
         LocalDate refreshDate = now.toLocalDate();
 
         LocalTime refreshTime = getRefreshTime();

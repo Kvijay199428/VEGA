@@ -46,6 +46,9 @@ public class LoginAutomationController {
     @Autowired
     private AuthProgressPublisher progressPublisher;
 
+    @Autowired
+    private com.vegatrader.upstox.auth.service.AuthService authService;
+
     /**
      * Initiate single API login.
      *
@@ -130,6 +133,11 @@ public class LoginAutomationController {
             response.put("tokenType", token.getTokenType());
             response.put("expiresIn", token.getExpiresIn());
 
+            // Trigger WebSocket Update
+            authService.updateLoginSuccess(
+                    List.of(request.getApiName()),
+                    System.currentTimeMillis() / 1000 + token.getExpiresIn());
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -167,6 +175,15 @@ public class LoginAutomationController {
             response.put("successfulTokens", result.getSuccessfulTokens());
             response.put("authenticated", result.isFullyAuthenticated());
             response.put("errors", result.getErrors());
+
+            // Trigger WebSocket Update
+            if (result.getSuccessfulTokens() > 0) {
+                // Estimation: 24h from now for simplicity, or we should get min expiry
+                long expiry = System.currentTimeMillis() / 1000 + 86400;
+                authService.updateLoginSuccess(
+                        tokenStorageService.getValidApiNames(), // Fetch actual valid tokens
+                        expiry);
+            }
 
             return ResponseEntity.ok(response);
 

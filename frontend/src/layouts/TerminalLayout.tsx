@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import TopBar from '../components/shell/TopBar'
 import Sidebar from '../components/shell/Sidebar'
 import BottomBar from '../components/shell/BottomBar'
+import VegaStatusBar from '../components/shell/VegaStatusBar'
+import { useKillSwitch } from '../hooks/useKillSwitch'
 
 /**
  * Terminal Layout - Bloomberg-style global shell.
@@ -12,6 +14,10 @@ export default function TerminalLayout() {
     const navigate = useNavigate()
     const location = useLocation()
     const [commandInput, setCommandInput] = useState('')
+
+    // Terminal Control Plane
+    // Global Kill Switch Key Binding (Ctrl+Alt+K)
+    useKillSwitch()
 
     // Keyboard navigation (F1-F8)
     useEffect(() => {
@@ -91,6 +97,9 @@ export default function TerminalLayout() {
         <div className="h-screen flex flex-col bg-[#0b0f14] text-[#c7ccd1] font-mono overflow-hidden">
             {/* Top Bar */}
             <TopBar />
+
+            {/* TERMINAL STATUS BAR (Bloomberg Style) */}
+            <VegaStatusBar />
 
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden">

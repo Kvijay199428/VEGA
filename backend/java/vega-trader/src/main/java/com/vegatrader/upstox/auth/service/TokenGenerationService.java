@@ -1,12 +1,13 @@
 package com.vegatrader.upstox.auth.service;
 
 import com.vegatrader.upstox.auth.db.ApiName;
-import com.vegatrader.upstox.auth.db.UpstoxTokenRepository;
-import com.vegatrader.upstox.auth.db.UpstoxTokenRepositoryImpl;
-import com.vegatrader.upstox.auth.db.entity.UpstoxTokenEntity;
+import com.vegatrader.upstox.auth.repository.TokenRepository;
+import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
 import com.vegatrader.upstox.auth.selenium.v2.*;
+import com.vegatrader.upstox.auth.service.UpstoxTokenMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
  *
  * @since 2.2.0
  */
+@Service
 public class TokenGenerationService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenGenerationService.class);
@@ -31,17 +33,21 @@ public class TokenGenerationService {
         PARTIAL
     }
 
-    private final UpstoxTokenRepository tokenRepository;
+    private final TokenRepository tokenRepository;
     private final TokenDecisionEngine decisionEngine;
     private final TokenValidityService validityService;
     private final EnvConfigLoaderV2 configLoader;
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
 
-    public TokenGenerationService() {
-        this.tokenRepository = new UpstoxTokenRepositoryImpl();
-        this.validityService = new TokenValidityService();
-        ProfileVerificationService profileService = new ProfileVerificationService();
+    public TokenGenerationService(TokenRepository tokenRepository,
+            TokenValidityService validityService,
+            ProfileVerificationService profileService,
+            com.vegatrader.util.time.TimeProvider timeProvider) {
+        this.tokenRepository = tokenRepository;
+        this.validityService = validityService;
         this.decisionEngine = new TokenDecisionEngine(tokenRepository, validityService, profileService);
         this.configLoader = new EnvConfigLoaderV2();
+        this.timeProvider = timeProvider;
     }
 
     /**
@@ -91,13 +97,13 @@ public class TokenGenerationService {
                 }
 
                 // Perform login
-                OAuthLoginAutomationV2 automation = new OAuthLoginAutomationV2();
+                OAuthLoginAutomationV2 automation = new OAuthLoginAutomationV2(timeProvider);
                 LoginResultV2 loginResult = automation.performLogin(config);
 
                 if (loginResult.isSuccess()) {
                     // CRITICAL: Persist immediately
                     UpstoxTokenEntity entity = UpstoxTokenMapper.from(loginResult, config);
-                    tokenRepository.upsertToken(entity);
+                    tokenRepository.save(entity);
 
                     logger.info("✓ Token generated and persisted for: {}", api);
                     results.add(new GenerationResult(api, true, "Success"));

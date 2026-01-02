@@ -3,6 +3,9 @@ package com.vegatrader.service;
 import com.vegatrader.service.exception.NoHealthyTokenException;
 import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
 import com.vegatrader.upstox.auth.service.TokenStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @since 3.0.0
  */
+@Service
 public class UpstoxTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(UpstoxTokenProvider.class);
@@ -34,7 +38,9 @@ public class UpstoxTokenProvider {
      * @param preferredApiName    the preferred API name (e.g., "WEBSOCKET1",
      *                            "PRIMARY")
      */
-    public UpstoxTokenProvider(TokenStorageService tokenStorageService, String preferredApiName) {
+    @Autowired
+    public UpstoxTokenProvider(TokenStorageService tokenStorageService,
+            @Value("${upstox.token.preferred:WEBSOCKET1}") String preferredApiName) {
         this.tokenStorageService = tokenStorageService;
         this.preferredApiName = preferredApiName != null ? preferredApiName : "WEBSOCKET1";
         logger.info("UpstoxTokenProvider initialized with preferred API: {}", this.preferredApiName);
@@ -122,8 +128,8 @@ public class UpstoxTokenProvider {
             }
         }
 
-        logger.warn("No active WEBSOCKET token found. Falling back to PRIMARY.");
-        return getCoreRestToken();
+        logger.error("No active WEBSOCKET token found. Fallback to PRIMARY is DISABLED.");
+        throw new RuntimeException("No active WEBSOCKET token available. Please refresh tokens.");
     }
 
     private String getOptionChainToken() {

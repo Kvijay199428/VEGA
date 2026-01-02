@@ -47,8 +47,8 @@ public class FullD30Mapper {
             List<BookLevel> asks = new ArrayList<>();
 
             for (MarketDataFeedV3.Quote q : level.getBidAskQuoteList()) {
-                bids.add(new BookLevel(q.getBidP(), q.getBidQ()));
-                asks.add(new BookLevel(q.getAskP(), q.getAskQ()));
+                bids.add(new BookLevel(q.getBidP(), q.getBidQ(), 0));
+                asks.add(new BookLevel(q.getAskP(), q.getAskQ(), 0));
             }
 
             book.setBids(bids);

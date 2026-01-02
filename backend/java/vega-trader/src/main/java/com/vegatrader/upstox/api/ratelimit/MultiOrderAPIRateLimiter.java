@@ -1,7 +1,9 @@
 package com.vegatrader.upstox.api.ratelimit;
 
+import com.vegatrader.util.time.TimeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -21,54 +23,47 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * </ul>
  * </p>
  * <p>
- * Multi-order APIs have stricter limits (12.5x more restrictive) than standard
- * APIs
- * to prevent system overload from bulk operations.
- * </p>
- * <p>
- * <b>Usage Example:</b>
- * 
- * <pre>{@code
- * MultiOrderAPIRateLimiter limiter = new MultiOrderAPIRateLimiter();
- * 
- * // Check if batch order is allowed
- * int orderCount = 5;
- * if (limiter.canPlaceBatch(orderCount)) {
- *     // Place batch order
- *     placeBatchOrder(orders);
- *     limiter.recordRequest();
- * } else {
- *     // Batch not allowed
- *     logger.warn("Cannot place batch order - rate limit exceeded");
- * }
- * }</pre>
+ * Uses TimeProvider for deterministic time during Market Replay.
  * </p>
  *
  * @since 2.0.0
  */
+@Component
 public class MultiOrderAPIRateLimiter implements RateLimiter {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiOrderAPIRateLimiter.class);
     private static final int MAX_ORDERS_PER_REQUEST = 10;
 
     private final RateLimitConfig config;
+    private TimeProvider timeProvider;
     private final Queue<Instant> requestTimes = new LinkedList<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
+     * Default constructor for frameworks/proxies.
+     */
+    protected MultiOrderAPIRateLimiter() {
+        this.config = RateLimitConfig.multiOrderApi();
+        this.timeProvider = null;
+    }
+
+    /**
      * Creates a new multi-order API rate limiter with default limits.
      */
-    public MultiOrderAPIRateLimiter() {
+    public MultiOrderAPIRateLimiter(TimeProvider timeProvider) {
         this.config = RateLimitConfig.multiOrderApi();
+        this.timeProvider = timeProvider;
     }
 
     /**
      * Creates a new rate limiter with custom configuration.
      *
-     * @param config the rate limit configuration
+     * @param config       the rate limit configuration
+     * @param timeProvider the time provider
      */
-    public MultiOrderAPIRateLimiter(RateLimitConfig config) {
+    public MultiOrderAPIRateLimiter(RateLimitConfig config, TimeProvider timeProvider) {
         this.config = config;
+        this.timeProvider = timeProvider;
     }
 
     /**
@@ -98,7 +93,7 @@ public class MultiOrderAPIRateLimiter implements RateLimiter {
         lock.writeLock().lock();
         try {
             cleanupOldRequests();
-            Instant now = Instant.now();
+            Instant now = timeProvider.now();
 
             // Check 30-minute limit
             if (requestTimes.size() >= config.getPer30MinLimit()) {
@@ -141,7 +136,7 @@ public class MultiOrderAPIRateLimiter implements RateLimiter {
     public void recordRequest() {
         lock.writeLock().lock();
         try {
-            requestTimes.offer(Instant.now());
+            requestTimes.offer(timeProvider.now());
             logger.debug("Multi-order request recorded. Total: {}", requestTimes.size());
         } finally {
             lock.writeLock().unlock();
@@ -152,7 +147,7 @@ public class MultiOrderAPIRateLimiter implements RateLimiter {
     public RateLimitUsage getCurrentUsage() {
         lock.readLock().lock();
         try {
-            Instant now = Instant.now();
+            Instant now = timeProvider.now();
             Instant secondAgo = now.minus(Duration.ofSeconds(1));
             Instant minuteAgo = now.minus(Duration.ofMinutes(1));
 
@@ -232,7 +227,7 @@ public class MultiOrderAPIRateLimiter implements RateLimiter {
      * Removes requests outside the 30-minute window.
      */
     private void cleanupOldRequests() {
-        Instant thirtyMinutesAgo = Instant.now().minus(Duration.ofMinutes(30));
+        Instant thirtyMinutesAgo = timeProvider.now().minus(Duration.ofMinutes(30));
         int removed = 0;
 
         while (!requestTimes.isEmpty() && requestTimes.peek().isBefore(thirtyMinutesAgo)) {

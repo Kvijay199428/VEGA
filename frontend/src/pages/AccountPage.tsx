@@ -1,10 +1,10 @@
+import { useContext, useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStatus } from '../hooks/useAuthStatus'
+import { AuthContext } from '../context/AuthContext'
 import { useAccountData } from '../hooks/useAccountData'
 import { useSystemHealth } from '../hooks/useSystemHealth'
 import { usePageTitle } from '../context/PageContext'
 import { TokenTimeline } from '../components/TokenTimeline'
-import { useState, useEffect, useRef, useCallback } from 'react'
 import { httpClient } from '../api/httpClient'
 
 interface AuthProgressEvent {
@@ -22,9 +22,12 @@ interface AuthProgressEvent {
  */
 export default function AccountPage() {
     const navigate = useNavigate()
-    const { status, loading } = useAuthStatus()
+    const auth = useContext(AuthContext)
+    const { status, state, generatedTokens, requiredTokens, missingApis, primaryReady, fullyReady } = auth
     const { health } = useSystemHealth()
     const { positions } = useAccountData()
+
+    const loading = status === "loading"
 
     // Set page title in TopBar
     usePageTitle('System Status & Account', 'F7')
@@ -37,10 +40,10 @@ export default function AccountPage() {
 
     // Cooldown Timer Effect
     useEffect(() => {
-        if (status?.cooldownActive && status?.remainingSeconds) {
-            setCooldownSeconds(status.remainingSeconds)
+        if (auth.cooldownActive && auth.remainingSeconds) {
+            setCooldownSeconds(auth.remainingSeconds)
         }
-    }, [status?.cooldownActive, status?.remainingSeconds])
+    }, [auth.cooldownActive, auth.remainingSeconds])
 
     useEffect(() => {
         if (cooldownSeconds <= 0) return
@@ -111,7 +114,7 @@ export default function AccountPage() {
         }
     }, [])
 
-    if (loading || !status) {
+    if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-[calc(100vh-100px)] space-y-4">
                 <div className="w-8 h-8 border-2 border-[#00c176] border-t-transparent rounded-full animate-spin"></div>
@@ -120,7 +123,9 @@ export default function AccountPage() {
         )
     }
 
-    const { state, generatedTokens, requiredTokens, missingApis, primaryReady, fullyReady } = status
+    // Progress Calculation
+    const progressPercent = Math.min(100, (generatedTokens / (requiredTokens || 1)) * 100)
+    const needsTokens = generatedTokens < requiredTokens && !fullyReady
 
     const getStatusColor = (s: string) => {
         switch (s) {
@@ -149,9 +154,6 @@ export default function AccountPage() {
                 return { color: 'bg-[#6e7681]', text: 'text-[#6e7681]' }
         }
     }
-
-    const progressPercent = Math.min(100, (generatedTokens / (requiredTokens || 1)) * 100)
-    const needsTokens = generatedTokens < requiredTokens && !fullyReady
 
     const formatCooldown = (seconds: number) => {
         const mins = Math.floor(seconds / 60)
@@ -221,8 +223,8 @@ export default function AccountPage() {
                 <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-6 space-y-6">
                     <div>
                         <div className="text-xs text-[#8b949e] uppercase tracking-wider mb-2">Authentication State</div>
-                        <div className={`text-xl font-bold font-mono ${getStatusColor(state)}`}>
-                            {state.replace('_', ' ')}
+                        <div className={`text-xl font-bold font-mono ${getStatusColor(state || '')}`}>
+                            {(state || "INITIALIZING").replace(/_/g, ' ')}
                         </div>
                         <div className="text-sm text-[#6e7681] mt-1">
                             {state === 'GENERATING_TOKENS' && "Requesting tokens from Upstox API..."}
@@ -247,7 +249,7 @@ export default function AccountPage() {
                         </div>
                     </div>
 
-                    {missingApis.length > 0 && (
+                    {missingApis && missingApis.length > 0 && (
                         <div className="bg-[#0d1117] rounded border border-[#30363d] p-3">
                             <div className="text-xs text-[#8b949e] mb-2 uppercase">Pending Tokens</div>
                             <div className="flex flex-wrap gap-2">
@@ -286,8 +288,8 @@ export default function AccountPage() {
                             </div>
                             <div>
                                 <div className="text-[#8b949e]">Total P&L</div>
-                                <div className={`font-mono font-bold ${positions.reduce((a, b) => a + b.pnl, 0) >= 0 ? 'text-[#00c176]' : 'text-[#ff4d4d]'}`}>
-                                    ₹{positions.reduce((a, b) => a + b.pnl, 0).toFixed(2)}
+                                <div className={`font-mono font-bold ${(positions?.reduce((a, b) => a + (b.pnl || 0), 0) || 0) >= 0 ? 'text-[#00c176]' : 'text-[#ff4d4d]'}`}>
+                                    ₹{(positions?.reduce((a, b) => a + (b.pnl || 0), 0) || 0).toFixed(2)}
                                 </div>
                             </div>
                         </div>

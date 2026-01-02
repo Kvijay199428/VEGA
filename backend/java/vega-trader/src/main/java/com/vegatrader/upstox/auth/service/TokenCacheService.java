@@ -24,6 +24,11 @@ public class TokenCacheService {
     private final ConcurrentHashMap<String, PendingToken> pendingTokens = new ConcurrentHashMap<>();
     private final AtomicBoolean dbLocked = new AtomicBoolean(false);
     private final AtomicBoolean recoveryInProgress = new AtomicBoolean(false);
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
+
+    public TokenCacheService(com.vegatrader.util.time.TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
 
     /**
      * Pending token structure for cache storage.
@@ -33,10 +38,10 @@ public class TokenCacheService {
         private final UpstoxTokenEntity entity;
         private final Instant cachedAt;
 
-        public PendingToken(String apiName, UpstoxTokenEntity entity) {
+        public PendingToken(String apiName, UpstoxTokenEntity entity, Instant cachedAt) {
             this.apiName = apiName;
             this.entity = entity;
-            this.cachedAt = Instant.now();
+            this.cachedAt = cachedAt;
         }
 
         public String getApiName() {
@@ -57,13 +62,14 @@ public class TokenCacheService {
      */
     public void cachePendingToken(UpstoxTokenEntity entity) {
         String apiName = entity.getApiName();
-        pendingTokens.put(apiName, new PendingToken(apiName, entity));
+        Instant now = timeProvider.now();
+        pendingTokens.put(apiName, new PendingToken(apiName, entity, now));
         dbLocked.set(true);
 
         logger.warn("╔═══════════════════════════════════════════════════════╗");
         logger.warn("║  TOKEN CACHED IN MEMORY (DB LOCKED)  ║");
         logger.warn("╚═══════════════════════════════════════════════════════╝");
-        logger.warn("API: {} | Cached at: {}", apiName, Instant.now());
+        logger.warn("API: {} | Cached at: {}", apiName, now);
         logger.warn("Pending tokens in cache: {}", pendingTokens.size());
     }
 

@@ -33,6 +33,18 @@ public class AuthSessionState {
      * @param tokens     List of all active tokens from DB
      * @param apiConfigs List of all expected/configured APIs
      */
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
+
+    public AuthSessionState(com.vegatrader.util.time.TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
+
+    /**
+     * Hydrate state from database tokens and configured APIs.
+     *
+     * @param tokens     List of all active tokens from DB
+     * @param apiConfigs List of all expected/configured APIs
+     */
     public synchronized void hydrateFromDatabase(List<UpstoxTokenEntity> tokens, List<String> apiConfigs) {
         configuredApis.clear();
         configuredApis.addAll(apiConfigs);
@@ -42,7 +54,8 @@ public class AuthSessionState {
 
         for (UpstoxTokenEntity token : tokens) {
             // Check expiry
-            if (token.isActive() && !TokenExpiryCalculator.isExpired(token.getValidityAt())) {
+            if (token.isActive() && !TokenExpiryCalculator.isExpired(token.getValidityAt(),
+                    timeProvider.now().atZone(com.vegatrader.util.time.LocaleConstants.IST).toLocalDateTime())) {
                 validApis.add(token.getApiName());
 
                 // Check if PRIMARY (case-insensitive check or use boolean flag)

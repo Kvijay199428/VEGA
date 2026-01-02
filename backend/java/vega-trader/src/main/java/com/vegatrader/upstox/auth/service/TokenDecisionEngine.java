@@ -1,8 +1,7 @@
 package com.vegatrader.upstox.auth.service;
 
 import com.vegatrader.upstox.auth.db.ApiName;
-import com.vegatrader.upstox.auth.db.UpstoxTokenRepository;
-import com.vegatrader.upstox.auth.db.entity.UpstoxTokenEntity;
+import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +22,12 @@ public class TokenDecisionEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenDecisionEngine.class);
 
-    private final UpstoxTokenRepository repository;
+    private final com.vegatrader.upstox.auth.repository.TokenRepository repository;
     private final TokenValidityService validityService;
     private final ProfileVerificationService profileService;
 
     public TokenDecisionEngine(
-            UpstoxTokenRepository repository,
+            com.vegatrader.upstox.auth.repository.TokenRepository repository,
             TokenValidityService validityService,
             ProfileVerificationService profileService) {
         this.repository = repository;
@@ -42,7 +41,7 @@ public class TokenDecisionEngine {
     public TokenDecisionReport evaluate() {
         logger.info("Evaluating all tokens...");
 
-        List<UpstoxTokenEntity> tokens = repository.findAll();
+        List<UpstoxTokenEntity> tokens = repository.findAllActive();
         Map<String, UpstoxTokenEntity> tokenMap = tokens.stream()
                 .collect(Collectors.toMap(
                         UpstoxTokenEntity::getApiName,
@@ -90,7 +89,7 @@ public class TokenDecisionEngine {
      * Evaluate single token.
      */
     public TokenStatus evaluateSingle(ApiName apiName) {
-        Optional<UpstoxTokenEntity> tokenOpt = repository.findByApiName(apiName);
+        Optional<UpstoxTokenEntity> tokenOpt = repository.findByApiName(apiName.name());
 
         if (tokenOpt.isEmpty()) {
             return TokenStatus.MISSING;

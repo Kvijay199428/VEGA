@@ -1,24 +1,24 @@
 import { Navigate } from 'react-router-dom'
-import { ReactNode } from 'react'
-import { useAuthStore } from '../auth/authStore'
+import { ReactNode, useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
 
 interface ProtectedRouteProps {
     children: ReactNode
 }
 
 /**
- * Protected Route - enforces authentication.
+ * Protected Route - enforces authentication via AuthContext.
  * 
  * Behavior:
- * - While loading: show loading indicator
- * - If authenticated: render children
- * - If not authenticated: redirect to /login
+ * - Loading: Show splash screen
+ * - Authenticated: Render children (even if degraded/expiring)
+ * - Unauthenticated/Error/Expired: Redirect to login
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const { authenticated, loading } = useAuthStore()
+    const { status } = useContext(AuthContext)
 
-    // Show loading during bootstrap
-    if (loading) {
+    // Show loading during WebSocket handshake or initial bootstrap
+    if (status === 'loading') {
         return (
             <div className="min-h-screen flex items-center justify-center bg-terminal-bg">
                 <div className="text-center">
@@ -26,18 +26,20 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
                         VEGA TRADER
                     </div>
                     <div className="text-terminal-muted text-sm">
-                        Verifying session...
+                        Establishing secure uplink...
                     </div>
                 </div>
             </div>
         )
     }
 
-    // Redirect if not authenticated
-    if (!authenticated) {
+    // Redirect ONLY if strictly unauthenticated or explicitly expired
+    // "Degraded" or low-timer states are considered valid for routing
+    if (status === 'unauthenticated' || status === 'expired' || status === 'error') {
         return <Navigate to="/login" replace />
     }
 
+    // AUTH_CONFIRMED, PRIMARY_VALIDATED, etc -> Access Granted
     return <>{children}</>
 }
 

@@ -3,6 +3,7 @@ package com.vegatrader.upstox.auth.service;
 import com.vegatrader.upstox.auth.db.SqliteDataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -12,6 +13,7 @@ import java.sql.*;
  *
  * @since 2.4.0
  */
+@Repository
 public class ExecutionStateRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(ExecutionStateRepository.class);

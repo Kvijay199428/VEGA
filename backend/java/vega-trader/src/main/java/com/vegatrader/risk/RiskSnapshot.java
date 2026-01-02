@@ -4,7 +4,7 @@ public class RiskSnapshot {
     private String clientId;
     private double usedMargin;
     private double availableMargin;
-    private boolean blocked;
+    private boolean riskBreached;
     private String reason;
 
     public RiskSnapshot() {
@@ -23,8 +23,8 @@ public class RiskSnapshot {
         return availableMargin;
     }
 
-    public boolean isBlocked() {
-        return blocked;
+    public boolean isRiskBreached() {
+        return riskBreached;
     }
 
     public String getReason() {
@@ -44,8 +44,8 @@ public class RiskSnapshot {
         this.availableMargin = availableMargin;
     }
 
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
+    public void setRiskBreached(boolean riskBreached) {
+        this.riskBreached = riskBreached;
     }
 
     public void setReason(String reason) {
@@ -75,8 +75,8 @@ public class RiskSnapshot {
             return this;
         }
 
-        public RiskSnapshotBuilder blocked(boolean b) {
-            snapshot.setBlocked(b);
+        public RiskSnapshotBuilder isRiskBreached(boolean b) {
+            snapshot.setRiskBreached(b);
             return this;
         }
 

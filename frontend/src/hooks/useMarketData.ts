@@ -22,17 +22,16 @@ export function useMarketData() {
     useEffect(() => {
         const init = async () => {
             try {
-                // 1. Connect WS
+                // Ensure singleton is alive (safe to call repeatedly)
                 marketStream.connect()
 
                 // 2. Subscribe via API
-                // Assuming client ID 'WEB_CLIENT' for now
                 await marketDataService.subscribe({
                     instrumentKeys: WATCHLIST,
                     mode: FeedMode.FULL
                 })
 
-                // Initialize map with empty placeholders or wait for ticks
+                // Initialize map
                 const initialMap = new Map<string, StockData>()
                 WATCHLIST.forEach(key => {
                     initialMap.set(key, {
@@ -70,22 +69,21 @@ export function useMarketData() {
         const unsub = marketStream.onTick((tick) => {
             setStocks(prev => {
                 const current = prev.get(tick.instrumentKey)
-                if (!current) return prev // Ignore unknown symbols (robustness)
+                if (!current) return prev
 
-                // Merge and update
                 const next = new Map(prev)
                 next.set(tick.instrumentKey, {
                     ...current,
                     ...tick,
-                    symbol: tick.instrumentKey.split('|')[1] // Ensure symbol is preserved
+                    symbol: tick.instrumentKey.split('|')[1]
                 })
                 return next
             })
         })
 
         return () => {
+            // Only unsubscribe from Service, do NOT killing the WebSocket
             marketDataService.unsubscribe(WATCHLIST).catch(console.error)
-            marketStream.disconnect()
             unsub()
         }
     }, [])

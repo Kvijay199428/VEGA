@@ -30,8 +30,8 @@ public class AuthConfiguration {
      * Token validation service bean.
      */
     @Bean
-    public TokenValidationService tokenValidationService() {
-        return new TokenValidationService();
+    public TokenValidationService tokenValidationService(com.vegatrader.util.time.TimeProvider timeProvider) {
+        return new TokenValidationService(timeProvider);
     }
 
 }

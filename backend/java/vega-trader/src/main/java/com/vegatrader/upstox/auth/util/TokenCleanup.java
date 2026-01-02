@@ -27,7 +27,9 @@ public class TokenCleanup {
         try {
             TokenStorageService tokenStorage = new TokenStorageService(
                     new com.vegatrader.upstox.auth.repository.TokenRepository(),
-                    new com.vegatrader.upstox.auth.service.TokenCacheService());
+                    new com.vegatrader.upstox.auth.service.TokenCacheService(
+                            new com.vegatrader.util.time.SystemTimeProvider()),
+                    new com.vegatrader.util.time.SystemTimeProvider());
             List<UpstoxTokenEntity> existingTokens = tokenStorage.getAllActiveTokens();
 
             logger.info("Found {} existing tokens in database", existingTokens.size());

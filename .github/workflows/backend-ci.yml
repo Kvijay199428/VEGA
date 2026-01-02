@@ -1,0 +1,28 @@
+name: Vega Backend CI
+
+on:
+  push:
+    paths:
+      - "backend/java/**"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (STRICT)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Verify Java Version
+        run: |
+          java -version
+          javac -version
+
+      - name: Build Backend
+        working-directory: backend/java/vega-trader
+        run: mvn -B clean verify

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.time.Instant;
 import java.util.stream.Collectors;
+import com.vegatrader.util.time.LocaleConstants;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -43,6 +44,7 @@ public class BatchAuthenticationService {
     private final CooldownService cooldownService;
     private final AuthProgressPublisher progressPublisher;
     private final com.vegatrader.upstox.auth.state.AuthSessionState authSessionState;
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
 
     @Value("${upstox.redirect-uri:http://localhost:28020/api/v1/auth/upstox/callback}")
     private String redirectUri;
@@ -58,7 +60,8 @@ public class BatchAuthenticationService {
             TokenCacheService tokenCacheService,
             CooldownService cooldownService,
             AuthProgressPublisher progressPublisher,
-            com.vegatrader.upstox.auth.state.AuthSessionState authSessionState) {
+            com.vegatrader.upstox.auth.state.AuthSessionState authSessionState,
+            com.vegatrader.util.time.TimeProvider timeProvider) {
         this.apiDiscovery = apiDiscovery;
         this.tokenStorageService = tokenStorageService;
         this.tokenRepository = tokenRepository;
@@ -66,6 +69,7 @@ public class BatchAuthenticationService {
         this.cooldownService = cooldownService;
         this.progressPublisher = progressPublisher;
         this.authSessionState = authSessionState;
+        this.timeProvider = timeProvider;
     }
 
     /**
@@ -262,7 +266,7 @@ public class BatchAuthenticationService {
                         "STARTED",
                         getValidTokenNames().size(),
                         AuthConstants.TOTAL_UPSTOX_APIS,
-                        Instant.now(),
+                        timeProvider.now(),
                         null));
 
                 try {
@@ -297,7 +301,7 @@ public class BatchAuthenticationService {
                                 "SUCCESS",
                                 getValidTokenNames().size(),
                                 AuthConstants.TOTAL_UPSTOX_APIS,
-                                Instant.now(),
+                                timeProvider.now(),
                                 null));
                     } else {
                         errors.add(app.getPurpose() + ": Token response was null");
@@ -309,7 +313,7 @@ public class BatchAuthenticationService {
                                 "FAILED",
                                 getValidTokenNames().size(),
                                 AuthConstants.TOTAL_UPSTOX_APIS,
-                                Instant.now(),
+                                timeProvider.now(),
                                 "Token response was null"));
                     }
 
@@ -323,7 +327,7 @@ public class BatchAuthenticationService {
                             "FAILED",
                             getValidTokenNames().size(),
                             AuthConstants.TOTAL_UPSTOX_APIS,
-                            Instant.now(),
+                            timeProvider.now(),
                             e.getMessage()));
                 }
             }
@@ -520,7 +524,8 @@ public class BatchAuthenticationService {
         }
         try {
             LocalDateTime expiryTime = LocalDateTime.parse(validityAt, VALIDITY_FORMATTER);
-            return LocalDateTime.now().isAfter(expiryTime);
+            return timeProvider.now().atZone(LocaleConstants.IST).toLocalDateTime()
+                    .isAfter(expiryTime);
         } catch (Exception e) {
             logger.warn("Error parsing validityAt '{}': {}", validityAt, e.getMessage());
             return true; // Assume expired if can't parse

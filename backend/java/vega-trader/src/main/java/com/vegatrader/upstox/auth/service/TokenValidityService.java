@@ -1,24 +1,42 @@
 package com.vegatrader.upstox.auth.service;
 
-import com.vegatrader.upstox.auth.db.entity.UpstoxTokenEntity;
+import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
+import com.vegatrader.util.format.TextFormatter;
+import com.vegatrader.util.time.LocaleConstants;
+import com.vegatrader.util.time.TimeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Token validity service - Layer 1 (time-based check).
+ * 
+ * <p>
+ * Uses TimeProvider for deterministic time operations.
  *
  * @since 2.2.0
  */
+@Service
 public class TokenValidityService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenValidityService.class);
-    private static final DateTimeFormatter VALIDITY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter VALIDITY_FORMAT = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm:ss", LocaleConstants.DEFAULT_LOCALE);
     private static final ZoneId IST = ZoneId.of("Asia/Kolkata");
+
+    private final TimeProvider timeProvider;
+    private final TextFormatter formatter;
+
+    public TokenValidityService(TimeProvider timeProvider, TextFormatter formatter) {
+        this.timeProvider = timeProvider;
+        this.formatter = formatter;
+    }
 
     /**
      * Check if token is valid based on validity_at timestamp.
@@ -29,7 +47,7 @@ public class TokenValidityService {
         }
 
         try {
-            Instant now = Instant.now();
+            Instant now = timeProvider.now();
             Instant validity = LocalDateTime
                     .parse(token.getValidityAt(), VALIDITY_FORMAT)
                     .atZone(IST)
@@ -56,7 +74,7 @@ public class TokenValidityService {
         }
 
         try {
-            Instant now = Instant.now();
+            Instant now = timeProvider.now();
             Instant validity = LocalDateTime
                     .parse(token.getValidityAt(), VALIDITY_FORMAT)
                     .atZone(IST)
@@ -82,9 +100,9 @@ public class TokenValidityService {
         long minutes = (seconds % 3600) / 60;
 
         if (hours > 0) {
-            return String.format("%dh %dm", hours, minutes);
+            return String.format(Locale.ROOT, "%dh %dm", hours, minutes);
         } else {
-            return String.format("%dm", minutes);
+            return String.format(Locale.ROOT, "%dm", minutes);
         }
     }
 
@@ -99,7 +117,7 @@ public class TokenValidityService {
      * Calculate validity_at for new token (3:30 AM IST next day).
      */
     public String calculateValidityAt() {
-        LocalDateTime now = LocalDateTime.now(IST);
+        LocalDateTime now = timeProvider.dateTime(IST);
         LocalDateTime expiryTime;
 
         // If before 3:30 AM, expires today at 3:30 AM

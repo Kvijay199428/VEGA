@@ -38,12 +38,13 @@ public class SectorCache {
 
     private final Map<SectoralIndex, CacheEntry> cache = new ConcurrentHashMap<>();
     private final Duration ttl;
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
 
     /**
      * Creates a new sector cache with default 24-hour TTL.
      */
-    public SectorCache() {
-        this(DEFAULT_TTL);
+    public SectorCache(com.vegatrader.util.time.TimeProvider timeProvider) {
+        this(DEFAULT_TTL, timeProvider);
     }
 
     /**
@@ -51,8 +52,9 @@ public class SectorCache {
      *
      * @param ttl the time-to-live for cache entries
      */
-    public SectorCache(Duration ttl) {
+    public SectorCache(Duration ttl, com.vegatrader.util.time.TimeProvider timeProvider) {
         this.ttl = ttl;
+        this.timeProvider = timeProvider;
         logger.info("SectorCache initialized with TTL: {}", ttl);
     }
 
@@ -70,14 +72,14 @@ public class SectorCache {
             return null;
         }
 
-        if (entry.isExpired()) {
+        if (entry.isExpired(timeProvider.now())) {
             logger.info("Cache entry EXPIRED for {}", sector.getSectorKey());
             cache.remove(sector);
             return null;
         }
 
         logger.debug("Cache HIT for {} (age: {})", sector.getSectorKey(),
-                Duration.between(entry.timestamp, Instant.now()));
+                Duration.between(entry.timestamp, timeProvider.now()));
         return entry.data;
     }
 
@@ -93,7 +95,7 @@ public class SectorCache {
             return;
         }
 
-        CacheEntry entry = new CacheEntry(data, Instant.now(), ttl);
+        CacheEntry entry = new CacheEntry(data, timeProvider.now(), ttl);
         cache.put(sector, entry);
 
         logger.info("Cached {} constituents for {} (expires in {})",
@@ -168,7 +170,7 @@ public class SectorCache {
         int removed = 0;
 
         for (Map.Entry<SectoralIndex, CacheEntry> entry : cache.entrySet()) {
-            if (entry.getValue().isExpired()) {
+            if (entry.getValue().isExpired(timeProvider.now())) {
                 cache.remove(entry.getKey());
                 removed++;
             }
@@ -189,7 +191,7 @@ public class SectorCache {
     public String getStatistics() {
         int total = cache.size();
         long expired = cache.values().stream()
-                .filter(CacheEntry::isExpired)
+                .filter(e -> e.isExpired(timeProvider.now()))
                 .count();
 
         return String.format("SectorCache{total=%d, expired=%d, active=%d, ttl=%s}",
@@ -218,8 +220,8 @@ public class SectorCache {
             this.ttl = ttl;
         }
 
-        boolean isExpired() {
-            return Instant.now().isAfter(timestamp.plus(ttl));
+        boolean isExpired(Instant now) {
+            return now.isAfter(timestamp.plus(ttl));
         }
     }
 }

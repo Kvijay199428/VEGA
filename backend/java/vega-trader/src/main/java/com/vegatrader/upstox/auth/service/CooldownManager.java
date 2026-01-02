@@ -1,7 +1,9 @@
 package com.vegatrader.upstox.auth.service;
 
+import com.vegatrader.util.time.TimeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -18,6 +20,7 @@ import java.time.format.DateTimeFormatter;
  *
  * @since 2.4.0
  */
+@Service
 public class CooldownManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CooldownManager.class);
@@ -29,6 +32,12 @@ public class CooldownManager {
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.of("Asia/Kolkata"));
+
+    private final TimeProvider timeProvider;
+
+    public CooldownManager(TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
 
     /**
      * Enforce cooldown period.

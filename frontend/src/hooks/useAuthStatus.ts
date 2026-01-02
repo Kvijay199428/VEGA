@@ -1,53 +1,46 @@
-import { useState, useEffect } from 'react';
-import { httpClient } from '../api/httpClient';
+import { useEffect, useState } from "react";
+import { connectAuthWS, subscribeAuthStatus } from "./authWebSocket";
+import { amLeader } from "./leaderElection";
+import { AuthContextValue, INITIAL_AUTH_CONTEXT } from "../context/AuthContext";
 
-export interface AuthStatusResponse {
-    state: string;
-    authenticated: boolean;
-    primaryReady: boolean;
-    fullyReady: boolean;
-    generatedTokens: number;
-    requiredTokens: number;
-    validTokens: string[];
-    missingApis: string[];
-    cooldownActive?: boolean;
-    remainingSeconds?: number;
-    // Dashboard compatibility fields
-    dbLocked?: boolean;
-    inProgress?: boolean;
-    currentApi?: string;
-    pendingInCache?: number;
-    recoveryInProgress?: boolean;
-}
-
-export function useAuthStatus(pollIntervalMs = 3000) {
-    const [status, setStatus] = useState<AuthStatusResponse | null>(null);
-    const [loading, setLoading] = useState(true);
+export function useAuthStatus(): AuthContextValue {
+    const [state, setState] = useState<AuthContextValue>(INITIAL_AUTH_CONTEXT);
 
     useEffect(() => {
-        let mounted = true;
+        // Ensure connection (singleton logic in authWebSocket)
+        connectAuthWS();
 
-        const fetchStatus = async () => {
-            try {
-                const res = await httpClient.get<AuthStatusResponse>('/api/auth/status');
-                if (mounted) {
-                    setStatus(res.data);
-                    setLoading(false);
-                }
-            } catch (err) {
-                console.error("Failed to fetch auth status", err);
-                if (mounted) setLoading(false);
-            }
-        };
+        // Subscribe to updates (either direct WS or BroadcastChannel)
+        const unsubscribe = subscribeAuthStatus((data: any) => {
+            if (!data) return;
 
-        fetchStatus();
-        const interval = setInterval(fetchStatus, pollIntervalMs);
+            // Map backend raw state to high-level lifecycle status
+            let frontendStatus: AuthContextValue["status"] = "unauthenticated";
 
-        return () => {
-            mounted = false;
-            clearInterval(interval);
-        };
-    }, [pollIntervalMs]);
+            if (data.state === "AUTH_CONFIRMED" || data.state === "PRIMARY_VALIDATED") frontendStatus = "authenticated";
+            else if (data.state === "EXPIRED") frontendStatus = "expired";
+            else if (data.state === "ERROR") frontendStatus = "error";
+            else if (!data.state || data.state === "INITIALIZING") frontendStatus = "loading";
 
-    return { status, loading };
+            setState({
+                status: frontendStatus,
+                state: data.state || "INITIALIZING",
+                primaryReady: data.primaryReady || false,
+                fullyReady: data.fullyReady || false,
+                generatedTokens: data.generatedTokens || 0,
+                requiredTokens: data.requiredTokens || 0,
+                validTokens: data.validTokens || [],
+                missingApis: data.missingApis || [],
+                cooldownActive: data.cooldownActive || false,
+                remainingSeconds: data.remainingSeconds || 0,
+                expiresAt: data.expiresAt || null,
+                isLeader: amLeader(),
+                connected: true
+            });
+        });
+
+        return unsubscribe;
+    }, []);
+
+    return state;
 }

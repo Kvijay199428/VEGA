@@ -35,6 +35,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         // Allow Selenium endpoints
                         .requestMatchers("/api/v1/auth/selenium/**").permitAll()
+                        // Allow WebSocket endpoints
+                        .requestMatchers("/ws/**").permitAll()
                         // Allow Option Chain endpoints (public data)
                         .requestMatchers("/api/v1/option-chain/**").permitAll()
                         // Allow Actuator/Metrics
@@ -50,7 +52,8 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Allow Frontend
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
+        configuration.setAllowedOrigins(
+                Arrays.asList("http://localhost:5173", "http://localhost:5174", "http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

@@ -24,7 +24,7 @@ import java.util.*;
  * 
  * @since 5.0.0
  */
-@Service
+@Service("upstoxRiskEngine")
 public class RiskEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RiskEngine.class);

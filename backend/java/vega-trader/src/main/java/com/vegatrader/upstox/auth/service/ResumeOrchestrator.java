@@ -3,6 +3,7 @@ package com.vegatrader.upstox.auth.service;
 import com.vegatrader.upstox.auth.db.ApiName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.UUID;
  *
  * @since 2.4.0
  */
+@Service
 public class ResumeOrchestrator {
 
     private static final Logger logger = LoggerFactory.getLogger(ResumeOrchestrator.class);
@@ -27,12 +29,6 @@ public class ResumeOrchestrator {
     private final ExecutionStateRepository stateRepo;
     private final CooldownManager cooldown;
     private final TokenGenerationService generationService;
-
-    public ResumeOrchestrator() {
-        this.stateRepo = new ExecutionStateRepository();
-        this.cooldown = new CooldownManager();
-        this.generationService = new TokenGenerationService();
-    }
 
     public ResumeOrchestrator(ExecutionStateRepository stateRepo,
             CooldownManager cooldown,

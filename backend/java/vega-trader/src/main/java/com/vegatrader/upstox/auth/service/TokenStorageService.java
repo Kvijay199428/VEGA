@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import com.vegatrader.util.time.LocaleConstants;
 
 /**
  * Service for token storage and retrieval operations.
@@ -25,10 +26,13 @@ public class TokenStorageService {
 
     private final TokenRepository tokenRepository;
     private final TokenCacheService tokenCacheService;
+    private final com.vegatrader.util.time.TimeProvider timeProvider;
 
-    public TokenStorageService(TokenRepository tokenRepository, TokenCacheService tokenCacheService) {
+    public TokenStorageService(TokenRepository tokenRepository, TokenCacheService tokenCacheService,
+            com.vegatrader.util.time.TimeProvider timeProvider) {
         this.tokenRepository = tokenRepository;
         this.tokenCacheService = tokenCacheService;
+        this.timeProvider = timeProvider;
     }
 
     /**
@@ -58,9 +62,12 @@ public class TokenStorageService {
         entity.setRedirectUri(redirectUri);
         entity.setIsPrimary(isPrimary);
         entity.setIsActive(1);
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setGeneratedAt(LocalDateTime.now().toString());
-        entity.setValidityAt(TokenExpiryCalculator.calculateValidityAtString());
+        entity.setCreatedAt(
+                timeProvider.now().atZone(LocaleConstants.IST).toLocalDateTime());
+        entity.setGeneratedAt(
+                timeProvider.now().atZone(LocaleConstants.IST).toLocalDateTime().toString());
+        entity.setValidityAt(TokenExpiryCalculator.calculateValidityAtString(
+                timeProvider.now().atZone(LocaleConstants.IST).toLocalDateTime()));
 
         try {
             boolean saved = tokenRepository.save(entity);
@@ -95,8 +102,10 @@ public class TokenStorageService {
             UpstoxTokenEntity entity = existing.get();
             entity.setAccessToken(tokenResponse.getAccessToken());
             entity.setRefreshToken(tokenResponse.getRefreshToken());
-            entity.setLastRefreshed(LocalDateTime.now());
-            entity.setValidityAt(TokenExpiryCalculator.calculateValidityAtString());
+            entity.setLastRefreshed(
+                    timeProvider.now().atZone(LocaleConstants.IST).toLocalDateTime());
+            entity.setValidityAt(TokenExpiryCalculator.calculateValidityAtString(
+                    timeProvider.now().atZone(LocaleConstants.IST).toLocalDateTime()));
             entity.setUpdatedAt(System.currentTimeMillis());
 
             try {
@@ -189,5 +198,14 @@ public class TokenStorageService {
      */
     public TokenCacheService.CacheStatus getCacheStatus() {
         return tokenCacheService.getStatus();
+    }
+
+    /**
+     * Get list of all valid API names.
+     */
+    public List<String> getValidApiNames() {
+        return getAllActiveTokens().stream()
+                .map(UpstoxTokenEntity::getApiName)
+                .toList();
     }
 }

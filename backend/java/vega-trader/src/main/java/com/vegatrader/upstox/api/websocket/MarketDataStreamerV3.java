@@ -17,6 +17,9 @@ import com.vegatrader.upstox.api.websocket.protocol.UpstoxMessageParser;
 import com.vegatrader.upstox.api.websocket.event.*;
 import com.vegatrader.upstox.api.response.websocket.MarketDataFeedV3Response;
 import com.vegatrader.upstox.api.response.websocket.FeedType;
+import com.vegatrader.market.journal.JournalManager;
+import com.vegatrader.upstox.mapper.FullD30Mapper;
+import com.vegatrader.market.depth.model.L30OrderBook;
 import okhttp3.*;
 import okio.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -96,9 +99,19 @@ public class MarketDataStreamerV3 {
     private Mode initialMode;
 
     private com.vegatrader.journal.JournalWriter journalWriter;
+    private JournalManager journalManager;
+    private FullD30Mapper fullD30Mapper;
 
     public void setJournalWriter(com.vegatrader.journal.JournalWriter journalWriter) {
         this.journalWriter = journalWriter;
+    }
+
+    public void setJournalManager(JournalManager journalManager) {
+        this.journalManager = journalManager;
+    }
+
+    public void setFullD30Mapper(FullD30Mapper fullD30Mapper) {
+        this.fullD30Mapper = fullD30Mapper;
     }
 
     /**
@@ -152,7 +165,7 @@ public class MarketDataStreamerV3 {
         int workerCount = settings.getWorkerThreads();
         this.workerPool = Executors.newFixedThreadPool(workerCount, r -> {
             Thread t = new Thread(r);
-            t.setName("MarketData-Worker-" + t.threadId());
+            t.setName("MarketData-Worker-" + t.getId());
             t.setDaemon(true);
             return t;
         });
@@ -220,7 +233,7 @@ public class MarketDataStreamerV3 {
         int workerCount = settings.getWorkerThreads();
         this.workerPool = Executors.newFixedThreadPool(workerCount, r -> {
             Thread t = new Thread(r);
-            t.setName("MarketData-Worker-" + t.threadId());
+            t.setName("MarketData-Worker-" + t.getId());
             t.setDaemon(true);
             return t;
         });
@@ -772,6 +785,54 @@ public class MarketDataStreamerV3 {
                 }
             } else if (event != null) {
                 eventBus.publish(event);
+            }
+
+            // Enterprise Journaling (Canonical Binary)
+            // Phase A: Normalize and Persist off-heap
+            if (journalManager != null && fullD30Mapper != null) {
+                // Determine instrument key. In V3, MarketFullFeed doesn't strictly carry the
+                // subscribed "Key"
+                // but usually the token is inside or mapped.
+                // However, FullD30Mapper requires instrumentKey.
+                // We might need to look it up from marketStateTracker or response if available.
+                // For now, let's assume marketStateTracker tracks it or use a fallback
+                // mechanism
+                // But wait, the response is MarketDataFeedV3.FeedResponse.
+                // It has map<string, Feed> feeds? No.
+                // FeedResponse definition:
+                // message FeedResponse {
+                // Type type = 1;
+                // map<string, Feed> feeds = 2; ...
+                // }
+                // Ah, 'response' IS the wrapper. It contains a map of feeds.
+                // So we need to iterate over feeds.
+
+                // Oops, the parser logic above: `messageParser.parse(response)` handles
+                // iteration internally?
+                // Let's check `UpstoxMessageParser`.
+                // Actually, `handleBinaryMessage` logic:
+                // `MarketDataFeedV3.FeedResponse response = ...`
+                // `marketStateTracker.onFeedReceived(response);`
+
+                // If we want to write canonical snapshots, we need to iterate the feeds here or
+                // hook into `messageParser`.
+                // The current logic uses `messageParser.parse(response)` which returns a SINGLE
+                // `MarketUpdateEvent`.
+                // This implies `UpstoxMessageParser` might aggregate or return a batch event?
+
+                // To be safe and minimal:
+                // We iterate the feeds map in the response directly.
+                if (response.getFeedsMap() != null) {
+                    response.getFeedsMap().forEach((key, feed) -> {
+                        if (feed.getFeedUnionCase() == MarketDataFeedV3.Feed.FeedUnionCase.FULLFEED) {
+                            MarketDataFeedV3.FullFeed fullFeed = feed.getFullFeed();
+                            if (fullFeed.hasMarketFF()) {
+                                L30OrderBook book = fullD30Mapper.map(fullFeed.getMarketFF(), key);
+                                journalManager.writePromise(book);
+                            }
+                        }
+                    });
+                }
             }
 
         } catch (InvalidProtocolBufferException e) {

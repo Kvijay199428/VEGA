@@ -3,7 +3,7 @@ package com.vegatrader.execution.dto;
 public class OrderResponse {
     private String orderId;
     private String instrumentKey;
-    private String status; // ACCEPTED, REJECTED, COMPLETE
+    private OrderStatus status; // ACCEPTED, REJECTED, COMPLETE
     private String message;
     private int filledQuantity;
     private double avgPrice;
@@ -20,7 +20,7 @@ public class OrderResponse {
         return instrumentKey;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
@@ -45,7 +45,7 @@ public class OrderResponse {
         this.instrumentKey = instrumentKey;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
@@ -79,7 +79,7 @@ public class OrderResponse {
             return this;
         }
 
-        public OrderResponseBuilder status(String s) {
+        public OrderResponseBuilder status(OrderStatus s) {
             response.setStatus(s);
             return this;
         }

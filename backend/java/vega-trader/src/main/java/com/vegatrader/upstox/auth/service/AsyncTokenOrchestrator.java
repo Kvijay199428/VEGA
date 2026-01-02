@@ -1,11 +1,11 @@
 package com.vegatrader.upstox.auth.service;
 
 import com.vegatrader.upstox.auth.db.ApiName;
-import com.vegatrader.upstox.auth.db.UpstoxTokenRepository;
-import com.vegatrader.upstox.auth.db.UpstoxTokenRepositoryImpl;
-import com.vegatrader.upstox.auth.db.entity.UpstoxTokenEntity;
+import com.vegatrader.upstox.auth.repository.TokenRepository;
+import com.vegatrader.upstox.auth.entity.UpstoxTokenEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.concurrent.*;
  *
  * @since 2.3.0
  */
+@Service
 public class AsyncTokenOrchestrator {
 
     private static final Logger logger = LoggerFactory.getLogger(AsyncTokenOrchestrator.class);
@@ -33,16 +34,19 @@ public class AsyncTokenOrchestrator {
     // SINGLE Selenium browser per c2.md: prevents OTP/PIN session contention
     private final ExecutorService seleniumPool = Executors.newSingleThreadExecutor();
 
-    private final UpstoxTokenRepository tokenRepository;
+    private final TokenRepository tokenRepository;
     private final TokenValidityService validityService;
     private final ProfileVerificationService profileService;
     private final TokenGenerationService generationService;
 
-    public AsyncTokenOrchestrator() {
-        this.tokenRepository = new UpstoxTokenRepositoryImpl();
-        this.validityService = new TokenValidityService();
-        this.profileService = new ProfileVerificationService();
-        this.generationService = new TokenGenerationService();
+    public AsyncTokenOrchestrator(TokenRepository tokenRepository,
+            TokenValidityService validityService,
+            ProfileVerificationService profileService,
+            TokenGenerationService generationService) {
+        this.tokenRepository = tokenRepository;
+        this.validityService = validityService;
+        this.profileService = profileService;
+        this.generationService = generationService;
     }
 
     /**
@@ -85,7 +89,7 @@ public class AsyncTokenOrchestrator {
      */
     private List<UpstoxTokenEntity> loadTokens() {
         logger.info("Loading tokens from database...");
-        List<UpstoxTokenEntity> tokens = tokenRepository.findAll();
+        List<UpstoxTokenEntity> tokens = tokenRepository.findAllActive();
         logger.info("✓ Loaded {} tokens", tokens.size());
         return tokens;
     }
