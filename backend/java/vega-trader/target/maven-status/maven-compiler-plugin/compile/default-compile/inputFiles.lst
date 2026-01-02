@@ -482,6 +482,7 @@ D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\up
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\config\AuthConfiguration.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\config\AuthConstants.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\config\SecurityConfiguration.java
+D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\controller\AuthDiagController.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\controller\BasicAuthController.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\controller\LoginAutomationController.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\controller\LoginSuccessController.java
@@ -494,6 +495,7 @@ D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\up
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\db\SqliteDataSourceFactory.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\db\UpstoxTokenRepository.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\db\UpstoxTokenRepositoryImpl.java
+D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\dto\AuthEvent.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\dto\AuthStatus.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\dto\LoginSuccessResponse.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\dto\ProfileView.java
@@ -587,6 +589,7 @@ D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\up
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\utils\ApiNameResolver.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\utils\AuthUrlBuilder.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\utils\TokenExpiryCalculator.java
+D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\websocket\AuthSession.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\websocket\AuthSessionRegistry.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\websocket\AuthStatusWebSocketHandler.java
 D:\projects\VEGA TRADER\backend\java\vega-trader\src\main\java\com\vegatrader\upstox\auth\websocket\UserHandshakeInterceptor.java

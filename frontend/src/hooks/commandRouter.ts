@@ -11,6 +11,7 @@ type Command =
     | { type: "DEPTH"; level: number }
     | { type: "GREEKS"; action: "ON" | "OFF" }
     | { type: "SUBSCRIBE"; instrumentKey: string }
+    | { type: "DIAG"; subtype: "AUTH_TRACE"; sessionId?: string }
     | { type: "UNKNOWN"; raw: string };
 
 // Current context for commands
@@ -64,16 +65,52 @@ export function parseCommand(input: string): Command {
                 return { type: "SUBSCRIBE", instrumentKey: parts.slice(1).join("|") };
             }
             break;
+        case "DIAG":
+            if (parts[1] === "AUTH" && parts[2] === "TRACE") {
+                const sessionIdIdx = parts.indexOf("SESSION");
+                const sessionId = sessionIdIdx !== -1 ? parts[sessionIdIdx + 1] : undefined;
+                return { type: "DIAG", subtype: "AUTH_TRACE", sessionId };
+            }
+            break;
     }
 
     return { type: "UNKNOWN", raw: input };
 }
 
-export function executeCommand(cmd: Command) {
+export async function executeCommand(cmd: Command) {
     switch (cmd.type) {
         case "GO":
             console.log(`[Command] Navigating to symbol: ${cmd.symbol}`);
             window.location.hash = `/trade/${cmd.symbol}`;
+            break;
+
+        case "DIAG":
+            if (cmd.subtype === "AUTH_TRACE") {
+                console.log(`[DIAG] Fetching Auth Trace...`);
+                // Use current session if not specified - hard to get from here without store access
+                // For now, let's just log instructions if no session ID, or try to simplify
+                // Actually, let's fetch from the DIAG endpoint
+                // We need the session ID. 
+                // We'll prompt user or use a default if we can access it.
+                // But commandRouter doesn't have access to AuthState.
+                // We will dispatch an event and let the UI handle it or fetch if session provided.
+
+                if (cmd.sessionId) {
+                    try {
+                        const res = await fetch(`/api/auth/trace?sessionId=${cmd.sessionId}`);
+                        if (res.ok) {
+                            const trace = await res.json();
+                            console.table(trace);
+                        } else {
+                            console.error("[DIAG] Failed to fetch trace", res.status);
+                        }
+                    } catch (e) {
+                        console.error("[DIAG] Error fetching trace", e);
+                    }
+                } else {
+                    console.warn("[DIAG] Session ID required. Usage: DIAG AUTH TRACE SESSION <id>");
+                }
+            }
             break;
 
         case "BOOK":

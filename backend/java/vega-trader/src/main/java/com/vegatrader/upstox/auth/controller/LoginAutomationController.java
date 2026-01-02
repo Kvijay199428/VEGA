@@ -282,6 +282,79 @@ public class LoginAutomationController {
     }
 
     /**
+     * Retry a specific failed/expired token.
+     * Called from frontend TokenTimeline retry button.
+     * 
+     * POST http://localhost:28020/api/v1/auth/selenium/retry-token
+     * Body: { "api": "OPTION_CHAIN_2" }
+     */
+    @PostMapping("/retry-token")
+    public ResponseEntity<?> retryToken(@RequestBody RetryTokenRequest request) {
+        String apiName = request.getApi();
+        logger.info("AUDIT: Manual token retry requested | API: {}", apiName);
+
+        if (apiName == null || apiName.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "status", "error",
+                    "message", "API name is required"));
+        }
+
+        try {
+            // Check if API exists in configuration
+            if (!batchAuthService.isValidApiName(apiName)) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "status", "error",
+                        "message", "Unknown API: " + apiName));
+            }
+
+            // Check cooldown status
+            if (batchAuthService.isApiInCooldown(apiName)) {
+                long cooldownRemaining = batchAuthService.getCooldownRemaining(apiName);
+                return ResponseEntity.status(429).body(Map.of(
+                        "status", "cooldown",
+                        "message", "API is in cooldown",
+                        "cooldownRemainingSeconds", cooldownRemaining));
+            }
+
+            // Trigger async retry for this specific API
+            new Thread(() -> {
+                try {
+                    logger.info("Starting retry for API: {}", apiName);
+                    batchAuthService.retrySingleApi(apiName, true); // headless = true
+                } catch (Exception e) {
+                    logger.error("Error retrying token for API: {}", apiName, e);
+                }
+            }).start();
+
+            return ResponseEntity.accepted().body(Map.of(
+                    "status", "accepted",
+                    "message", "Retry initiated for " + apiName,
+                    "api", apiName));
+
+        } catch (Exception e) {
+            logger.error("AUDIT: Token retry failed | API: {} | Error: {}", apiName, e.getMessage());
+            return ResponseEntity.status(500).body(Map.of(
+                    "status", "error",
+                    "message", "Retry failed: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Retry token request DTO.
+     */
+    public static class RetryTokenRequest {
+        private String api;
+
+        public String getApi() {
+            return api;
+        }
+
+        public void setApi(String api) {
+            this.api = api;
+        }
+    }
+
+    /**
      * Initiate multi-login for multiple APIs.
      *
      * POST http://localhost:28021/api/v1/auth/selenium/multi-login

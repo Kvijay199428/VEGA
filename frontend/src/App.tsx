@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Bootstrap } from './app/Bootstrap'
-import { ProtectedRoute } from './app/ProtectedRoute'
-import { GuardedLoginPage } from './guards/GuardedLoginPage'
+import { AuthBoundary } from './auth/AuthBoundary'
+import { LoginPage } from './pages/LoginPage'
 import AuthCallback from './pages/AuthCallback'
 import { PageProvider } from './context/PageContext'
 
@@ -25,37 +25,40 @@ import { AuthProvider } from './context/AuthProvider'
 
 /**
  * Main App Component - Bloomberg-style Terminal.
+ * 
+ * Router Structure:
+ * - /login, /auth/callback: Public routes (no auth required)
+ * - All other routes: Protected by single AuthBoundary
+ * 
+ * IMPORTANT: AuthBoundary is the ONLY auth guard.
+ * Do NOT add per-page session checks.
  */
 function App() {
     useKillSwitch()
-    // useCommandPalette call if defined
 
     return (
         <PageProvider>
             <AuthProvider>
                 <Bootstrap>
                     <Routes>
-                        <Route path="/login" element={<GuardedLoginPage />} />
+                        {/* Public Routes - No Auth Required */}
+                        <Route path="/login" element={<LoginPage />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
 
-                        <Route
-                            path="/*"
-                            element={
-                                <ProtectedRoute>
-                                    <TerminalLayout />
-                                </ProtectedRoute>
-                            }
-                        >
-                            <Route index element={<Dashboard />} />
-                            <Route path="dashboard" element={<Dashboard />} />
-                            <Route path="market-watch" element={<MarketWatch />} />
-                            <Route path="options" element={<OptionsChain />} />
-                            <Route path="sectors" element={<Sectors />} />
-                            <Route path="orders" element={<Orders />} />
-                            <Route path="risk" element={<RiskDashboard />} />
-                            <Route path="account" element={<AccountPage />} />
-                            <Route path="settings" element={<SettingsPage />} />
-                            <Route path="vega-status" element={<VegaDashboard />} />
+                        {/* Protected Routes - Single AuthBoundary Guard */}
+                        <Route element={<AuthBoundary />}>
+                            <Route element={<TerminalLayout />}>
+                                <Route index element={<Dashboard />} />
+                                <Route path="dashboard" element={<Dashboard />} />
+                                <Route path="market-watch" element={<MarketWatch />} />
+                                <Route path="options" element={<OptionsChain />} />
+                                <Route path="sectors" element={<Sectors />} />
+                                <Route path="orders" element={<Orders />} />
+                                <Route path="risk" element={<RiskDashboard />} />
+                                <Route path="account" element={<AccountPage />} />
+                                <Route path="settings" element={<SettingsPage />} />
+                                <Route path="vega-status" element={<VegaDashboard />} />
+                            </Route>
                         </Route>
                     </Routes>
                 </Bootstrap>
@@ -65,3 +68,4 @@ function App() {
 }
 
 export default App;
+

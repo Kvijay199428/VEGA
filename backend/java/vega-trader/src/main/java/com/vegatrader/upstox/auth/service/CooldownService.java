@@ -175,4 +175,43 @@ public class CooldownService {
             return message;
         }
     }
+
+    // ==========================================
+    // Per-API Cooldown Methods (delegates to global for now)
+    // Future: implement per-API cooldown tracking
+    // ==========================================
+
+    /**
+     * Check if specific API is in cooldown.
+     * Currently delegates to global cooldown state.
+     * 
+     * @param apiName The API name to check
+     * @return true if API is in cooldown
+     */
+    public boolean isApiInCooldown(String apiName) {
+        // For now, all APIs share the same cooldown
+        // Future: track per-API cooldowns in a Map
+        return isTokenGenerationCooldownActive();
+    }
+
+    /**
+     * Get remaining cooldown time for specific API in seconds.
+     * 
+     * @param apiName The API name
+     * @return remaining seconds, 0 if not in cooldown
+     */
+    public long getCooldownRemainingSeconds(String apiName) {
+        // Delegates to global cooldown
+        return remainingSeconds();
+    }
+
+    /**
+     * Trigger cooldown for specific API.
+     * 
+     * @param apiName The API that triggered the cooldown
+     */
+    public void triggerCooldown(String apiName) {
+        logger.warn("API {} triggered cooldown", apiName);
+        triggerCooldown(); // Delegate to global
+    }
 }

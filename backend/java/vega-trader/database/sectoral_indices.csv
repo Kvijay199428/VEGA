@@ -1,0 +1,107 @@
+CATEGORY,INDEX NAME,URI LINKS
+SECTORAL,Nifty Auto Index,https://www.niftyindices.com/IndexConstituent/ind_niftyautolist.csv
+SECTORAL,Nifty Bank Index,https://www.niftyindices.com/IndexConstituent/ind_niftybanklist.csv
+SECTORAL,Nifty Chemicals,https://www.niftyindices.com/IndexConstituent/ind_niftyChemicals_list.csv
+SECTORAL,Nifty Financial Services Index,https://www.niftyindices.com/IndexConstituent/ind_niftyfinancelist.csv
+SECTORAL,Nifty Financial Services 25/50 Index,https://www.niftyindices.com/IndexConstituent/ind_niftyfinancialservices25-50list.csv
+SECTORAL,Nifty Financial Services Ex-Bank,N/A - Dynamic Content
+SECTORAL,Nifty FMCG Index,https://www.niftyindices.com/IndexConstituent/ind_niftyfmcglist.csv
+SECTORAL,Nifty Healthcare Index,https://www.niftyindices.com/IndexConstituent/ind_niftyhealthcarelist.csv
+SECTORAL,Nifty IT Index,https://www.niftyindices.com/IndexConstituent/ind_niftyitlist.csv
+SECTORAL,Nifty Media Index,https://www.niftyindices.com/IndexConstituent/ind_niftymedialist.csv
+SECTORAL,Nifty Metal Index,https://www.niftyindices.com/IndexConstituent/ind_niftymetallist.csv
+SECTORAL,Nifty Pharma Index,https://www.niftyindices.com/IndexConstituent/ind_niftypharmalist.csv
+SECTORAL,Nifty Private Bank Index,https://www.niftyindices.com/IndexConstituent/ind_nifty_privatebanklist.csv
+SECTORAL,Nifty PSU Bank Index,https://www.niftyindices.com/IndexConstituent/ind_niftypsubanklist.csv
+SECTORAL,Nifty Realty Index,https://www.niftyindices.com/IndexConstituent/ind_niftyrealtylist.csv
+SECTORAL,Nifty Consumer Durables Index,https://www.niftyindices.com/IndexConstituent/ind_niftyconsumerdurableslist.csv
+SECTORAL,Nifty Oil and Gas Index,https://www.niftyindices.com/IndexConstituent/ind_niftyoilgaslist.csv
+SECTORAL,Nifty500 Healthcare,https://www.niftyindices.com/IndexConstituent/ind_nifty500Healthcare_list.csv
+SECTORAL,Nifty MidSmall Financial Services Index,https://www.niftyindices.com/IndexConstituent/ind_niftymidsmallfinancailservice_list.csv
+SECTORAL,Nifty MidSmall Healthcare Index,https://www.niftyindices.com/IndexConstituent/ind_niftymidsmallhealthcare_list.csv
+SECTORAL,Nifty MidSmall IT & Telecom Index,https://www.niftyindices.com/IndexConstituent/ind_niftymidsmallitAndtelecom_list.csv
+THEMATIC,Nifty Capital Markets,https://www.niftyindices.com/IndexConstituent/ind_niftyCapitalMarkets_list.csv
+THEMATIC,Nifty Commodities,https://www.niftyindices.com/IndexConstituent/ind_niftycommoditieslist.csv
+THEMATIC,Nifty Conglomerate 50,https://www.niftyindices.com/IndexConstituent/ind_niftyConglomerate50_list.csv
+THEMATIC,Nifty Core Housing,https://www.niftyindices.com/IndexConstituent/ind_niftyCoreHousing_list.csv
+THEMATIC,Nifty CPSE,https://www.niftyindices.com/IndexConstituent/ind_niftycpselist.csv
+THEMATIC,Nifty EV & New Age Automotive,https://www.niftyindices.com/IndexConstituent/ind_niftyEv_NewAgeAutomotive_list.csv
+THEMATIC,Nifty Energy,https://www.niftyindices.com/IndexConstituent/ind_niftyenergylist.csv
+THEMATIC,Nifty Housing,https://www.niftyindices.com/IndexConstituent/ind_niftyhouselist.csv
+THEMATIC,Nifty India Consumption,https://www.niftyindices.com/IndexConstituent/ind_niftyindiaconsumptionlist.csv
+THEMATIC,Nifty India Defence,https://www.niftyindices.com/IndexConstituent/ind_niftyindiadeference_list.csv
+THEMATIC,Nifty India Digital,https://www.niftyindices.com/IndexConstituent/ind_niftyIndiaDigital_list.csv
+THEMATIC,Nifty India Infrastructure & Logistics,https://www.niftyindices.com/IndexConstituent/ind_niftyIndiaInfrastructureLogistics_list.csv
+THEMATIC,Nifty India Internet,https://www.niftyindices.com/IndexConstituent/ind_niftyindiainternet_list.csv
+THEMATIC,Nifty India Manufacturing,https://www.niftyindices.com/IndexConstituent/ind_niftyindiamanufacturing_list.csv
+THEMATIC,Nifty India New Age Consumption,https://www.niftyindices.com/IndexConstituent/ind_niftyindianewaeconsumption_list.csv
+THEMATIC,Nifty India Railways PSU,https://www.niftyindices.com/IndexConstituent/ind_niftyIndiaRailwaysPSU_list.csv
+THEMATIC,Nifty India Tourism,https://www.niftyindices.com/IndexConstituent/ind_niftyindiatorism_list.csv
+THEMATIC,Nifty Infrastructure,https://www.niftyindices.com/IndexConstituent/ind_niftyinfrastructurelist.csv
+THEMATIC,Nifty IPO,https://www.niftyindices.com/IndexConstituent/ind_niftyipo_list.csv
+THEMATIC,Nifty Midcap Liquid 15,https://www.niftyindices.com/IndexConstituent/ind_niftymidcapliquid15_list.csv
+THEMATIC,Nifty MidSmall India Consumption,https://www.niftyindices.com/IndexConstituent/ind_niftymidsmallindiaconsumption_list.csv
+THEMATIC,Nifty MNC,https://www.niftyindices.com/IndexConstituent/ind_niftymnc_list.csv
+THEMATIC,Nifty Mobility,https://www.niftyindices.com/IndexConstituent/ind_niftymobility_list.csv
+THEMATIC,Nifty PSE,https://www.niftyindices.com/IndexConstituent/ind_niftypse_list.csv
+THEMATIC,Nifty REITs & InvITs,https://www.niftyindices.com/IndexConstituent/ind_niftyreitsandvits_list.csv
+THEMATIC,Nifty Rural,https://www.niftyindices.com/IndexConstituent/ind_niftyrural_list.csv
+THEMATIC,Nifty Non-Cyclical Consumer,https://www.niftyindices.com/IndexConstituent/ind_niftynoncyclicalconsumer_list.csv
+THEMATIC,Nifty Services Sector,https://www.niftyindices.com/IndexConstituent/ind_niftyservicesector_list.csv
+THEMATIC,Nifty Shariah 25,https://www.niftyindices.com/IndexConstituent/ind_niftyshariah25_list.csv
+THEMATIC,Nifty100 Liquid 15,https://www.niftyindices.com/IndexConstituent/ind_nifty100liquid15_list.csv
+THEMATIC,Nifty50 Shariah,https://www.niftyindices.com/IndexConstituent/ind_nifty50shariah_list.csv
+THEMATIC,Nifty500 Shariah,https://www.niftyindices.com/IndexConstituent/ind_nifty500shariah_list.csv
+THEMATIC,Nifty500 Multicap India Manufacturing 50:30:20,https://www.niftyindices.com/IndexConstituent/ind_nifty500multicapindiamfg5030_20_list.csv
+THEMATIC,Nifty500 Multicap Infrastructure 50:30:20,https://www.niftyindices.com/IndexConstituent/ind_nifty500multicapinfra5030_20_list.csv
+THEMATIC,Nifty SME EMERGE,https://www.niftyindices.com/IndexConstituent/ind_niftysmeeemerge_list.csv
+THEMATIC,Nifty Transportation & Logistics,https://www.niftyindices.com/IndexConstituent/ind_niftytransportationlogistics_list.csv
+THEMATIC,Nifty Waves,https://www.niftyindices.com/IndexConstituent/ind_niftywaves_list.csv
+THEMATIC,Nifty100 ESG,https://www.niftyindices.com/IndexConstituent/ind_nifty100esg_list.csv
+THEMATIC,Nifty100 Enhanced ESG,https://www.niftyindices.com/IndexConstituent/ind_nifty100enhancedesg_list.csv
+THEMATIC,Nifty100 ESG Sector Leaders,https://www.niftyindices.com/IndexConstituent/ind_nifty100esgsectorleaders_list.csv
+STRATEGY,Nifty Quality Low Volatility 30,https://www.niftyindices.com/IndexConstituent/ind_nifty_quality_lowvol30list.csv
+STRATEGY,Nifty Alpha Low Volatility 30,https://www.niftyindices.com/IndexConstituent/ind_nifty_alpha_lowvol30list.csv
+STRATEGY,Nifty Alpha Quality Low Volatility 30,https://www.niftyindices.com/IndexConstituent/ind_nifty_alpha_quality_lowvol30list.csv
+STRATEGY,Nifty Alpha Quality Value Low Volatility 30,https://www.niftyindices.com/IndexConstituent/ind_nifty_alpha_quality_value_lowvol30list.csv
+STRATEGY,Nifty100 Equal Weight,https://www.niftyindices.com/IndexConstituent/ind_nifty100equalweight_list.csv
+STRATEGY,Nifty100 Low Volatility 30,https://www.niftyindices.com/IndexConstituent/ind_nifty100lowvol30_list.csv
+STRATEGY,Nifty 50 Arbitrage,https://www.niftyindices.com/IndexConstituent/ind_nifty50arbitrage_list.csv
+STRATEGY,Nifty 50 Futures PR,https://www.niftyindices.com/IndexConstituent/ind_nifty50futurespr_list.csv
+STRATEGY,Nifty 50 Futures TR,https://www.niftyindices.com/IndexConstituent/ind_nifty50futurestr_list.csv
+STRATEGY,Nifty200 Momentum 30,https://www.niftyindices.com/IndexConstituent/ind_nifty200momentum30_list.csv
+STRATEGY,Nifty200 Alpha 30,https://www.niftyindices.com/IndexConstituent/ind_nifty200alpha30_list.csv
+STRATEGY,Nifty100 Alpha 30,https://www.niftyindices.com/IndexConstituent/ind_nifty100alpha30_list.csv
+STRATEGY,Nifty Dividend Opportunities 50,https://www.niftyindices.com/IndexConstituent/ind_niftydividendopportunities50_list.csv
+STRATEGY,Nifty Growth Sectors 15,https://www.niftyindices.com/IndexConstituent/ind_niftygrowthsectors15_list.csv
+STRATEGY,Nifty High Beta 50,https://www.niftyindices.com/IndexConstituent/ind_niftyhighbeta50_list.csv
+STRATEGY,Nifty Low Volatility 50,https://www.niftyindices.com/IndexConstituent/ind_niftylowvolatility50_list.csv
+STRATEGY,Nifty Top 10 Equal Weight,https://www.niftyindices.com/IndexConstituent/ind_niftytop10equalweight_list.csv
+STRATEGY,Nifty Top 15 Equal Weight,https://www.niftyindices.com/IndexConstituent/ind_niftytop15equalweight_list.csv
+STRATEGY,Nifty Top 20 Equal Weight,https://www.niftyindices.com/IndexConstituent/ind_niftytop20equalweight_list.csv
+STRATEGY,Nifty100 Quality 30,https://www.niftyindices.com/IndexConstituent/ind_nifty100quality30_list.csv
+STRATEGY,Nifty Midcap150 Momentum 50,https://www.niftyindices.com/IndexConstituent/ind_niftymidcap150momentum50_list.csv
+STRATEGY,Nifty Midcap150 Quality 50,https://www.niftyindices.com/IndexConstituent/ind_niftymidcap150quality50_list.csv
+STRATEGY,Nifty Alpha 50,https://www.niftyindices.com/IndexConstituent/ind_niftyalpha50_list.csv
+STRATEGY,Nifty50 Dividend Points,https://www.niftyindices.com/IndexConstituent/ind_nifty50dividendpoints_list.csv
+STRATEGY,Nifty50 Equal Weight,https://www.niftyindices.com/IndexConstituent/ind_nifty50equalweight_list.csv
+STRATEGY,Nifty50 USD,https://www.niftyindices.com/IndexConstituent/ind_nifty50usd_list.csv
+STRATEGY,Nifty50 PR 1x Inverse,https://www.niftyindices.com/IndexConstituent/ind_nifty50pr1xinverse_list.csv
+STRATEGY,Nifty50 PR 2x Leverage,https://www.niftyindices.com/IndexConstituent/ind_nifty50pr2xleverage_list.csv
+STRATEGY,Nifty50 TR 1x Inverse,https://www.niftyindices.com/IndexConstituent/ind_nifty50tr1xinverse_list.csv
+STRATEGY,Nifty50 TR 2x Leverage,https://www.niftyindices.com/IndexConstituent/ind_nifty50tr2xleverage_list.csv
+STRATEGY,Nifty50 Value 20,https://www.niftyindices.com/IndexConstituent/ind_nifty50value20_list.csv
+STRATEGY,Nifty200 Value 30,https://www.niftyindices.com/IndexConstituent/ind_nifty200value30_list.csv
+STRATEGY,Nifty500 Flexicap Quality 30,https://www.niftyindices.com/IndexConstituent/ind_nifty500flexicapquality30_list.csv
+STRATEGY,Nifty500 Value 50,https://www.niftyindices.com/IndexConstituent/ind_nifty500value50_list.csv
+STRATEGY,Nifty500 Equal Weight,https://www.niftyindices.com/IndexConstituent/ind_nifty500equalweight_list.csv
+STRATEGY,Nifty500 Low Volatility 50,https://www.niftyindices.com/IndexConstituent/ind_nifty500lowvolatility50_list.csv
+STRATEGY,Nifty500 Momentum 50,https://www.niftyindices.com/IndexConstituent/ind_nifty500momentum50_list.csv
+STRATEGY,Nifty500 Quality 50,https://www.niftyindices.com/IndexConstituent/ind_nifty500quality50_list.csv
+STRATEGY,Nifty500 Multifactor MQVLv 50,https://www.niftyindices.com/IndexConstituent/ind_nifty500multifactormqvlv50_list.csv
+STRATEGY,Nifty200 Quality 30,https://www.niftyindices.com/IndexConstituent/ind_nifty200quality30_list.csv
+STRATEGY,Nifty Smallcap250 Quality 50,https://www.niftyindices.com/IndexConstituent/ind_niftysmallcap250quality50_list.csv
+STRATEGY,Nifty Total Market Momentum Quality 50,https://www.niftyindices.com/IndexConstituent/ind_niftyTotalMarketMomentumQuality50_list.csv
+STRATEGY,Nifty500 Multicap Momentum Quality 50,https://www.niftyindices.com/IndexConstituent/ind_nifty500MulticapMomentumQuality50_list.csv
+STRATEGY,Nifty MidSmallcap400 Momentum Quality 100,https://www.niftyindices.com/IndexConstituent/ind_niftyMidSmallcap400MomentumQuality100_list.csv
+STRATEGY,Nifty Smallcap250 Momentum Quality 100,https://www.niftyindices.com/IndexConstituent/ind_niftySmallcap250MomentumQuality100_list.csv

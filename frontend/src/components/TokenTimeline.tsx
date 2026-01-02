@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { httpClient } from '../api/httpClient'
 
 interface TokenTimelineItem {
     apiName: string
     validityAt: string
-    status: 'VALID' | 'WARNING' | 'CRITICAL' | 'EXPIRED' | 'ERROR'
+    status: 'VALID' | 'WARNING' | 'CRITICAL' | 'EXPIRED' | 'ERROR' | 'COOLDOWN'
     remainingMinutes: number
     durationString: string
+    cooldownUntil?: number
 }
 
 export function TokenTimeline() {
     const [items, setItems] = useState<TokenTimelineItem[]>([])
     const [loading, setLoading] = useState(true)
+    const [retrying, setRetrying] = useState<string | null>(null)
 
     const fetchTimeline = async () => {
         try {
@@ -28,6 +30,20 @@ export function TokenTimeline() {
         fetchTimeline()
         const interval = setInterval(fetchTimeline, 60000) // update every minute
         return () => clearInterval(interval)
+    }, [])
+
+    // Manual retry for failed/expired tokens
+    const handleRetryToken = useCallback(async (apiName: string) => {
+        try {
+            setRetrying(apiName)
+            await httpClient.post('/api/v1/auth/selenium/retry-token', { api: apiName })
+            // Refresh timeline after retry
+            await fetchTimeline()
+        } catch (e) {
+            console.error(`Failed to retry ${apiName}`, e)
+        } finally {
+            setRetrying(null)
+        }
     }, [])
 
     if (loading) return <div className="text-xs text-terminal-muted animate-pulse">Scanning tokens...</div>
@@ -50,15 +66,29 @@ export function TokenTimeline() {
 
                         {/* Progress Bar Background */}
                         <div className="flex-1 mx-4 h-1 bg-gray-800 rounded-full overflow-hidden relative">
-                            {/* Calculated width based on 24h scale or just status logic? */}
-                            {/* Simple visual based on status */}
                             <div
                                 className={`h-full ${getStatusBg(item.status)} transition-all duration-1000`}
                                 style={{ width: getWidth(item.status, item.remainingMinutes) }}
                             />
                         </div>
 
-                        <div className="flex items-center space-x-3 min-w-[120px] justify-end">
+                        <div className="flex items-center space-x-3 min-w-[150px] justify-end">
+                            {/* Retry button for failed/expired tokens */}
+                            {(item.status === 'EXPIRED' || item.status === 'ERROR') && (
+                                <button
+                                    onClick={() => handleRetryToken(item.apiName)}
+                                    disabled={retrying === item.apiName}
+                                    className="text-[10px] px-2 py-0.5 bg-terminal-accent/20 text-terminal-accent border border-terminal-accent/50 rounded hover:bg-terminal-accent hover:text-black transition-all disabled:opacity-50"
+                                >
+                                    {retrying === item.apiName ? 'Retrying...' : 'Retry'}
+                                </button>
+                            )}
+
+                            {/* Cooldown timer */}
+                            {item.status === 'COOLDOWN' && item.cooldownUntil && (
+                                <CooldownTimer endTime={item.cooldownUntil} />
+                            )}
+
                             <span className="text-gray-500 text-[10px]">{item.validityAt.split(' ')[1]}</span>
                             <span className={`font-bold w-14 text-right ${getStatusColor(item.status)}`}>
                                 {item.durationString}
@@ -78,8 +108,35 @@ export function TokenTimeline() {
 
 function StatusIndicator({ status }: { status: string }) {
     const color = getStatusBg(status)
-    const pulse = status === 'CRITICAL' || status === 'WARNING' ? 'animate-pulse' : ''
+    const pulse = status === 'CRITICAL' || status === 'WARNING' || status === 'COOLDOWN' ? 'animate-pulse' : ''
     return <div className={`w-2 h-2 rounded-full ${color} ${pulse} shadow-[0_0_8px_rgba(0,0,0,0.5)]`} />
+}
+
+// Cooldown timer component
+function CooldownTimer({ endTime }: { endTime: number }) {
+    const [remaining, setRemaining] = useState('')
+
+    useEffect(() => {
+        const update = () => {
+            const diff = endTime - Date.now()
+            if (diff <= 0) {
+                setRemaining('Ready')
+                return
+            }
+            const mins = Math.floor(diff / 60000)
+            const secs = Math.floor((diff % 60000) / 1000)
+            setRemaining(`${mins}:${secs.toString().padStart(2, '0')}`)
+        }
+        update()
+        const interval = setInterval(update, 1000)
+        return () => clearInterval(interval)
+    }, [endTime])
+
+    return (
+        <span className="text-[10px] text-amber-400 font-mono animate-pulse">
+            ⏳ {remaining}
+        </span>
+    )
 }
 
 function getStatusColor(status: string) {
@@ -88,6 +145,7 @@ function getStatusColor(status: string) {
         case 'WARNING': return 'text-terminal-yellow decoration-yellow-500 underline decoration-dashed'
         case 'CRITICAL': return 'text-terminal-red font-black'
         case 'EXPIRED': return 'text-gray-400 line-through'
+        case 'COOLDOWN': return 'text-amber-400'
         default: return 'text-gray-500'
     }
 }
@@ -97,6 +155,7 @@ function getStatusBg(status: string) {
         case 'VALID': return 'bg-terminal-green'
         case 'WARNING': return 'bg-terminal-yellow'
         case 'CRITICAL': return 'bg-terminal-red'
+        case 'COOLDOWN': return 'bg-amber-500'
         default: return 'bg-gray-600'
     }
 }
@@ -109,3 +168,4 @@ function getWidth(status: string, minutes: number): string {
     const pct = Math.min(100, Math.max(5, (minutes / 180) * 100)) // Scale based on 3 hours for relevant movement
     return `${pct}%`
 }
+

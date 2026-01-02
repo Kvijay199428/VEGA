@@ -1,58 +1,45 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import { Navigate } from 'react-router-dom'
 import { LoginPage } from '../pages/LoginPage'
-import { httpClient } from '../api/httpClient'
+import { AuthContext } from '../context/AuthContext'
 
 /**
- * Login Route with Session Guard
+ * Login Route with Session Guard (Single Source of Truth)
  * 
- * Checks for valid session before rendering login page.
- * If PRIMARY token exists and is valid, redirects to dashboard.
+ * Uses AuthContext (same as ProtectedRoute) to prevent ping-pong redirects.
+ * If authenticated, redirects to dashboard. Otherwise shows login page.
  * 
- * This provides Bloomberg-terminal behavior: login page only shown when necessary.
+ * IMPORTANT: This guard and ProtectedRoute MUST use the same source of truth
+ * (AuthContext via WebSocket) to prevent infinite redirect loops.
  */
 export function GuardedLoginPage() {
-    const navigate = useNavigate()
-    const [loading, setLoading] = useState(true)
-    const [shouldShowLogin, setShouldShowLogin] = useState(false)
+    const { status, primaryReady } = useContext(AuthContext)
 
-    useEffect(() => {
-        async function checkSession() {
-            try {
-                const response = await httpClient.get('/api/auth/session')
-                const session = response.data
+    console.log('[LoginGuard] AuthContext status:', status, 'primaryReady:', primaryReady)
 
-                // If PRIMARY token exists and is valid, bypass login
-                if (session.status === 'SUCCESS' && session.primaryReady) {
-                    console.log('[LoginGuard] Session valid - redirecting to dashboard')
-                    console.log(`[LoginGuard] Tokens: ${session.generatedTokens}/${session.configuredApis}`)
-                    navigate('/dashboard', { replace: true })
-                    return
-                }
-
-                // Session invalid or PRIMARY missing - show login page
-                console.log('[LoginGuard] No valid session - showing login page')
-                setShouldShowLogin(true)
-            } catch (error) {
-                // Network error or backend down - show login page
-                console.warn('[LoginGuard] Session check failed:', error)
-                setShouldShowLogin(true)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        checkSession()
-    }, [navigate])
-
-    if (loading) {
-        // Minimal loading state - session check is very fast
+    // Loading state - same splash as ProtectedRoute
+    if (status === 'loading') {
         return (
             <div className="min-h-screen bg-terminal-bg flex items-center justify-center">
-                <div className="text-terminal-muted text-sm">Checking session...</div>
+                <div className="text-center">
+                    <div className="text-terminal-success text-lg font-bold mb-2">
+                        VEGA TRADER
+                    </div>
+                    <div className="text-terminal-muted text-sm">
+                        Establishing secure uplink...
+                    </div>
+                </div>
             </div>
         )
     }
 
-    return shouldShowLogin ? <LoginPage /> : null
+    // If authenticated (same check as ProtectedRoute inverse), redirect to dashboard
+    if (status === 'authenticated') {
+        console.log('[LoginGuard] Authenticated - redirecting to /dashboard')
+        return <Navigate to="/dashboard" replace />
+    }
+
+    // Unauthenticated / expired / error - show login page
+    console.log('[LoginGuard] Not authenticated - showing LoginPage')
+    return <LoginPage />
 }

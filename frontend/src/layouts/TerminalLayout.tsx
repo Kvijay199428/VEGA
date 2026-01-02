@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import TopBar from '../components/shell/TopBar'
 import Sidebar from '../components/shell/Sidebar'
 import BottomBar from '../components/shell/BottomBar'
-import VegaStatusBar from '../components/shell/VegaStatusBar'
 import { useKillSwitch } from '../hooks/useKillSwitch'
 
 /**
@@ -97,9 +96,6 @@ export default function TerminalLayout() {
         <div className="h-screen flex flex-col bg-[#0b0f14] text-[#c7ccd1] font-mono overflow-hidden">
             {/* Top Bar */}
             <TopBar />
-
-            {/* TERMINAL STATUS BAR (Bloomberg Style) */}
-            <VegaStatusBar />
 
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden">

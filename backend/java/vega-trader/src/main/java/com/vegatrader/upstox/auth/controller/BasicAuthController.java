@@ -160,21 +160,32 @@ public class BasicAuthController {
                     long minutes = 0;
                     Duration remaining = Duration.ZERO;
                     String status;
+                    Long cooldownUntil = null;
 
                     try {
-                        LocalDateTime validityAt = LocalDateTime.parse(token.getValidityAt(), formatter);
-                        remaining = Duration.between(now, validityAt);
-                        minutes = remaining.toMinutes();
-
-                        if (remaining.isNegative() || remaining.isZero()) {
-                            status = "EXPIRED";
-                            minutes = 0; // consistent 0 for sorting
-                        } else if (minutes < 30) {
-                            status = "CRITICAL";
-                        } else if (minutes < 60) {
-                            status = "WARNING";
+                        // Check Cooldown FIRST
+                        if (cooldownService.isApiInCooldown(token.getApiName())) {
+                            status = "COOLDOWN";
+                            // Approximate end time based on remaining seconds
+                            long remSec = cooldownService.getCooldownRemainingSeconds(token.getApiName());
+                            cooldownUntil = System.currentTimeMillis() + (remSec * 1000);
+                            minutes = 0;
+                            remaining = Duration.ZERO;
                         } else {
-                            status = "VALID";
+                            LocalDateTime validityAt = LocalDateTime.parse(token.getValidityAt(), formatter);
+                            remaining = Duration.between(now, validityAt);
+                            minutes = remaining.toMinutes();
+
+                            if (remaining.isNegative() || remaining.isZero()) {
+                                status = "EXPIRED";
+                                minutes = 0; // consistent 0 for sorting
+                            } else if (minutes < 30) {
+                                status = "CRITICAL";
+                            } else if (minutes < 60) {
+                                status = "WARNING";
+                            } else {
+                                status = "VALID";
+                            }
                         }
                     } catch (Exception e) {
                         logger.error("Error parsing validity for {}: {}", token.getApiName(), e.getMessage());
@@ -187,7 +198,8 @@ public class BasicAuthController {
                             token.getValidityAt(),
                             status,
                             minutes,
-                            formatDuration(remaining));
+                            formatDuration(remaining),
+                            cooldownUntil);
                 })
                 .sorted(Comparator.comparingLong(TokenTimelineDTO::getRemainingMinutes))
                 .collect(Collectors.toList());
@@ -210,14 +222,16 @@ public class BasicAuthController {
         private String status;
         private long remainingMinutes;
         private String durationString;
+        private Long cooldownUntil;
 
         public TokenTimelineDTO(String apiName, String validityAt, String status, long remainingMinutes,
-                String durationString) {
+                String durationString, Long cooldownUntil) {
             this.apiName = apiName;
             this.validityAt = validityAt;
             this.status = status;
             this.remainingMinutes = remainingMinutes;
             this.durationString = durationString;
+            this.cooldownUntil = cooldownUntil;
         }
 
         public String getApiName() {
@@ -238,6 +252,10 @@ public class BasicAuthController {
 
         public String getDurationString() {
             return durationString;
+        }
+
+        public Long getCooldownUntil() {
+            return cooldownUntil;
         }
     }
 }

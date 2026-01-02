@@ -705,4 +705,94 @@ public class BatchAuthenticationService {
             return apiProgress;
         }
     }
+
+    // ==========================================
+    // Retry Token Helper Methods
+    // ==========================================
+
+    /**
+     * Check if API name is valid (exists in configured APIs).
+     */
+    public boolean isValidApiName(String apiName) {
+        if (apiName == null || apiName.isEmpty()) {
+            return false;
+        }
+        return getConfiguredApiNames().contains(apiName);
+    }
+
+    /**
+     * Check if specific API is in cooldown.
+     */
+    public boolean isApiInCooldown(String apiName) {
+        if (cooldownService == null) {
+            return false;
+        }
+        return cooldownService.isApiInCooldown(apiName);
+    }
+
+    /**
+     * Get remaining cooldown time for API in seconds.
+     */
+    public long getCooldownRemaining(String apiName) {
+        if (cooldownService == null) {
+            return 0;
+        }
+        return cooldownService.getCooldownRemainingSeconds(apiName);
+    }
+
+    /**
+     * Retry authentication for a single API.
+     * Used by manual retry button in frontend.
+     * 
+     * @param apiName  The API name to retry (e.g., "OPTION_CHAIN_2")
+     * @param headless Whether to use headless browser
+     */
+    public void retrySingleApi(String apiName, boolean headless) {
+        logger.info("AUDIT: Retrying single API | API: {} | Headless: {}", apiName, headless);
+
+        try {
+            // Find the credentials for this API by purpose (e.g., "OPTION_CHAIN_2")
+            ApiCredentialsDiscovery.UpstoxAppCredentials targetApp = null;
+            for (ApiCredentialsDiscovery.UpstoxAppCredentials app : apiDiscovery.getAllApps()) {
+                if (apiName.equals(app.getPurpose())) {
+                    targetApp = app;
+                    break;
+                }
+            }
+
+            if (targetApp == null) {
+                logger.error("API not found in configuration: {}", apiName);
+                return;
+            }
+
+            // Use common credentials from discovery service
+            LoginCredentials credentials = apiDiscovery.getCommonCredentials();
+
+            // Create Selenium config
+            SeleniumConfig seleniumConfig = new SeleniumConfig("chrome", headless);
+
+            // Create orchestrator
+            AuthenticationOrchestrator orchestrator = new AuthenticationOrchestrator(
+                    seleniumConfig, tokenStorageService);
+
+            // Perform authentication
+            logger.info("Starting authentication for {}", apiName);
+            orchestrator.authenticate(
+                    targetApp.getPurpose(),
+                    targetApp.getClientId(),
+                    targetApp.getClientSecret(),
+                    redirectUri,
+                    credentials,
+                    "PRIMARY".equals(apiName));
+
+            logger.info("AUDIT: Retry successful | API: {}", apiName);
+
+        } catch (Exception e) {
+            logger.error("AUDIT: Retry failed | API: {} | Error: {}", apiName, e.getMessage(), e);
+            // Trigger cooldown on failure
+            if (cooldownService != null) {
+                cooldownService.triggerCooldown(apiName);
+            }
+        }
+    }
 }

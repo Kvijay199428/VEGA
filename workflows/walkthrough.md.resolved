@@ -1,0 +1,71 @@
+# Walkthrough - Auth WebSocket Protocol Refactor (Terminal-Grade)
+
+## Overview
+We have completely refactored the Authentication WebSocket architecture to meet **Bloomberg/Terminal-grade standards**. 
+The new protocol is **Delta-Only**, **Session-Bound**, and **Monotonic**, ensuring zero race conditions and perfect state synchronization across tabs.
+
+## Key Changes
+
+### 1. Protocol Specification
+- **Strict Session Binding**: `ws://.../ws/auth/status?sessionId=<UUID>`
+- **No Initial Emit**: WebSocket **NEVER** sends state on connect. Client relies on HTTP bootstrap.
+- **Delta Events Only**:
+  - `TOKEN_READY`
+  - `TOKEN_FAILED`
+  - `SESSION_INVALIDATED`
+- **Monotonic Sequencing**: Events have strictly increasing `seq` numbers per session.
+
+### 2. Backend Implementation
+- **[AuthSession](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/websocket/AuthSession.java#13-46)**: Tracks session state, sequence numbers, and event history (circular buffer).
+- **[AuthStatusWebSocketHandler](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/websocket/AuthStatusWebSocketHandler.java#20-134)**: Enforces specific session connection and publishes events via [AuthSession](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/websocket/AuthSession.java#13-46).
+- **[AuthService](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/service/AuthService.java#18-130)**: Replaced all `broadcastStatus()` calls with [publishEvent()](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/websocket/AuthStatusWebSocketHandler.java#77-99) logic.
+- **[AuthDiagController](file:///d:/projects/VEGA%20TRADER/backend/java/vega-trader/src/main/java/com/vegatrader/upstox/auth/controller/AuthDiagController.java#15-34)**: New endpoint `GET /api/auth/trace` to inspect event history.
+
+### 3. Frontend Implementation
+- **[authWsReducer.ts](file:///d:/projects/VEGA%20TRADER/frontend/src/auth/authWsReducer.ts)**: Pure reducer handling delta events. Ignores out-of-order sequences.
+- **[useAuthStatus.ts](file:///d:/projects/VEGA%20TRADER/frontend/src/hooks/useAuthStatus.ts)**: 
+  - Generates stable `SESSION_ID`.
+  - Bootstraps via HTTP (Authoritative).
+  - Connects WS with `sessionId`.
+  - Updates state via reducer.
+- **`DIAG AUTH TRACE`**: New operator command to fetch and display auth event history.
+
+---
+
+## Verification
+
+### Compile Status
+- **Backend**: `mvn compile` ✅ SUCCESS
+
+### How to Verify
+1.  **Restart Backend**: `mvn spring-boot:run`
+2.  **Hard Refresh Frontend**: `Ctrl+Shift+R`
+3.  **Check Console**: Look for `[useAuthStatus] HTTP bootstrap received` followed by `[AUTH WS] Connected`.
+4.  **Run Diagnosis**: Type `DIAG AUTH TRACE SESSION <sessionId>` in the command bar (find session ID in console logs).
+
+---
+
+## Architecture Diagram
+
+```mermaid
+sequenceDiagram
+    participant UI as Frontend (Tab A)
+    participant WS as WebSocket Handler
+    participant Svc as AuthService
+    participant DB as TokenStorage
+
+    Note over UI: 1. HTTP Bootstrap
+    UI->>Svc: GET /api/auth/status
+    Svc->>DB: Query Tokens
+    DB-->>Svc: 5 Tokens
+    Svc-->>UI: { authenticated: true, tokens: 5 }
+
+    Note over UI: 2. WS Connect (SessionID)
+    UI->>WS: CONNECT ?sessionId=123
+    WS-->>UI: OPEN (No Data)
+
+    Note over Svc: 3. Token Update (Delta)
+    Svc->>WS: publishEvent(TOKEN_READY, "OPTION_CHAIN")
+    WS->>UI: { type: "TOKEN_READY", seq: 101, payload: "OPTION_CHAIN" }
+    UI->>UI: Reducer(State, Event) -> NewState
+```

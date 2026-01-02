@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { httpClient } from '../api/httpClient'
 
 interface AuthStatus {
-    // Renamed from requiredTokens → configuredApis
-    configuredApis: number
+    // Use requiredTokens to match backend response
+    requiredTokens: number
     generatedTokens: number
     authenticated: boolean
     inProgress: boolean
@@ -250,7 +250,7 @@ export function LoginPage() {
     }
 
     const progress = status ? status.generatedTokens : 0
-    const total = status ? status.configuredApis : 6
+    const total = status ? (status.requiredTokens || 6) : 6
     const progressPercent = total > 0 ? (progress / total) * 100 : 0
 
     return (
